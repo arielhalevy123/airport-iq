@@ -28,6 +28,7 @@ from airportiq.scoring.engine import score          # noqa: E402
 
 _FACTS: list = []
 _CARDS: dict[str, list] = {}
+_SESSIONS = None   # lazily created; see _load()
 
 
 def _load() -> None:
@@ -35,6 +36,9 @@ def _load() -> None:
     global _FACTS, _CARDS
     if _FACTS:
         return
+    global _SESSIONS
+    from airportiq.agent.session import SessionStore
+    _SESSIONS = SessionStore()
     from build_and_rank import JET_RUNWAYS, build_facts
     _FACTS = build_facts(sorted(JET_RUNWAYS))
     for profile in ("terminal_expansion", "congestion"):
@@ -69,6 +73,7 @@ scoring engine; the model only phrases the answer.</div>
  <button>Ask</button>
 </form>
 <script>
+const SID=Math.random().toString(36).slice(2);
 const log=document.getElementById('log');
 document.querySelectorAll('.ex').forEach(e=>e.onclick=()=>{q.value=e.textContent.trim();ask()});
 function add(cls,text){const d=document.createElement('div');d.className='msg '+cls;d.textContent=text;log.appendChild(d);return d}
@@ -79,7 +84,7 @@ async function ask(ev){
   const pending=add('bot','thinking...');
   try{
     const r=await fetch('/v1/chat',{method:'POST',headers:{'content-type':'application/json'},
-      body:JSON.stringify({question:text})});
+      body:JSON.stringify({question:text,session_id:SID})});
     const d=await r.json();
     pending.textContent=d.answer||d.error||'(no answer)';
     if(d.assumptions&&d.assumptions.length){
@@ -142,8 +147,10 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(400, {"error": "question is required"})
             try:
                 from airportiq.agent.answer import answer
+                sid = payload.get("session_id") or self.headers.get("X-Session", "default")
                 res = answer(question, _CARDS["terminal_expansion"],
-                             {f.code: f for f in _FACTS})
+                             {f.code: f for f in _FACTS},
+                             session=_SESSIONS.get(sid))
                 return self._json(200, {"answer": res.text, "intent": res.intent,
                                         "assumptions": res.assumptions})
             except Exception as e:                       # noqa: BLE001

@@ -22,6 +22,7 @@ import re
 from dataclasses import dataclass, field
 
 from . import llm, resolve
+from .session import Session, Turn, is_followup
 
 INTENTS = ("rank", "compare", "metric", "explain", "unsupported")
 
@@ -54,8 +55,17 @@ class Answer:
     unsupported_reason: str = ""
 
 
-def _parse(question: str) -> dict:
-    raw = llm.complete(question, system=_PARSE_SYSTEM, temperature=0.0, max_tokens=300)
+def _parse(question: str, prior: str = "") -> dict:
+    """Turn a question into a plan. `prior` carries the previous turn so that a bare
+    follow-up ("why?") is interpreted against it rather than rejected as meaningless."""
+    prompt = question
+    if prior:
+        prompt = (f"Previous question in this conversation: {prior}\n"
+                  f"Follow-up question: {question}\n\n"
+                  "Interpret the follow-up in the context of the previous question. "
+                  "If it asks 'why', the intent is 'explain' and the entities are the same "
+                  "as the previous question.")
+    raw = llm.complete(prompt, system=_PARSE_SYSTEM, temperature=0.0, max_tokens=300)
     raw = re.sub(r"^```(?:json)?|```$", "", raw.strip(), flags=re.M).strip()
     try:
         plan = json.loads(raw)
@@ -125,9 +135,24 @@ def _verify_no_stray_numbers(text: str, allowed: set[str]) -> list[str]:
     return stray
 
 
-def answer(question: str, cards: list, facts_by_code: dict) -> Answer:
-    """Answer one question against an already-computed set of ScoreCards."""
-    plan = _parse(question)
+def answer(question: str, cards: list, facts_by_code: dict,
+           session: Session | None = None) -> Answer:
+    """Answer one question against an already-computed set of ScoreCards.
+
+    If a session is supplied and the question is a follow-up ("why?", "what about SFO"),
+    the airports and profile from the previous turn carry over. Numbers never do - they are
+    always re-read from the score cards.
+    """
+    followup = bool(session and session.turns and is_followup(question))
+    prior = session.last.question if followup and session.last else ""
+    plan = _parse(question, prior=prior)
+
+    # A follow-up that still parses as unsupported means the model could not use the
+    # context. Fall back to explaining the previous turn rather than refusing - the user
+    # asked a reasonable question and we know what it refers to.
+    if followup and plan["intent"] == "unsupported" and session.context_codes():
+        plan = {"intent": "explain", "entities": [], "region": None,
+                "profile": session.context_profile() or "terminal_expansion"}
 
     if plan["intent"] == "unsupported":
         return Answer(
@@ -151,6 +176,11 @@ def answer(question: str, cards: list, facts_by_code: dict) -> Answer:
     elif plan.get("entities"):
         codes, notes = resolve.resolve_many(plan["entities"])
         assumptions.extend(notes)
+    elif followup and session.context_codes():
+        codes = session.context_codes()
+        assumptions.append(
+            f"Following up on {', '.join(codes)} from the previous question."
+        )
     else:
         codes = [c.code for c in cards if c.hub_class == "large"][:10]
         assumptions.append("No region given — showing large hubs.")
@@ -215,6 +245,12 @@ def answer(question: str, cards: list, facts_by_code: dict) -> Answer:
         for f in c.flags:
             if f not in assumptions:
                 assumptions.append(f"{c.code}: {f}")
+
+    if session is not None:
+        session.add(Turn(question=question, intent=plan["intent"],
+                         codes=[c.code for c in selected], profile=plan["profile"]))
+        # Do not repeat a caveat already stated this session.
+        assumptions = session.new_assumptions(assumptions)
 
     return Answer(text=text.strip(), intent=plan["intent"],
                   assumptions=assumptions, data=briefing)
