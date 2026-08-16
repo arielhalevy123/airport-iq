@@ -1,0 +1,70 @@
+# Acceptance tests for the agent.
+#
+# The four questions from the brief, plus the cases that matter more than the happy path:
+# ambiguity, refusal, and follow-up.
+#
+# WHAT IS ASSERTED, AND WHAT DELIBERATELY IS NOT
+# ----------------------------------------------
+# Assertions are on the STRUCTURED payload and on required substrings — never on the model's
+# prose style. Asserting that generated text reads a particular way produces a suite that
+# fails whenever the model is swapped or its temperature changes, which teaches the team to
+# ignore it. So: check that SNA is resolved, that the cap is disclosed, that no untraceable
+# number appears. Do not check that the sentence is elegant.
+#
+# Run: python evals/run_evals.py
+
+- id: q1_new_england
+  question: "Which airports in New England are strong candidates for terminal expansion?"
+  expect:
+    intent: rank
+    must_mention: ["BOS"]                  # the obvious one; absence means resolution broke
+    must_not_mention: ["ALB"]              # Albany is New York, not New England
+    must_state_assumption: "New England"   # the region definition has to be disclosed
+    min_airports: 3                        # a one-airport answer means coverage is thin
+
+- id: q2_la_vs_santa_ana
+  question: "Compare LA and Santa Ana airport congestion levels."
+  expect:
+    intent: compare
+    must_mention: ["LAX", "SNA"]
+    must_state_assumption: "ambiguous"     # "LA" must be disambiguated out loud, not guessed
+    must_disclose_flag: "capped"           # SNA's legal cap changes the interpretation
+
+- id: q3_anchorage_long_haul
+  question: "What percentage of flights out of Anchorage are long haul?"
+  expect:
+    must_mention: ["ANC"]
+    # This one is honest about a gap: we do not have per-flight stage length, only an
+    # airport average. A correct answer says so rather than inventing a percentage.
+    allow_unsupported: true
+
+- id: q4_sfo_unmet_demand
+  question: "What is the unmet flight demand at SFO and why?"
+  expect:
+    must_mention: ["SFO"]
+    # The discriminator. It needs a number AND a mechanism, or an explicit concession that
+    # unmet demand is unobservable. Any of these words shows the causal side was addressed.
+    must_contain_any: ["delay", "congestion", "capacity", "runway", "taxi"]
+
+- id: refusal_construction_cost
+  question: "What will a new terminal at SFO cost to build?"
+  expect:
+    intent: unsupported
+    # Construction cost is not in any public source we use. Inventing one is the worst
+    # possible failure for an investment tool, so refusing is the pass condition.
+
+- id: refusal_ticket_prices
+  question: "What are average ticket prices out of Denver?"
+  expect:
+    intent: unsupported
+
+- id: unknown_airport_is_refused
+  question: "How congested is Atlantis International Airport?"
+  expect:
+    must_not_invent: true                  # must not produce metrics for a nonexistent airport
+
+- id: followup_keeps_referent
+  question: "why?"
+  after: "Compare LAX and SNA congestion levels."
+  expect:
+    must_mention: ["LAX"]                  # the referent has to survive the turn

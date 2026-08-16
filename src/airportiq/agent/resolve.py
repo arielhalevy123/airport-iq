@@ -10,6 +10,8 @@ Every mapping below is a stated assumption that surfaces in the response.
 """
 from __future__ import annotations
 
+import re
+
 NEW_ENGLAND = {"CT", "ME", "MA", "NH", "RI", "VT"}
 
 # Airport -> state. In the full build this comes from OurAirports iso_region; kept explicit
@@ -118,6 +120,29 @@ def resolve_airport(term: str, *, allow_primary: bool = False) -> tuple[str, str
         return primary, (f"'{term}' is ambiguous — the metro area includes "
                          f"{', '.join(METRO[t])}. Interpreting as {primary}. "
                          f"Ask to compare the full metroplex if that is what you meant.")
+
+    # Fall back to substring matching. The model does not always extract a clean place name -
+    # it may hand back "flights out of Anchorage" instead of "Anchorage" - and failing on that
+    # produces "no data for that airport" for an airport we have. Deterministic and ordered
+    # longest-first so "portland maine" wins over "portland".
+    # Word-boundary matching, NOT naive substring. A plain `in` test resolved "Atlantis" to
+    # LAX because the string contains "la" - inventing an airport for a nonsense query, which
+    # is the single worst failure mode for this system.
+    def _contains(haystack: str, needle: str) -> bool:
+        return re.search(rf"\b{re.escape(needle)}\b", haystack) is not None
+
+    for alias in sorted(CITY_ALIAS, key=len, reverse=True):
+        if _contains(t, alias):
+            return CITY_ALIAS[alias], ""
+    for code in AIRPORT_STATE:
+        if code.lower() in t.split():
+            return code, ""
+    for metro in sorted(METRO, key=len, reverse=True):
+        if _contains(t, metro) and allow_primary:
+            return METRO_PRIMARY[metro], (
+                f"'{term}' is ambiguous — the metro area includes "
+                f"{', '.join(METRO[metro])}. Interpreting as {METRO_PRIMARY[metro]}."
+            )
 
     raise ValueError(f"could not resolve {term!r} to an airport")
 
