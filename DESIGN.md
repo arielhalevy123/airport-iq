@@ -23,6 +23,30 @@ That distinction is stated first because everything else follows from it.
 
 ## 2. Architecture
 
+Two paths, and which one runs depends on the question.
+
+**Tool-calling agent** (default). The model is given six read-only tools and decides which to
+call and in what order. This is what makes open-ended questions answerable — a fixed pipeline
+can only answer questions whose shape it anticipated. Asked "what is the unmet demand at SFO
+and why", it independently calls `estimate_unmet_demand` then `get_delay_breakdown`: the number,
+then the cause.
+
+```
+  question ──▶ model picks tools ──▶ tools return ENGINE values ──▶ model narrates
+                     ▲                        │
+                     └────────────────────────┘   up to 4 rounds, 10 calls, repeats cached
+```
+
+Tools: `list_region`, `get_airport_metrics`, `compare_airports`, `get_delay_breakdown`,
+`estimate_unmet_demand`, `rank_airports`.
+
+The boundary does not move. Every tool returns values computed by the pure engine — the model
+chooses the *questions*, never the *answers*. Giving a model tools is usually where determinism
+quietly dies, because the model starts computing in prose over tool output. The defence is that
+tools return structured values with provenance, and `/v1/score` reproduces any figure quoted.
+
+**Deterministic pipeline** (fallback, and the reference implementation):
+
 ```
   user question
        │
@@ -148,6 +172,25 @@ mean taxi-out, second only to JFK, with 26.4% of flights delayed 15+ minutes.
 One month is committed as a 24 KB aggregate so the reviewer gets real delay data without a 30 MB
 download or a BTS account.
 
+### Unmet demand: a proxy, stated as one
+
+The hardest question in the brief. The first implementation refused it — "unmet demand data is
+not available" — which is technically true and the wrong answer, because the brief asks it.
+
+Suppressed demand genuinely never enters the data: the passenger who did not book, the airline
+that did not add a frequency. So the estimate is built from three observable leaks — load factor
+above the ~82% planning comfort level, airspace-attributable delay share, and upgauging without
+frequency growth — and returned as a **range**, because a point estimate would imply precision
+the method does not have.
+
+For SFO: 3-9% of current traffic, roughly 0.9M-2.4M passengers a year, at medium confidence.
+
+And the mechanism, which is the half that matters: **SFO's parallel runway pairs are roughly
+750 ft apart — too close for simultaneous independent approaches under instrument conditions.
+When the marine layer moves in the arrival rate roughly halves and the published schedule cannot
+be flown.** That is a physical cause, not a restatement of the question, and it says the
+investment case at SFO is airside rather than terminal.
+
 ### Conversational follow-up
 
 "Compare LAX and SNA" then "why?" must work. Airports, profile and already-stated assumptions
@@ -232,7 +275,27 @@ model structurally cannot.
 - **Data lags roughly four months** (currently through 2026-04). Fine for trend analysis; stated
   in every answer.
 
-## 8. Not modelled at all
+## 8. Evaluation
+
+`evals/run_evals.py` runs eight cases: the four questions from the brief, two refusals, a
+nonexistent airport, and a follow-up. It asserts on the **structured payload** — resolved
+intent, airports referenced, assumptions disclosed — and deliberately not on prose style. A
+suite that fails when a sentence is reworded gets ignored within a week, and an ignored suite
+is worse than none because it looks like coverage.
+
+It earned itself immediately. Within minutes it caught:
+
+- the Anchorage case regressing after a parser prompt change, because the model sometimes
+  extracts "flights out of Anchorage" rather than "Anchorage";
+- the fix for that resolving **"Atlantis" to LAX**, since the string contains "la" — inventing
+  an airport for a nonsense query, which is the worst failure this system can have. Now
+  word-boundary matched, with a regression test;
+- `rank_airports` returning only BOS for New England, a worse answer than the pipeline it
+  replaced.
+
+All three would have shipped otherwise.
+
+## 9. Not modelled at all
 
 Construction cost. Land availability. Political and NEPA feasibility. Airline
 majority-in-interest lease clauses, which are often the actual binding constraint on capital
