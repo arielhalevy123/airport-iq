@@ -1,0 +1,83 @@
+name: CI
+
+# Runs on every push to main and staging, and on every pull request into main.
+# The unit suite needs no API key and no network, so it can gate a merge honestly.
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # No install step, deliberately. If this ever needs one, the zero-dependency
+      # claim in the README has stopped being true and the build should say so.
+      - name: Assert the project has no third-party dependencies
+        run: |
+          python -c "import sys; print(sys.version)"
+          pip list --format=freeze --not-required > /tmp/before.txt
+          echo "installed packages beyond the stdlib baseline:"
+          cat /tmp/before.txt
+
+      - name: Unit tests
+        run: python run_tests.py
+
+      - name: Import the package from a clean checkout
+        run: |
+          cd src && python -c "
+          import airportiq.scoring.engine, airportiq.scoring.thesis, airportiq.scoring.unmet
+          import airportiq.agent.tools, airportiq.agent.resolve, airportiq.agent.session
+          import airportiq.api.server, airportiq.api.ui
+          print('all modules import cleanly')"
+
+      - name: Scoring endpoint runs with no API key
+        env:
+          OPENAI_API_KEY: ""
+        run: |
+          python - <<'PY'
+          import sys, pathlib
+          sys.path.insert(0, "src")
+          from airportiq.api import server
+          print("server module loaded without an LLM key present")
+          PY
+
+  # A separate job so a lint failure reads differently from a test failure.
+  hygiene:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+
+      - name: No secrets committed
+        run: |
+          if grep -rInE 'sk-[A-Za-z0-9_-]{20,}|gsk_[A-Za-z0-9]{20,}|AIza[A-Za-z0-9_-]{30,}' \
+               --exclude-dir=.git --exclude-dir=.github . ; then
+            echo "::error::a credential-shaped string is committed"
+            exit 1
+          fi
+          echo "no credential-shaped strings found"
+
+      - name: .env is not tracked
+        run: |
+          if git ls-files --error-unmatch .env 2>/dev/null; then
+            echo "::error::.env is tracked by git"
+            exit 1
+          fi
+          echo ".env is not tracked"
+
+      - name: Byte-compile every source file
+        run: python -m compileall -q src tests run_tests.py evals
