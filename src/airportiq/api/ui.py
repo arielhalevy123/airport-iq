@@ -21,6 +21,21 @@ One deliberate asymmetry: voice INPUT is the whole question, but voice OUTPUT is
 answer. The tool trace and the assumptions list stay on screen and are never spoken. Reading a
 list of caveats aloud is how a listener stops hearing them, and the caveats are the part of this
 system that must not be lost. Speech is for the finding; the screen is for the evidence.
+
+THE LOOK, AND WHY IT IS NOT A GENERIC CHAT BOX
+----------------------------------------------
+The visual language is borrowed from aviation instrumentation rather than from consumer chat:
+IATA codes set as boxed tags, all figures in monospace so columns of percentiles line up, and a
+dark palette reading as a night-ops console with amber reserved exclusively for constraint
+flags. Amber appears nowhere decorative — if something is amber, an airport is legally or
+physically capped.
+
+The scorecard panel is the substantive half of this. Every answer that touches an airport is
+accompanied by that airport's percentile bars, drawn straight from the deterministic engine.
+The prose sits above the numbers that produced it, so a reader can check one against the other
+in the same glance. Crucially the panel is built from the TOOL-CALL ARGUMENTS, not by parsing
+the model's sentence for airport codes — a panel derived from the prose would agree with the
+prose by construction, and would verify nothing.
 """
 
 INDEX = """<!doctype html>
@@ -28,36 +43,62 @@ INDEX = """<!doctype html>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AirportIQ — US airport capacity investment</title>
 <style>
+ /* Night-ops console. Amber is reserved for constraint flags and used nowhere
+    decorative — if something is amber, an airport is capped. */
  :root{
-   --bg:#fbfbfa; --panel:#fff; --ink:#1a1a1a; --muted:#6b6b6b; --line:#e5e4e1;
-   --accent:#1f4e79; --warn:#b4530a; --ok:#1e6b3a;
+   --bg:#0d1117; --panel:#161c24; --panel2:#1b232d; --ink:#e6edf3; --muted:#7d8896;
+   --line:#232c38; --accent:#4db8d4; --accent-dim:#2a6b7d; --warn:#e0a44c; --ok:#5ec27e;
+   --grid:rgba(77,184,212,.05);
  }
- @media (prefers-color-scheme: dark){
-   :root{ --bg:#161615; --panel:#1e1e1d; --ink:#eceae4; --muted:#9a978f;
-          --line:#33322f; --accent:#7fb2e0; --warn:#e0a060; --ok:#7dc79a; }
+ @media (prefers-color-scheme: light){
+   :root{ --bg:#f4f6f8; --panel:#fff; --panel2:#f0f3f6; --ink:#10161d; --muted:#5b6672;
+          --line:#dde3ea; --accent:#0f6b86; --accent-dim:#8fc4d4; --warn:#9a5f10;
+          --ok:#1c7a45; --grid:rgba(15,107,134,.05); }
  }
  *{box-sizing:border-box}
  body{margin:0;background:var(--bg);color:var(--ink);
-      font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
- .wrap{max-width:820px;margin:0 auto;padding:32px 20px 120px}
- header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:22px}
- h1{font-size:19px;margin:0 0 4px;letter-spacing:-.01em}
- .tag{color:var(--muted);font-size:13.5px;margin:0}
+      font:15px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+      background-image:
+        linear-gradient(var(--grid) 1px,transparent 1px),
+        linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+      background-size:44px 44px}
+ .wrap{max-width:860px;margin:0 auto;padding:30px 20px 132px}
+
+ /* header: a runway threshold, not a logo */
+ header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:8px}
+ .brand{display:flex;align-items:baseline;gap:11px}
+ h1{font-size:18px;margin:0;letter-spacing:.06em;text-transform:uppercase;font-weight:650}
+ h1 span{color:var(--accent)}
+ .rwy{flex:1;height:9px;position:relative;overflow:hidden;
+      border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+ .rwy:after{content:"";position:absolute;top:50%;left:0;right:0;height:1px;
+            transform:translateY(-50%);
+            background:repeating-linear-gradient(90deg,
+              var(--accent-dim) 0 14px,transparent 14px 28px)}
+ .meta{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+       letter-spacing:.08em}
+ .tag{color:var(--muted);font-size:13.5px;margin:10px 0 0}
  .tag b{color:var(--ink);font-weight:600}
 
  .examples{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 4px}
- .ex{background:var(--panel);border:1px solid var(--line);border-radius:16px;
-     padding:6px 13px;font-size:13px;cursor:pointer;color:var(--muted);transition:.12s}
- .ex:hover{border-color:var(--accent);color:var(--ink)}
+ .ex{background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--accent-dim);
+     border-radius:3px;padding:7px 13px;font-size:13px;cursor:pointer;color:var(--muted);
+     transition:.12s}
+ .ex:hover{border-left-color:var(--accent);color:var(--ink);background:var(--panel2)}
 
  .msg{margin:18px 0}
  .you{text-align:right}
- .you span{display:inline-block;background:var(--accent);color:#fff;
-           padding:9px 14px;border-radius:14px 14px 3px 14px;max-width:80%;text-align:left}
- .bot{background:var(--panel);border:1px solid var(--line);border-radius:3px 14px 14px 14px;
-      padding:16px 18px}
+ .you span{display:inline-block;background:var(--accent-dim);color:var(--ink);
+           padding:9px 14px;border-radius:3px;max-width:80%;text-align:left;
+           border-right:2px solid var(--accent)}
+ .bot{background:var(--panel);border:1px solid var(--line);
+      border-left:2px solid var(--accent);border-radius:3px;padding:16px 18px}
  .bot p{margin:0 0 10px;white-space:pre-wrap}
  .bot p:last-child{margin:0}
+ /* IATA codes read as instrument labels, not prose */
+ .bot p code,.iata{font:600 12.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+       letter-spacing:.06em;background:var(--panel2);border:1px solid var(--line);
+       border-radius:2px;padding:2px 5px;color:var(--accent)}
 
  details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
  summary{cursor:pointer;color:var(--muted);font-size:12.5px;
@@ -67,29 +108,51 @@ INDEX = """<!doctype html>
  details[open] summary:before{content:"▾ "}
  .trace{font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
         margin-top:8px}
- .trace div{padding:3px 0}
+ .trace div{padding:3px 0;border-left:1px solid var(--line);padding-left:9px}
  .trace b{color:var(--accent);font-weight:600}
  .assume{font-size:12.5px;color:var(--muted);margin-top:8px}
  .assume li{margin:4px 0}
 
- .badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;
+ .badge{display:inline-block;font:11px ui-monospace,SFMono-Regular,Menlo,monospace;
+        padding:2px 8px;border-radius:2px;letter-spacing:.05em;
         border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:middle}
  .badge.warn{color:var(--warn);border-color:var(--warn)}
 
+ /* ---- scorecard: the engine's numbers, beside the prose that used them ---- */
+ .cards{display:grid;gap:10px;margin-top:14px;
+        grid-template-columns:repeat(auto-fit,minmax(232px,1fr))}
+ .card{background:var(--panel2);border:1px solid var(--line);border-radius:3px;padding:11px 13px}
+ .card.capped{border-color:var(--warn)}
+ .chead{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+ .chead .nm{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;
+            white-space:nowrap;flex:1}
+ .chead .rk{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+ .kpi{display:grid;grid-template-columns:1fr 34px;gap:7px;align-items:center;
+      font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+      margin:5px 0}
+ .kpi .lbl{grid-column:1/-1;letter-spacing:.03em}
+ .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+ .bar i{display:block;height:100%;background:var(--accent)}
+ .bar.hi i{background:var(--warn)}
+ .val{text-align:right;color:var(--ink)}
+ .cflag{margin-top:9px;font-size:11.5px;color:var(--warn);line-height:1.45}
+ .cmiss{margin-top:7px;font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+
  form{position:fixed;bottom:0;left:0;right:0;background:var(--bg);
       border-top:1px solid var(--line);padding:14px 20px}
- .row{max-width:820px;margin:0 auto;display:flex;gap:10px}
+ .row{max-width:860px;margin:0 auto;display:flex;gap:8px}
  input{flex:1;padding:11px 14px;font-size:15px;font-family:inherit;color:var(--ink);
-       background:var(--panel);border:1px solid var(--line);border-radius:10px}
+       background:var(--panel);border:1px solid var(--line);border-radius:3px}
  input:focus{outline:none;border-color:var(--accent)}
- button{padding:11px 20px;font-size:15px;font-family:inherit;border:0;border-radius:10px;
-        background:var(--accent);color:#fff;cursor:pointer}
- button:disabled{opacity:.5;cursor:default}
+ button{padding:11px 20px;font:600 13px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;
+        letter-spacing:.09em;text-transform:uppercase;border:1px solid var(--accent);
+        border-radius:3px;background:var(--accent);color:var(--bg);cursor:pointer}
+ button:disabled{opacity:.45;cursor:default}
  .thinking{color:var(--muted);font-style:italic}
 
  /* voice */
- .icon{padding:11px 14px;background:var(--panel);color:var(--muted);
-       border:1px solid var(--line);border-radius:10px;font-size:15px;line-height:1}
+ .icon{padding:11px 13px;background:var(--panel);color:var(--muted);
+       border:1px solid var(--line);border-radius:3px;font-size:15px;line-height:1}
  .icon:hover{color:var(--ink);border-color:var(--accent)}
  .icon[hidden]{display:none}
  .icon.on{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -100,7 +163,11 @@ INDEX = """<!doctype html>
 </style></head><body>
 <div class="wrap">
  <header>
-  <h1>AirportIQ</h1>
+  <div class="brand">
+   <h1>Airport<span>IQ</span></h1>
+   <div class="rwy"></div>
+   <div class="meta">CAPACITY &middot; US</div>
+  </div>
   <p class="tag">US airport capacity investment analysis.
      Every figure is computed by a <b>deterministic scoring engine</b> — the model chooses
      which questions to ask and writes the prose, never the numbers.</p>
@@ -143,6 +210,47 @@ function el(tag, cls, text){
   return d;
 }
 
+const KPI_LABEL = {
+  delay_congestion:'delay congestion', peak_pressure:'peak pressure',
+  gate_saturation:'gate saturation', airside_saturation:'airside saturation',
+  airside_headroom:'airside headroom', demand_growth:'demand growth',
+  international_intensity:'intl intensity'
+};
+
+function scorecards(list){
+  const grid = el('div','cards');
+  list.forEach(c => {
+    const capped = (c.flags||[]).length > 0;
+    const card = el('div','card' + (capped ? ' capped' : ''));
+
+    const head = el('div','chead');
+    head.appendChild(el('span','iata',c.code));
+    head.appendChild(el('span','nm',c.name || ''));
+    if (c.rank) head.appendChild(el('span','rk','#'+c.rank+' '+(c.hub_class||'')));
+    card.appendChild(head);
+
+    // Percentiles are within the airport's own hub class — the same caveat the tools
+    // return. Bars are therefore comparable down a column, never across hub classes.
+    Object.entries(c.kpis||{}).forEach(([k,v]) => {
+      if (typeof v !== 'number') return;
+      const row = el('div','kpi');
+      row.appendChild(el('div','lbl', KPI_LABEL[k] || k.replace(/_/g,' ')));
+      const bar = el('div','bar' + (v >= 80 ? ' hi' : ''));
+      const fill = el('i'); fill.style.width = Math.max(0,Math.min(100,v)) + '%';
+      bar.appendChild(fill);
+      row.appendChild(bar);
+      row.appendChild(el('div','val', v.toFixed(0)));
+      card.appendChild(row);
+    });
+
+    (c.flags||[]).forEach(f => card.appendChild(el('div','cflag','⚠ ' + f)));
+    if ((c.missing||[]).length)
+      card.appendChild(el('div','cmiss','computed without: ' + c.missing.join(', ')));
+    grid.appendChild(card);
+  });
+  return grid;
+}
+
 function ask(ev){
   if (ev) ev.preventDefault();
   const text = q.value.trim();
@@ -168,6 +276,12 @@ function ask(ev){
 
       if (d.intent === 'unsupported')
         bot.querySelector('p').appendChild(el('span','badge warn','outside the data'));
+
+      // The engine's own numbers, next to the sentence that used them. Built from the
+      // tool-call arguments server-side, never from parsing the prose — see the module
+      // docstring. A capped airport is outlined amber because a legal ceiling changes
+      // the recommendation regardless of how good the other metrics look.
+      if (d.scorecards && d.scorecards.length) bot.appendChild(scorecards(d.scorecards));
 
       // The point of this interface: show what the agent actually did.
       if (d.trace && d.trace.length){

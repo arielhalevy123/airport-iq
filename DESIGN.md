@@ -25,7 +25,7 @@ That distinction is stated first because everything else follows from it.
 
 Two paths, and which one runs depends on the question.
 
-**Tool-calling agent** (default). The model is given six read-only tools and decides which to
+**Tool-calling agent** (default). The model is given seven read-only tools and decides which to
 call and in what order. This is what makes open-ended questions answerable — a fixed pipeline
 can only answer questions whose shape it anticipated. Asked "what is the unmet demand at SFO
 and why", it independently calls `estimate_unmet_demand` then `get_delay_breakdown`: the number,
@@ -38,12 +38,39 @@ then the cause.
 ```
 
 Tools: `list_region`, `get_airport_metrics`, `compare_airports`, `get_delay_breakdown`,
-`estimate_unmet_demand`, `rank_airports`.
+`estimate_unmet_demand`, `get_stage_length_mix`, `rank_airports`.
 
 The boundary does not move. Every tool returns values computed by the pure engine — the model
 chooses the *questions*, never the *answers*. Giving a model tools is usually where determinism
 quietly dies, because the model starts computing in prose over tool output. The defence is that
 tools return structured values with provenance, and `/v1/score` reproduces any figure quoted.
+
+### Stage length, and refusing to hide behind a threshold
+
+`get_stage_length_mix` answers the brief's Anchorage question. It nearly did not exist: T-100 is
+summarised by origin airport and carries only an airport-wide average distance, so the honest
+answer was "we cannot compute this" — and the eval suite encoded exactly that with
+`allow_unsupported: true`.
+
+That was true but lazy. BTS On-Time Performance is flight-level and carries `Distance`, and the
+delay snapshot already iterates every row of it, so bucketing by distance cost one extra field
+read on a pass we were making anyway. ANC now returns 11.6% of departures at 2,500+ statute
+miles and 24.4% at 1,500+, across 1,333 measured departures.
+
+**Two thresholds are always returned, never one.** "Long haul" has no single definition, and the
+answer roughly doubles between the two. A single figure would hide that the *threshold*, not the
+airport, produced it.
+
+**Stage length is deliberately not a scored KPI.** It describes what kind of flying happens at an
+airport, not whether the airport is constrained. A long-haul airport is not thereby a better or
+worse expansion candidate, and folding it into the composite would smuggle in a judgement the
+data cannot support.
+
+**The scope caveat is emitted by the tool, not left to the model.** This source covers domestic
+flights by reporting US carriers. For most airports that is a footnote. For Anchorage it is the
+whole story: ANC is one of the world's largest cargo hubs and its genuinely long-haul traffic is
+international freight to Asia, none of which appears here. A reader who misses that draws the
+opposite conclusion about the airport, so `test_anchorage_cargo_caveat_is_forced` pins it.
 
 **Deterministic pipeline** (fallback, and the reference implementation):
 
@@ -81,6 +108,37 @@ tools return structured values with provenance, and `/v1/score` reproduces any f
 The LLM appears exactly twice and cannot produce a number that reaches the user in either place.
 
 ---
+
+### The interface, and why it shows its working
+
+The frontend is plain HTML/CSS/JS — no build step, no CDN — so `python -m airportiq.api.server`
+gives a reviewer a working page with nothing installed.
+
+Two things drive the design:
+
+**Every answer shows the tool calls that produced it.** Most chat UIs hide the machinery and
+present a paragraph, which is exactly the shape that makes an analyst distrust an AI answer:
+they cannot see where a number came from. Here the trace is one click away.
+
+**Every answer that touches an airport carries that airport's percentile bars**, drawn straight
+from the deterministic engine, so the prose sits directly above the numbers that produced it.
+The panel is assembled from the *tool-call arguments* server-side, never by parsing the model's
+sentence for airport codes — a panel derived from the prose would agree with the prose by
+construction and would verify nothing.
+
+Amber is reserved for constraint flags and appears nowhere decorative. If a card is outlined
+amber, that airport is legally or physically capped, which changes the recommendation no matter
+how good its other metrics look.
+
+**Voice** (the brief's bonus) uses the browser's own Web Speech API: `SpeechRecognition` in,
+`speechSynthesis` out. No key, no cloud STT vendor, no dependency. Each leg is feature-detected
+separately, so Firefox — which has synthesis but not recognition — gets spoken answers rather
+than a dead microphone.
+
+One deliberate asymmetry: voice *input* is the whole question, but voice *output* is the prose
+answer only. The tool trace and the assumptions are never spoken. Reading a list of caveats
+aloud is how a listener stops hearing them, and the caveats are the part of this system that
+must not be lost. Speech carries the finding; the screen carries the evidence.
 
 ## 3. How the model is walled off from the arithmetic
 
