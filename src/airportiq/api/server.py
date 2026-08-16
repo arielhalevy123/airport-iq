@@ -45,58 +45,10 @@ def _load() -> None:
         _CARDS[profile] = score(_FACTS, profile)
 
 
-INDEX = """<!doctype html><meta charset=utf-8>
-<title>AirportIQ</title>
-<style>
- body{font:15px/1.55 -apple-system,system-ui,sans-serif;max-width:760px;margin:40px auto;padding:0 20px;color:#1a1a1a}
- h1{font-size:20px;margin-bottom:4px} .sub{color:#666;margin-bottom:24px;font-size:14px}
- #log{white-space:pre-wrap}
- .msg{margin:14px 0;padding:12px 14px;border-radius:8px}
- .you{background:#eef2f7} .bot{background:#f7f7f5;border-left:3px solid #888}
- .note{color:#666;font-size:13px;margin-top:8px;border-top:1px solid #ddd;padding-top:8px}
- form{display:flex;gap:8px;margin-top:20px}
- input{flex:1;padding:10px;font-size:15px;border:1px solid #ccc;border-radius:6px}
- button{padding:10px 18px;font-size:15px;border:0;border-radius:6px;background:#1a1a1a;color:#fff;cursor:pointer}
- .ex{color:#555;font-size:13px;margin-bottom:6px;cursor:pointer;text-decoration:underline dotted}
-</style>
-<h1>AirportIQ</h1>
-<div class=sub>US airport capacity-investment analysis. Numbers come from a deterministic
-scoring engine; the model only phrases the answer.</div>
-<div id=ex>
- <div class=ex>Which airports in New England are strong candidates for terminal expansion?</div>
- <div class=ex>Compare LA and Santa Ana airport congestion levels</div>
- <div class=ex>What is the unmet flight demand at SFO and why?</div>
-</div>
-<div id=log></div>
-<form onsubmit="ask(event)">
- <input id=q placeholder="Ask about US airport capacity..." autocomplete=off>
- <button>Ask</button>
-</form>
-<script>
-const SID=Math.random().toString(36).slice(2);
-const log=document.getElementById('log');
-document.querySelectorAll('.ex').forEach(e=>e.onclick=()=>{q.value=e.textContent.trim();ask()});
-function add(cls,text){const d=document.createElement('div');d.className='msg '+cls;d.textContent=text;log.appendChild(d);return d}
-async function ask(ev){
-  if(ev)ev.preventDefault();
-  const text=q.value.trim(); if(!text)return;
-  add('you',text); q.value='';
-  const pending=add('bot','thinking...');
-  try{
-    const r=await fetch('/v1/chat',{method:'POST',headers:{'content-type':'application/json'},
-      body:JSON.stringify({question:text,session_id:SID})});
-    const d=await r.json();
-    pending.textContent=d.answer||d.error||'(no answer)';
-    if(d.assumptions&&d.assumptions.length){
-      const n=document.createElement('div');n.className='note';
-      n.textContent='Assumptions: '+d.assumptions.join(' | ');
-      pending.appendChild(n);
-    }
-  }catch(e){pending.textContent='error: '+e}
-  window.scrollTo(0,document.body.scrollHeight);
-}
-</script>
-"""
+# Absolute, not relative: a relative import fails when this file is run directly
+# (`python src/airportiq/api/server.py`), which is exactly what someone tries first.
+# sys.path is already set above, so both entry points work.
+from airportiq.api.ui import INDEX  # noqa: E402
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -146,13 +98,30 @@ class Handler(BaseHTTPRequestHandler):
             if not question:
                 return self._json(400, {"error": "question is required"})
             try:
-                from airportiq.agent.answer import answer
                 sid = payload.get("session_id") or self.headers.get("X-Session", "default")
-                res = answer(question, _CARDS["terminal_expansion"],
-                             {f.code: f for f in _FACTS},
-                             session=_SESSIONS.get(sid))
-                return self._json(200, {"answer": res.text, "intent": res.intent,
-                                        "assumptions": res.assumptions})
+                by_code = {f.code: f for f in _FACTS}
+
+                # Tool-calling agent first: it picks its own data and handles open-ended
+                # questions. Falls back to the deterministic pipeline if tool calling is
+                # unavailable (no OpenAI-compatible key), so the demo still works.
+                try:
+                    from airportiq.agent import react
+                    out = react.run(question, _CARDS["congestion"], by_code)
+                    assumptions = []
+                    for t in out["trace"]:
+                        if "list_region" in t["tool"]:
+                            assumptions.append("Region membership resolved deterministically, "
+                                               "not inferred by the model.")
+                    return self._json(200, {
+                        "answer": out["answer"], "intent": "agent",
+                        "trace": out["trace"], "rounds": out["rounds"],
+                        "assumptions": assumptions})
+                except Exception:
+                    from airportiq.agent.answer import answer
+                    res = answer(question, _CARDS["terminal_expansion"], by_code,
+                                 session=_SESSIONS.get(sid))
+                    return self._json(200, {"answer": res.text, "intent": res.intent,
+                                            "assumptions": res.assumptions})
             except Exception as e:                       # noqa: BLE001
                 return self._json(500, {
                     "error": f"{type(e).__name__}: {e}",
