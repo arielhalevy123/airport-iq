@@ -96,6 +96,93 @@ def complete_with_tools(messages: list[dict], tools: list | None = None,
     return {"content": msg.get("content"), "tool_calls": msg.get("tool_calls")}
 
 
+def stream_with_tools(messages: list[dict], tools: list | None = None,
+                      *, provider: str | None = None, model: str | None = None,
+                      temperature: float = 0.0, max_tokens: int = 1200):
+    """Same call as complete_with_tools, yielded incrementally.
+
+    Yields ("delta", text) as prose arrives, then exactly one ("final", {...}) carrying the
+    assembled message so the caller can treat it identically to the non-streaming path.
+
+    The fiddly part is tool calls: OpenAI streams them as fragments addressed by `index`,
+    with the function name usually in the first fragment and the JSON arguments dribbling
+    across many later ones. They are reassembled here rather than in the loop, so react.py
+    stays a control-flow module and does not grow a wire-format parser.
+    """
+    env = _load_env()
+    provider = (provider or env.get("LLM_PROVIDER") or "").lower()
+    if not provider:
+        found = [p for p in available_providers() if p != "anthropic"]
+        if not found:
+            raise RuntimeError("No OpenAI-compatible LLM key found for tool calling. "
+                               "Set OPENAI_API_KEY, GROQ_API_KEY or GOOGLE_API_KEY in .env.")
+        provider = found[0]
+    if provider == "anthropic":
+        raise RuntimeError("Streaming here targets the OpenAI-compatible protocol.")
+
+    url, key_name, default_model = _ENDPOINTS[provider]
+    api_key = env.get(key_name)
+    if not api_key:
+        raise RuntimeError(f"{provider} selected but {key_name} is not set in .env")
+
+    payload: dict = {
+        "model": model or env.get("LLM_MODEL") or default_model,
+        "messages": messages, "temperature": temperature,
+        "max_tokens": max_tokens, "stream": True,
+    }
+    if tools:
+        payload["tools"] = tools
+        payload["tool_choice"] = "auto"
+
+    req = urllib.request.Request(
+        url, data=json.dumps(payload).encode(),
+        headers={"Authorization": f"Bearer {api_key}", "content-type": "application/json"},
+        method="POST")
+
+    content_parts: list[str] = []
+    calls: dict[int, dict] = {}
+
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        for raw in resp:
+            line = raw.decode("utf-8", "replace").strip()
+            if not line.startswith("data:"):
+                continue
+            data = line[5:].strip()
+            if data == "[DONE]":
+                break
+            try:
+                chunk = json.loads(data)
+            except json.JSONDecodeError:
+                continue
+            choices = chunk.get("choices") or []
+            if not choices:
+                continue
+            delta = choices[0].get("delta") or {}
+
+            piece = delta.get("content")
+            if piece:
+                content_parts.append(piece)
+                yield ("delta", piece)
+
+            for tc in delta.get("tool_calls") or []:
+                idx = tc.get("index", 0)
+                slot = calls.setdefault(
+                    idx, {"id": "", "type": "function",
+                          "function": {"name": "", "arguments": ""}})
+                if tc.get("id"):
+                    slot["id"] = tc["id"]
+                fn = tc.get("function") or {}
+                if fn.get("name"):
+                    slot["function"]["name"] += fn["name"]
+                if fn.get("arguments"):
+                    slot["function"]["arguments"] += fn["arguments"]
+
+    yield ("final", {
+        "content": "".join(content_parts) or None,
+        "tool_calls": [calls[i] for i in sorted(calls)] or None,
+    })
+
+
 def complete(prompt: str, *, system: str = "", provider: str | None = None,
              model: str | None = None, temperature: float = 0.0,
              max_tokens: int = 900) -> str:
