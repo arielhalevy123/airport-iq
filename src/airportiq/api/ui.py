@@ -227,12 +227,12 @@ if (canSpeak){
 function speak(text){
   if (!canSpeak) return;
   speechSynthesis.cancel();
-  // Percentiles read badly as digits-with-symbols, and an unexpanded "SFO" is spelled
-  // out letter by letter at speed. Both are fixed here rather than in the model's prose,
-  // because the written answer should stay precise for the analyst reading it.
+  // "NAS" is read as a word by the synthesiser and comes out as noise; "%" is skipped
+  // entirely by some voices, which silently turns "the 87th percentile" into "the 87".
+  // Fixed here rather than in the model's prose, because the written answer must stay
+  // precise for the analyst reading it on screen.
   const spoken = text
-    .replace(/\bNAS\b/g, 'N A S')
-    .replace(/(\d+)(st|nd|rd|th)\b/g, '$1$2')
+    .replace(/\\bNAS\\b/g, 'N A S')
     .replace(/%/g, ' percent')
     .slice(0, 700);
   const u = new SpeechSynthesisUtterance(spoken);
