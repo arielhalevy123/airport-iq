@@ -50,6 +50,52 @@ def available_providers() -> list[str]:
     return [p for p, (_, key_name, _) in _ENDPOINTS.items() if env.get(key_name)]
 
 
+def complete_with_tools(messages: list[dict], tools: list | None = None,
+                        *, provider: str | None = None, model: str | None = None,
+                        temperature: float = 0.0, max_tokens: int = 1200) -> dict:
+    """A chat completion that may request tool calls.
+
+    Returns {"content": str|None, "tool_calls": list|None} so callers do not have to know
+    the provider's response shape. Only the OpenAI-compatible providers are wired for tools
+    here; Anthropic uses a different tool protocol and is left to the plain `complete` path
+    rather than half-implemented.
+    """
+    env = _load_env()
+    provider = (provider or env.get("LLM_PROVIDER") or "").lower()
+    if not provider:
+        found = [p for p in available_providers() if p != "anthropic"]
+        if not found:
+            raise RuntimeError("No OpenAI-compatible LLM key found for tool calling. "
+                               "Set OPENAI_API_KEY, GROQ_API_KEY or GOOGLE_API_KEY in .env.")
+        provider = found[0]
+    if provider == "anthropic":
+        raise RuntimeError("Tool calling here targets the OpenAI-compatible protocol. "
+                           "Use openai, groq or gemini, or extend this for Anthropic's format.")
+
+    url, key_name, default_model = _ENDPOINTS[provider]
+    api_key = env.get(key_name)
+    if not api_key:
+        raise RuntimeError(f"{provider} selected but {key_name} is not set in .env")
+
+    payload: dict = {
+        "model": model or env.get("LLM_MODEL") or default_model,
+        "messages": messages, "temperature": temperature, "max_tokens": max_tokens,
+    }
+    if tools:
+        payload["tools"] = tools
+        payload["tool_choice"] = "auto"
+
+    req = urllib.request.Request(
+        url, data=json.dumps(payload).encode(),
+        headers={"Authorization": f"Bearer {api_key}", "content-type": "application/json"},
+        method="POST")
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        data = json.loads(resp.read().decode())
+
+    msg = data["choices"][0]["message"]
+    return {"content": msg.get("content"), "tool_calls": msg.get("tool_calls")}
+
+
 def complete(prompt: str, *, system: str = "", provider: str | None = None,
              model: str | None = None, temperature: float = 0.0,
              max_tokens: int = 900) -> str:
