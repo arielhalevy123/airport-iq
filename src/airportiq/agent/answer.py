@@ -186,6 +186,49 @@ def answer(question: str, cards: list, facts_by_code: dict,
             return Answer(text="\n\n".join(parts), intent="unmet_demand",
                           assumptions=assumptions)
 
+    # Stage length gets the same treatment as unmet demand, for the same reason: the figure
+    # is already computed, so it is rendered deterministically rather than handed to the
+    # narrator with an implicit invitation to paraphrase a percentage.
+    if plan.get("metric") == "long_haul_share":
+        codes, notes = resolve.resolve_many(plan.get("entities") or [])
+        assumptions.extend(notes)
+        parts = []
+        for code in codes:
+            s = getattr(facts_by_code.get(code), "stage_length", None)
+            if not s:
+                continue
+            card = by_code.get(code)
+            parts.append(
+                f"{code} — long-haul share of departures\n"
+                f"  {s['long_haul_share_2500sm']:.1%} at 2,500+ statute miles "
+                f"(~4,000 km, the ICAO convention)\n"
+                f"  {s['long_haul_share_1500sm']:.1%} at 1,500+ statute miles "
+                f"(the looser commercial usage)\n"
+                f"  mean stage length {s['mean_stage_length_sm']:,.0f} sm across "
+                f"{s['departures_with_distance']:,} measured departures"
+            )
+            # Both thresholds, always. The answer roughly doubles between them, so quoting
+            # one alone would hide that the definition — not the airport — produced it.
+            assumptions.append(
+                f'{code}: "long haul" has no single definition, so both the 2,500 sm and '
+                f"1,500 sm thresholds are reported.")
+            assumptions.append(
+                f"{code}: counts DOMESTIC flights by reporting US carriers only — "
+                f"international departures are not in this source.")
+            if code == "ANC":
+                assumptions.append(
+                    "ANC: Anchorage is one of the world's largest cargo hubs, and its genuinely "
+                    "long-haul traffic is international freight to Asia — none of which is in "
+                    "this data. This figure describes the domestic passenger operation only.")
+            if card and card.missing:
+                assumptions.append(f"{code}: computed without {', '.join(card.missing)}")
+        if parts:
+            if session is not None:
+                session.add(Turn(question=question, intent="metric",
+                                 codes=codes, profile=plan["profile"]))
+            return Answer(text="\n\n".join(parts), intent="metric",
+                          assumptions=assumptions)
+
     # Deterministic resolution — never the model's job.
     if plan.get("region"):
         try:
