@@ -97,6 +97,7 @@ def build_facts(codes: list[str]) -> list[AirportFacts]:
             regulatory_cap=REGULATORY_CAPS.get(code),
             nas_delay_share=(delays.get(code) or {}).get("nas_delay_share"),
             mean_taxi_out_min=(delays.get(code) or {}).get("mean_taxi_out_min"),
+            stage_length=(delays.get(code) or {}).get("stage_length"),
         ))
     return facts
 

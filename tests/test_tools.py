@@ -66,3 +66,60 @@ if __name__ == "__main__":
         if name.startswith("test_"):
             fn(); print(f"  ok  {name}")
     print("all tool tests passed")
+
+
+# --------------------------------------------------------------- stage length
+
+class _Facts:
+    """Minimal stand-in for AirportFacts; the tool only reads .stage_length."""
+    def __init__(self, stage_length=None):
+        self.stage_length = stage_length
+
+
+_ANC_STAGE = {
+    "departures_with_distance": 1333,
+    "mean_stage_length_sm": 1232.3,
+    "bands_share": {"lt_500": 0.2386, "500_999": 0.1718, "1000_1499": 0.3458,
+                    "1500_2499": 0.1275, "ge_2500": 0.1163},
+    "long_haul_share_2500sm": 0.1163,
+    "long_haul_share_1500sm": 0.2440,
+    "scope": "domestic flights by reporting US carriers only",
+}
+
+
+def test_stage_length_returns_both_thresholds():
+    """One long-haul number would hide that the threshold is doing the work: for ANC the
+    answer roughly doubles between the two, so both must always be returned."""
+    _bind()
+    tools.bind(tools._CARDS.values(), {"ANC": _Facts(_ANC_STAGE)})
+    out = json.loads(tools.call("get_stage_length_mix", '{"airport": "Anchorage"}'))
+    lh = out["long_haul_share"]
+    assert lh["at_2500_statute_miles"] == 0.1163
+    assert lh["at_1500_statute_miles"] == 0.2440
+    assert lh["at_1500_statute_miles"] > lh["at_2500_statute_miles"]
+
+
+def test_stage_length_bands_sum_to_one():
+    """A band set that does not sum to 1 means departures were dropped or double counted."""
+    _bind()
+    tools.bind(tools._CARDS.values(), {"ANC": _Facts(_ANC_STAGE)})
+    out = json.loads(tools.call("get_stage_length_mix", '{"airport": "ANC"}'))
+    assert abs(sum(out["share_by_band"].values()) - 1.0) < 0.001
+
+
+def test_anchorage_cargo_caveat_is_forced():
+    """ANC's real long-haul flying is international freight, which is absent from this
+    source. Answering the brief's Anchorage question without that caveat is misleading,
+    so the tool emits it rather than hoping the model remembers."""
+    _bind()
+    tools.bind(tools._CARDS.values(), {"ANC": _Facts(_ANC_STAGE)})
+    out = json.loads(tools.call("get_stage_length_mix", '{"airport": "ANC"}'))
+    assert "cargo" in out["airport_specific_warning"].lower()
+    assert "DOMESTIC" in out["scope_warning"]
+
+
+def test_stage_length_missing_data_is_refused_not_guessed():
+    _bind()
+    tools.bind(tools._CARDS.values(), {"SFO": _Facts(None)})
+    out = json.loads(tools.call("get_stage_length_mix", '{"airport": "SFO"}'))
+    assert "error" in out
