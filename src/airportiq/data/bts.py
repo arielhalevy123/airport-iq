@@ -31,6 +31,8 @@ from pathlib import Path
 RESOURCE = "https://data.bts.gov/resource/r495-tyji.json"
 CACHE_DIR = Path(__file__).resolve().parents[3] / "data" / "cache"
 CACHE_TTL_SEC = 7 * 24 * 3600
+SNAPSHOT = Path(__file__).resolve().parents[3] / "data" / "snapshots" / "bts_monthly.json"
+_SNAP_CACHE: dict | None = None
 
 
 def _num(row: dict, key: str) -> float | None:
@@ -56,8 +58,14 @@ def _get(params: dict) -> list[dict]:
     # Retry with backoff. BTS returns intermittent 500s under load, and a reviewer whose
     # first run dies on a transient error will not try twice. If the network fails entirely
     # we fall back to the committed snapshot, so the demo runs offline with zero keys.
+    # If a snapshot can serve this query we retry ONCE and fall back fast. Retrying four
+    # times with backoff per airport turns an offline run into eleven minutes of sleeping,
+    # which makes the "runs offline" claim technically true and practically worthless.
+    snap_available = _from_snapshot(params) is not None
+    attempts = 1 if snap_available else 4
+
     last_err: Exception | None = None
-    for attempt in range(4):
+    for attempt in range(attempts):
         try:
             req = urllib.request.Request(f"{RESOURCE}?{qs}",
                                          headers={"User-Agent": "airport-iq/0.1"})
@@ -67,7 +75,7 @@ def _get(params: dict) -> list[dict]:
             return rows
         except Exception as e:                       # noqa: BLE001 - any failure is retryable
             last_err = e
-            if attempt < 3:
+            if attempt < attempts - 1:
                 time.sleep(1.5 * (2 ** attempt))     # 1.5s, 3s, 6s
 
     if cached.exists():                              # stale cache beats no answer
@@ -82,14 +90,14 @@ def _get(params: dict) -> list[dict]:
     ) from last_err
 
 
-SNAPSHOT = Path(__file__).resolve().parents[3] / "data" / "snapshots" / "bts_monthly.json"
-
-
 def _from_snapshot(params: dict) -> list[dict] | None:
     """Serve from the committed snapshot. This is what makes the demo reproducible."""
+    global _SNAP_CACHE
     if not SNAPSHOT.exists():
         return None
-    data = json.loads(SNAPSHOT.read_text())
+    if _SNAP_CACHE is None:
+        _SNAP_CACHE = json.loads(SNAPSHOT.read_text())
+    data = _SNAP_CACHE
     code = params.get("origin_airport_code")
     if code and code in data:
         return data[code][: int(params.get("$limit", 36))]
