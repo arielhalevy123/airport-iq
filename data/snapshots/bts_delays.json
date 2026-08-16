@@ -7,7 +7,21 @@
    "nas_delay_share": 0.1773,
    "pct_delayed_15": 0.1152,
    "cancel_rate": 0.0134,
-   "total_delay_minutes": 11708
+   "total_delay_minutes": 11708,
+   "stage_length": {
+    "departures_with_distance": 1120,
+    "mean_stage_length_sm": 425.8,
+    "bands_share": {
+     "lt_500": 0.5482,
+     "500_999": 0.425,
+     "1000_1499": 0.0268,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "STL": {
    "flights": 5156,
@@ -15,7 +29,21 @@
    "nas_delay_share": 0.2082,
    "pct_delayed_15": 0.2073,
    "cancel_rate": 0.008,
-   "total_delay_minutes": 69214
+   "total_delay_minutes": 69214,
+   "stage_length": {
+    "departures_with_distance": 5156,
+    "mean_stage_length_sm": 746.6,
+    "bands_share": {
+     "lt_500": 0.2962,
+     "500_999": 0.5033,
+     "1000_1499": 0.1472,
+     "1500_2499": 0.0533,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0533,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "LGA": {
    "flights": 11443,
@@ -23,7 +51,21 @@
    "nas_delay_share": 0.2777,
    "pct_delayed_15": 0.218,
    "cancel_rate": 0.0095,
-   "total_delay_minutes": 192839
+   "total_delay_minutes": 192839,
+   "stage_length": {
+    "departures_with_distance": 11443,
+    "mean_stage_length_sm": 800.9,
+    "bands_share": {
+     "lt_500": 0.2389,
+     "500_999": 0.4145,
+     "1000_1499": 0.3116,
+     "1500_2499": 0.035,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.035,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "MSP": {
    "flights": 9639,
@@ -31,7 +73,21 @@
    "nas_delay_share": 0.24,
    "pct_delayed_15": 0.1415,
    "cancel_rate": 0.0075,
-   "total_delay_minutes": 112522
+   "total_delay_minutes": 112522,
+   "stage_length": {
+    "departures_with_distance": 9639,
+    "mean_stage_length_sm": 828.1,
+    "bands_share": {
+     "lt_500": 0.3203,
+     "500_999": 0.3125,
+     "1000_1499": 0.2915,
+     "1500_2499": 0.0695,
+     "ge_2500": 0.0062
+    },
+    "long_haul_share_2500sm": 0.0062,
+    "long_haul_share_1500sm": 0.0757,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "MSY": {
    "flights": 4428,
@@ -39,7 +95,21 @@
    "nas_delay_share": 0.2164,
    "pct_delayed_15": 0.1949,
    "cancel_rate": 0.0065,
-   "total_delay_minutes": 59678
+   "total_delay_minutes": 59678,
+   "stage_length": {
+    "departures_with_distance": 4428,
+    "mean_stage_length_sm": 800.7,
+    "bands_share": {
+     "lt_500": 0.3731,
+     "500_999": 0.332,
+     "1000_1499": 0.2157,
+     "1500_2499": 0.0793,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0793,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "LAS": {
    "flights": 14672,
@@ -47,7 +117,21 @@
    "nas_delay_share": 0.1706,
    "pct_delayed_15": 0.2574,
    "cancel_rate": 0.004,
-   "total_delay_minutes": 180955
+   "total_delay_minutes": 180955,
+   "stage_length": {
+    "departures_with_distance": 14672,
+    "mean_stage_length_sm": 1023.8,
+    "bands_share": {
+     "lt_500": 0.3669,
+     "500_999": 0.1508,
+     "1000_1499": 0.1743,
+     "1500_2499": 0.2862,
+     "ge_2500": 0.0217
+    },
+    "long_haul_share_2500sm": 0.0217,
+    "long_haul_share_1500sm": 0.3079,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "CLT": {
    "flights": 15396,
@@ -55,7 +139,21 @@
    "nas_delay_share": 0.1615,
    "pct_delayed_15": 0.2135,
    "cancel_rate": 0.0023,
-   "total_delay_minutes": 221250
+   "total_delay_minutes": 221250,
+   "stage_length": {
+    "departures_with_distance": 15396,
+    "mean_stage_length_sm": 644.3,
+    "bands_share": {
+     "lt_500": 0.4185,
+     "500_999": 0.4627,
+     "1000_1499": 0.0395,
+     "1500_2499": 0.0794,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0794,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "DEN": {
    "flights": 25345,
@@ -63,7 +161,21 @@
    "nas_delay_share": 0.193,
    "pct_delayed_15": 0.1849,
    "cancel_rate": 0.0027,
-   "total_delay_minutes": 272005
+   "total_delay_minutes": 272005,
+   "stage_length": {
+    "departures_with_distance": 25345,
+    "mean_stage_length_sm": 845.2,
+    "bands_share": {
+     "lt_500": 0.2043,
+     "500_999": 0.5247,
+     "1000_1499": 0.1652,
+     "1500_2499": 0.0985,
+     "ge_2500": 0.0073
+    },
+    "long_haul_share_2500sm": 0.0073,
+    "long_haul_share_1500sm": 0.1058,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SLC": {
    "flights": 9877,
@@ -71,7 +183,21 @@
    "nas_delay_share": 0.2313,
    "pct_delayed_15": 0.1383,
    "cancel_rate": 0.0038,
-   "total_delay_minutes": 100847
+   "total_delay_minutes": 100847,
+   "stage_length": {
+    "departures_with_distance": 9877,
+    "mean_stage_length_sm": 841.3,
+    "bands_share": {
+     "lt_500": 0.2571,
+     "500_999": 0.4601,
+     "1000_1499": 0.1342,
+     "1500_2499": 0.1372,
+     "ge_2500": 0.0115
+    },
+    "long_haul_share_2500sm": 0.0115,
+    "long_haul_share_1500sm": 0.1487,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "MEM": {
    "flights": 2146,
@@ -79,7 +205,21 @@
    "nas_delay_share": 0.1503,
    "pct_delayed_15": 0.1836,
    "cancel_rate": 0.0098,
-   "total_delay_minutes": 33286
+   "total_delay_minutes": 33286,
+   "stage_length": {
+    "departures_with_distance": 2146,
+    "mean_stage_length_sm": 618.0,
+    "bands_share": {
+     "lt_500": 0.5154,
+     "500_999": 0.4124,
+     "1000_1499": 0.062,
+     "1500_2499": 0.0103,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0103,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "BOS": {
    "flights": 12626,
@@ -87,7 +227,21 @@
    "nas_delay_share": 0.265,
    "pct_delayed_15": 0.2019,
    "cancel_rate": 0.0031,
-   "total_delay_minutes": 172959
+   "total_delay_minutes": 172959,
+   "stage_length": {
+    "departures_with_distance": 12626,
+    "mean_stage_length_sm": 1037.5,
+    "bands_share": {
+     "lt_500": 0.2919,
+     "500_999": 0.2618,
+     "1000_1499": 0.2287,
+     "1500_2499": 0.1438,
+     "ge_2500": 0.0738
+    },
+    "long_haul_share_2500sm": 0.0738,
+    "long_haul_share_1500sm": 0.2176,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SEA": {
    "flights": 12864,
@@ -95,7 +249,21 @@
    "nas_delay_share": 0.2523,
    "pct_delayed_15": 0.1543,
    "cancel_rate": 0.0017,
-   "total_delay_minutes": 114830
+   "total_delay_minutes": 114830,
+   "stage_length": {
+    "departures_with_distance": 12864,
+    "mean_stage_length_sm": 1269.9,
+    "bands_share": {
+     "lt_500": 0.1429,
+     "500_999": 0.3148,
+     "1000_1499": 0.1901,
+     "1500_2499": 0.2745,
+     "ge_2500": 0.0778
+    },
+    "long_haul_share_2500sm": 0.0778,
+    "long_haul_share_1500sm": 0.3523,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ATL": {
    "flights": 26607,
@@ -103,7 +271,21 @@
    "nas_delay_share": 0.2058,
    "pct_delayed_15": 0.1686,
    "cancel_rate": 0.01,
-   "total_delay_minutes": 295899
+   "total_delay_minutes": 295899,
+   "stage_length": {
+    "departures_with_distance": 26607,
+    "mean_stage_length_sm": 704.5,
+    "bands_share": {
+     "lt_500": 0.3699,
+     "500_999": 0.483,
+     "1000_1499": 0.0278,
+     "1500_2499": 0.1176,
+     "ge_2500": 0.0017
+    },
+    "long_haul_share_2500sm": 0.0017,
+    "long_haul_share_1500sm": 0.1193,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "MIA": {
    "flights": 9556,
@@ -111,7 +293,21 @@
    "nas_delay_share": 0.2121,
    "pct_delayed_15": 0.2319,
    "cancel_rate": 0.003,
-   "total_delay_minutes": 154917
+   "total_delay_minutes": 154917,
+   "stage_length": {
+    "departures_with_distance": 9556,
+    "mean_stage_length_sm": 1056.6,
+    "bands_share": {
+     "lt_500": 0.1123,
+     "500_999": 0.3176,
+     "1000_1499": 0.4345,
+     "1500_2499": 0.1049,
+     "ge_2500": 0.0308
+    },
+    "long_haul_share_2500sm": 0.0308,
+    "long_haul_share_1500sm": 0.1356,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "FLL": {
    "flights": 8610,
@@ -119,7 +315,21 @@
    "nas_delay_share": 0.2581,
    "pct_delayed_15": 0.2877,
    "cancel_rate": 0.0106,
-   "total_delay_minutes": 181134
+   "total_delay_minutes": 181134,
+   "stage_length": {
+    "departures_with_distance": 8610,
+    "mean_stage_length_sm": 1055.7,
+    "bands_share": {
+     "lt_500": 0.0367,
+     "500_999": 0.4013,
+     "1000_1499": 0.4775,
+     "1500_2499": 0.0618,
+     "ge_2500": 0.0228
+    },
+    "long_haul_share_2500sm": 0.0228,
+    "long_haul_share_1500sm": 0.0846,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "IAH": {
    "flights": 10022,
@@ -127,7 +337,21 @@
    "nas_delay_share": 0.2415,
    "pct_delayed_15": 0.1871,
    "cancel_rate": 0.0057,
-   "total_delay_minutes": 143133
+   "total_delay_minutes": 143133,
+   "stage_length": {
+    "departures_with_distance": 10022,
+    "mean_stage_length_sm": 935.5,
+    "bands_share": {
+     "lt_500": 0.2177,
+     "500_999": 0.3614,
+     "1000_1499": 0.3367,
+     "1500_2499": 0.0812,
+     "ge_2500": 0.003
+    },
+    "long_haul_share_2500sm": 0.003,
+    "long_haul_share_1500sm": 0.0842,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "DTW": {
    "flights": 10417,
@@ -135,7 +359,21 @@
    "nas_delay_share": 0.2417,
    "pct_delayed_15": 0.1607,
    "cancel_rate": 0.0127,
-   "total_delay_minutes": 136754
+   "total_delay_minutes": 136754,
+   "stage_length": {
+    "departures_with_distance": 10417,
+    "mean_stage_length_sm": 740.7,
+    "bands_share": {
+     "lt_500": 0.4101,
+     "500_999": 0.3319,
+     "1000_1499": 0.1408,
+     "1500_2499": 0.1143,
+     "ge_2500": 0.0029
+    },
+    "long_haul_share_2500sm": 0.0029,
+    "long_haul_share_1500sm": 0.1172,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "OGG": {
    "flights": 2155,
@@ -143,7 +381,21 @@
    "nas_delay_share": 0.0844,
    "pct_delayed_15": 0.1777,
    "cancel_rate": 0.0037,
-   "total_delay_minutes": 20751
+   "total_delay_minutes": 20751,
+   "stage_length": {
+    "departures_with_distance": 2155,
+    "mean_stage_length_sm": 1361.9,
+    "bands_share": {
+     "lt_500": 0.5026,
+     "500_999": 0.0,
+     "1000_1499": 0.0,
+     "1500_2499": 0.2459,
+     "ge_2500": 0.2515
+    },
+    "long_haul_share_2500sm": 0.2515,
+    "long_haul_share_1500sm": 0.4974,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "MCI": {
    "flights": 4184,
@@ -151,7 +403,21 @@
    "nas_delay_share": 0.1941,
    "pct_delayed_15": 0.1926,
    "cancel_rate": 0.0098,
-   "total_delay_minutes": 55914
+   "total_delay_minutes": 55914,
+   "stage_length": {
+    "departures_with_distance": 4184,
+    "mean_stage_length_sm": 775.6,
+    "bands_share": {
+     "lt_500": 0.3145,
+     "500_999": 0.3494,
+     "1000_1499": 0.336,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "JFK": {
    "flights": 8254,
@@ -159,7 +425,21 @@
    "nas_delay_share": 0.3161,
    "pct_delayed_15": 0.1593,
    "cancel_rate": 0.0024,
-   "total_delay_minutes": 96632
+   "total_delay_minutes": 96632,
+   "stage_length": {
+    "departures_with_distance": 8254,
+    "mean_stage_length_sm": 1398.6,
+    "bands_share": {
+     "lt_500": 0.1693,
+     "500_999": 0.1959,
+     "1000_1499": 0.2077,
+     "1500_2499": 0.3541,
+     "ge_2500": 0.0731
+    },
+    "long_haul_share_2500sm": 0.0731,
+    "long_haul_share_1500sm": 0.4272,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ICT": {
    "flights": 993,
@@ -167,7 +447,21 @@
    "nas_delay_share": 0.3012,
    "pct_delayed_15": 0.2004,
    "cancel_rate": 0.0232,
-   "total_delay_minutes": 19152
+   "total_delay_minutes": 19152,
+   "stage_length": {
+    "departures_with_distance": 993,
+    "mean_stage_length_sm": 586.1,
+    "bands_share": {
+     "lt_500": 0.3696,
+     "500_999": 0.5921,
+     "1000_1499": 0.0383,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "PBI": {
    "flights": 3067,
@@ -175,7 +469,21 @@
    "nas_delay_share": 0.2329,
    "pct_delayed_15": 0.2468,
    "cancel_rate": 0.0062,
-   "total_delay_minutes": 68127
+   "total_delay_minutes": 68127,
+   "stage_length": {
+    "departures_with_distance": 3067,
+    "mean_stage_length_sm": 952.5,
+    "bands_share": {
+     "lt_500": 0.0163,
+     "500_999": 0.3792,
+     "1000_1499": 0.5859,
+     "1500_2499": 0.0186,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0186,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "PNS": {
    "flights": 1282,
@@ -183,7 +491,21 @@
    "nas_delay_share": 0.1755,
    "pct_delayed_15": 0.1778,
    "cancel_rate": 0.0078,
-   "total_delay_minutes": 18930
+   "total_delay_minutes": 18930,
+   "stage_length": {
+    "departures_with_distance": 1282,
+    "mean_stage_length_sm": 566.0,
+    "bands_share": {
+     "lt_500": 0.4836,
+     "500_999": 0.4555,
+     "1000_1499": 0.0608,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "EWR": {
    "flights": 10358,
@@ -191,7 +513,21 @@
    "nas_delay_share": 0.3254,
    "pct_delayed_15": 0.1383,
    "cancel_rate": 0.0069,
-   "total_delay_minutes": 103411
+   "total_delay_minutes": 103411,
+   "stage_length": {
+    "departures_with_distance": 10358,
+    "mean_stage_length_sm": 1138.5,
+    "bands_share": {
+     "lt_500": 0.1633,
+     "500_999": 0.3407,
+     "1000_1499": 0.2401,
+     "1500_2499": 0.2153,
+     "ge_2500": 0.0406
+    },
+    "long_haul_share_2500sm": 0.0406,
+    "long_haul_share_1500sm": 0.2559,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "LAX": {
    "flights": 15732,
@@ -199,7 +535,21 @@
    "nas_delay_share": 0.2165,
    "pct_delayed_15": 0.1883,
    "cancel_rate": 0.0044,
-   "total_delay_minutes": 193564
+   "total_delay_minutes": 193564,
+   "stage_length": {
+    "departures_with_distance": 15732,
+    "mean_stage_length_sm": 1319.3,
+    "bands_share": {
+     "lt_500": 0.2775,
+     "500_999": 0.1785,
+     "1000_1499": 0.1279,
+     "1500_2499": 0.3469,
+     "ge_2500": 0.0693
+    },
+    "long_haul_share_2500sm": 0.0693,
+    "long_haul_share_1500sm": 0.4162,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "RNO": {
    "flights": 1631,
@@ -207,7 +557,21 @@
    "nas_delay_share": 0.3132,
    "pct_delayed_15": 0.1833,
    "cancel_rate": 0.0043,
-   "total_delay_minutes": 18969
+   "total_delay_minutes": 18969,
+   "stage_length": {
+    "departures_with_distance": 1631,
+    "mean_stage_length_sm": 568.3,
+    "bands_share": {
+     "lt_500": 0.6254,
+     "500_999": 0.2594,
+     "1000_1499": 0.0785,
+     "1500_2499": 0.0368,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0368,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "MCO": {
    "flights": 14604,
@@ -215,7 +579,21 @@
    "nas_delay_share": 0.2507,
    "pct_delayed_15": 0.2247,
    "cancel_rate": 0.0039,
-   "total_delay_minutes": 210127
+   "total_delay_minutes": 210127,
+   "stage_length": {
+    "departures_with_distance": 14604,
+    "mean_stage_length_sm": 973.4,
+    "bands_share": {
+     "lt_500": 0.1328,
+     "500_999": 0.5295,
+     "1000_1499": 0.228,
+     "1500_2499": 0.0974,
+     "ge_2500": 0.0123
+    },
+    "long_haul_share_2500sm": 0.0123,
+    "long_haul_share_1500sm": 0.1097,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SFO": {
    "flights": 12401,
@@ -223,7 +601,21 @@
    "nas_delay_share": 0.2136,
    "pct_delayed_15": 0.2638,
    "cancel_rate": 0.007,
-   "total_delay_minutes": 207630
+   "total_delay_minutes": 207630,
+   "stage_length": {
+    "departures_with_distance": 12401,
+    "mean_stage_length_sm": 1247.4,
+    "bands_share": {
+     "lt_500": 0.3482,
+     "500_999": 0.1958,
+     "1000_1499": 0.0387,
+     "1500_2499": 0.2775,
+     "ge_2500": 0.1398
+    },
+    "long_haul_share_2500sm": 0.1398,
+    "long_haul_share_1500sm": 0.4173,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ALB": {
    "flights": 1141,
@@ -231,7 +623,21 @@
    "nas_delay_share": 0.2574,
    "pct_delayed_15": 0.1437,
    "cancel_rate": 0.0114,
-   "total_delay_minutes": 12708
+   "total_delay_minutes": 12708,
+   "stage_length": {
+    "departures_with_distance": 1141,
+    "mean_stage_length_sm": 715.4,
+    "bands_share": {
+     "lt_500": 0.3164,
+     "500_999": 0.4356,
+     "1000_1499": 0.2445,
+     "1500_2499": 0.0035,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0035,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "CHS": {
    "flights": 2167,
@@ -239,7 +645,21 @@
    "nas_delay_share": 0.1853,
    "pct_delayed_15": 0.1892,
    "cancel_rate": 0.0074,
-   "total_delay_minutes": 33855
+   "total_delay_minutes": 33855,
+   "stage_length": {
+    "departures_with_distance": 2167,
+    "mean_stage_length_sm": 603.7,
+    "bands_share": {
+     "lt_500": 0.4832,
+     "500_999": 0.4532,
+     "1000_1499": 0.0498,
+     "1500_2499": 0.0138,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0138,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SNA": {
    "flights": 3686,
@@ -247,7 +667,21 @@
    "nas_delay_share": 0.2732,
    "pct_delayed_15": 0.1991,
    "cancel_rate": 0.0081,
-   "total_delay_minutes": 46890
+   "total_delay_minutes": 46890,
+   "stage_length": {
+    "departures_with_distance": 3686,
+    "mean_stage_length_sm": 775.0,
+    "bands_share": {
+     "lt_500": 0.4929,
+     "500_999": 0.2713,
+     "1000_1499": 0.1066,
+     "1500_2499": 0.1291,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.1291,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "RSW": {
    "flights": 3632,
@@ -255,7 +689,21 @@
    "nas_delay_share": 0.2685,
    "pct_delayed_15": 0.1878,
    "cancel_rate": 0.0069,
-   "total_delay_minutes": 57762
+   "total_delay_minutes": 57762,
+   "stage_length": {
+    "departures_with_distance": 3632,
+    "mean_stage_length_sm": 1018.9,
+    "bands_share": {
+     "lt_500": 0.0138,
+     "500_999": 0.3747,
+     "1000_1499": 0.5713,
+     "1500_2499": 0.0385,
+     "ge_2500": 0.0017
+    },
+    "long_haul_share_2500sm": 0.0017,
+    "long_haul_share_1500sm": 0.0402,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ORD": {
    "flights": 33206,
@@ -263,7 +711,21 @@
    "nas_delay_share": 0.2108,
    "pct_delayed_15": 0.2564,
    "cancel_rate": 0.0354,
-   "total_delay_minutes": 754911
+   "total_delay_minutes": 754911,
+   "stage_length": {
+    "departures_with_distance": 33206,
+    "mean_stage_length_sm": 707.9,
+    "bands_share": {
+     "lt_500": 0.3872,
+     "500_999": 0.3904,
+     "1000_1499": 0.1184,
+     "1500_2499": 0.1012,
+     "ge_2500": 0.0029
+    },
+    "long_haul_share_2500sm": 0.0029,
+    "long_haul_share_1500sm": 0.104,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ECP": {
    "flights": 923,
@@ -271,7 +733,21 @@
    "nas_delay_share": 0.1477,
    "pct_delayed_15": 0.1831,
    "cancel_rate": 0.013,
-   "total_delay_minutes": 12057
+   "total_delay_minutes": 12057,
+   "stage_length": {
+    "departures_with_distance": 923,
+    "mean_stage_length_sm": 555.2,
+    "bands_share": {
+     "lt_500": 0.4583,
+     "500_999": 0.5049,
+     "1000_1499": 0.0368,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SAT": {
    "flights": 3384,
@@ -279,7 +755,21 @@
    "nas_delay_share": 0.2347,
    "pct_delayed_15": 0.1681,
    "cancel_rate": 0.0074,
-   "total_delay_minutes": 41332
+   "total_delay_minutes": 41332,
+   "stage_length": {
+    "departures_with_distance": 3384,
+    "mean_stage_length_sm": 817.2,
+    "bands_share": {
+     "lt_500": 0.2982,
+     "500_999": 0.2751,
+     "1000_1499": 0.3848,
+     "1500_2499": 0.042,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.042,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "BZN": {
    "flights": 717,
@@ -287,7 +777,21 @@
    "nas_delay_share": 0.2067,
    "pct_delayed_15": 0.1562,
    "cancel_rate": 0.0028,
-   "total_delay_minutes": 11381
+   "total_delay_minutes": 11381,
+   "stage_length": {
+    "departures_with_distance": 717,
+    "mean_stage_length_sm": 729.9,
+    "bands_share": {
+     "lt_500": 0.1255,
+     "500_999": 0.6918,
+     "1000_1499": 0.1325,
+     "1500_2499": 0.0502,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0502,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "CVG": {
    "flights": 2835,
@@ -295,7 +799,21 @@
    "nas_delay_share": 0.2297,
    "pct_delayed_15": 0.1478,
    "cancel_rate": 0.0102,
-   "total_delay_minutes": 41359
+   "total_delay_minutes": 41359,
+   "stage_length": {
+    "departures_with_distance": 2835,
+    "mean_stage_length_sm": 693.3,
+    "bands_share": {
+     "lt_500": 0.3993,
+     "500_999": 0.4511,
+     "1000_1499": 0.0744,
+     "1500_2499": 0.0751,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0751,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "TPA": {
    "flights": 6952,
@@ -303,7 +821,21 @@
    "nas_delay_share": 0.1979,
    "pct_delayed_15": 0.1926,
    "cancel_rate": 0.0049,
-   "total_delay_minutes": 86185
+   "total_delay_minutes": 86185,
+   "stage_length": {
+    "departures_with_distance": 6952,
+    "mean_stage_length_sm": 953.2,
+    "bands_share": {
+     "lt_500": 0.1519,
+     "500_999": 0.4888,
+     "1000_1499": 0.2391,
+     "1500_2499": 0.1077,
+     "ge_2500": 0.0125
+    },
+    "long_haul_share_2500sm": 0.0125,
+    "long_haul_share_1500sm": 0.1203,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "AUS": {
    "flights": 7647,
@@ -311,7 +843,21 @@
    "nas_delay_share": 0.2059,
    "pct_delayed_15": 0.2254,
    "cancel_rate": 0.0059,
-   "total_delay_minutes": 118651
+   "total_delay_minutes": 118651,
+   "stage_length": {
+    "departures_with_distance": 7647,
+    "mean_stage_length_sm": 937.9,
+    "bands_share": {
+     "lt_500": 0.1773,
+     "500_999": 0.3696,
+     "1000_1499": 0.3274,
+     "1500_2499": 0.1257,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.1257,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ABQ": {
    "flights": 1969,
@@ -319,7 +865,21 @@
    "nas_delay_share": 0.1861,
    "pct_delayed_15": 0.162,
    "cancel_rate": 0.0056,
-   "total_delay_minutes": 21301
+   "total_delay_minutes": 21301,
+   "stage_length": {
+    "departures_with_distance": 1969,
+    "mean_stage_length_sm": 650.6,
+    "bands_share": {
+     "lt_500": 0.3926,
+     "500_999": 0.452,
+     "1000_1499": 0.1244,
+     "1500_2499": 0.031,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.031,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "BNA": {
    "flights": 9617,
@@ -327,7 +887,21 @@
    "nas_delay_share": 0.1856,
    "pct_delayed_15": 0.2405,
    "cancel_rate": 0.006,
-   "total_delay_minutes": 135603
+   "total_delay_minutes": 135603,
+   "stage_length": {
+    "departures_with_distance": 9617,
+    "mean_stage_length_sm": 698.6,
+    "bands_share": {
+     "lt_500": 0.3813,
+     "500_999": 0.4673,
+     "1000_1499": 0.0642,
+     "1500_2499": 0.0872,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0872,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "IAD": {
    "flights": 4843,
@@ -335,7 +909,21 @@
    "nas_delay_share": 0.295,
    "pct_delayed_15": 0.1068,
    "cancel_rate": 0.0031,
-   "total_delay_minutes": 47641
+   "total_delay_minutes": 47641,
+   "stage_length": {
+    "departures_with_distance": 4843,
+    "mean_stage_length_sm": 1021.9,
+    "bands_share": {
+     "lt_500": 0.3095,
+     "500_999": 0.3011,
+     "1000_1499": 0.1551,
+     "1500_2499": 0.2323,
+     "ge_2500": 0.0021
+    },
+    "long_haul_share_2500sm": 0.0021,
+    "long_haul_share_1500sm": 0.2344,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "RDU": {
    "flights": 4748,
@@ -343,7 +931,21 @@
    "nas_delay_share": 0.25,
    "pct_delayed_15": 0.1672,
    "cancel_rate": 0.0063,
-   "total_delay_minutes": 61720
+   "total_delay_minutes": 61720,
+   "stage_length": {
+    "departures_with_distance": 4748,
+    "mean_stage_length_sm": 696.6,
+    "bands_share": {
+     "lt_500": 0.4484,
+     "500_999": 0.3481,
+     "1000_1499": 0.1171,
+     "1500_2499": 0.0864,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0864,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SAV": {
    "flights": 1764,
@@ -351,7 +953,21 @@
    "nas_delay_share": 0.1899,
    "pct_delayed_15": 0.1791,
    "cancel_rate": 0.0079,
-   "total_delay_minutes": 22304
+   "total_delay_minutes": 22304,
+   "stage_length": {
+    "departures_with_distance": 1764,
+    "mean_stage_length_sm": 596.1,
+    "bands_share": {
+     "lt_500": 0.3282,
+     "500_999": 0.6366,
+     "1000_1499": 0.0351,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "DFW": {
    "flights": 25686,
@@ -359,7 +975,21 @@
    "nas_delay_share": 0.1488,
    "pct_delayed_15": 0.2657,
    "cancel_rate": 0.0133,
-   "total_delay_minutes": 458981
+   "total_delay_minutes": 458981,
+   "stage_length": {
+    "departures_with_distance": 25686,
+    "mean_stage_length_sm": 804.5,
+    "bands_share": {
+     "lt_500": 0.2881,
+     "500_999": 0.4089,
+     "1000_1499": 0.2586,
+     "1500_2499": 0.0398,
+     "ge_2500": 0.0047
+    },
+    "long_haul_share_2500sm": 0.0047,
+    "long_haul_share_1500sm": 0.0445,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "DSM": {
    "flights": 1307,
@@ -367,7 +997,21 @@
    "nas_delay_share": 0.2336,
    "pct_delayed_15": 0.1477,
    "cancel_rate": 0.0252,
-   "total_delay_minutes": 23761
+   "total_delay_minutes": 23761,
+   "stage_length": {
+    "departures_with_distance": 1307,
+    "mean_stage_length_sm": 678.7,
+    "bands_share": {
+     "lt_500": 0.3267,
+     "500_999": 0.4507,
+     "1000_1499": 0.2226,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "PHX": {
    "flights": 17679,
@@ -375,7 +1019,21 @@
    "nas_delay_share": 0.1402,
    "pct_delayed_15": 0.2179,
    "cancel_rate": 0.0029,
-   "total_delay_minutes": 209974
+   "total_delay_minutes": 209974,
+   "stage_length": {
+    "departures_with_distance": 17679,
+    "mean_stage_length_sm": 964.5,
+    "bands_share": {
+     "lt_500": 0.2673,
+     "500_999": 0.2978,
+     "1000_1499": 0.246,
+     "1500_2499": 0.1733,
+     "ge_2500": 0.0156
+    },
+    "long_haul_share_2500sm": 0.0156,
+    "long_haul_share_1500sm": 0.1889,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "HSV": {
    "flights": 674,
@@ -383,7 +1041,21 @@
    "nas_delay_share": 0.0913,
    "pct_delayed_15": 0.178,
    "cancel_rate": 0.0163,
-   "total_delay_minutes": 12526
+   "total_delay_minutes": 12526,
+   "stage_length": {
+    "departures_with_distance": 674,
+    "mean_stage_length_sm": 500.4,
+    "bands_share": {
+     "lt_500": 0.2967,
+     "500_999": 0.6142,
+     "1000_1499": 0.089,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "BOI": {
    "flights": 1946,
@@ -391,7 +1063,21 @@
    "nas_delay_share": 0.2105,
    "pct_delayed_15": 0.147,
    "cancel_rate": 0.0036,
-   "total_delay_minutes": 24204
+   "total_delay_minutes": 24204,
+   "stage_length": {
+    "departures_with_distance": 1946,
+    "mean_stage_length_sm": 648.7,
+    "bands_share": {
+     "lt_500": 0.3371,
+     "500_999": 0.5257,
+     "1000_1499": 0.1084,
+     "1500_2499": 0.0288,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0288,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "DCA": {
    "flights": 11802,
@@ -399,7 +1085,21 @@
    "nas_delay_share": 0.185,
    "pct_delayed_15": 0.2345,
    "cancel_rate": 0.008,
-   "total_delay_minutes": 213751
+   "total_delay_minutes": 213751,
+   "stage_length": {
+    "departures_with_distance": 11802,
+    "mean_stage_length_sm": 687.1,
+    "bands_share": {
+     "lt_500": 0.3975,
+     "500_999": 0.4503,
+     "1000_1499": 0.104,
+     "1500_2499": 0.0483,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0483,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "COS": {
    "flights": 1034,
@@ -407,7 +1107,21 @@
    "nas_delay_share": 0.1988,
    "pct_delayed_15": 0.1741,
    "cancel_rate": 0.0048,
-   "total_delay_minutes": 14835
+   "total_delay_minutes": 14835,
+   "stage_length": {
+    "departures_with_distance": 1034,
+    "mean_stage_length_sm": 481.2,
+    "bands_share": {
+     "lt_500": 0.4081,
+     "500_999": 0.53,
+     "1000_1499": 0.0619,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "GEG": {
    "flights": 1457,
@@ -415,7 +1129,21 @@
    "nas_delay_share": 0.2505,
    "pct_delayed_15": 0.1283,
    "cancel_rate": 0.0027,
-   "total_delay_minutes": 13245
+   "total_delay_minutes": 13245,
+   "stage_length": {
+    "departures_with_distance": 1457,
+    "mean_stage_length_sm": 726.8,
+    "bands_share": {
+     "lt_500": 0.3164,
+     "500_999": 0.429,
+     "1000_1499": 0.2162,
+     "1500_2499": 0.0384,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0384,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SRQ": {
    "flights": 1806,
@@ -423,7 +1151,21 @@
    "nas_delay_share": 0.2355,
    "pct_delayed_15": 0.1733,
    "cancel_rate": 0.01,
-   "total_delay_minutes": 23838
+   "total_delay_minutes": 23838,
+   "stage_length": {
+    "departures_with_distance": 1806,
+    "mean_stage_length_sm": 849.3,
+    "bands_share": {
+     "lt_500": 0.1722,
+     "500_999": 0.4114,
+     "1000_1499": 0.3953,
+     "1500_2499": 0.021,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.021,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "JAX": {
    "flights": 2487,
@@ -431,7 +1173,21 @@
    "nas_delay_share": 0.1947,
    "pct_delayed_15": 0.1637,
    "cancel_rate": 0.0048,
-   "total_delay_minutes": 25256
+   "total_delay_minutes": 25256,
+   "stage_length": {
+    "departures_with_distance": 2487,
+    "mean_stage_length_sm": 713.3,
+    "bands_share": {
+     "lt_500": 0.2935,
+     "500_999": 0.5762,
+     "1000_1499": 0.1182,
+     "1500_2499": 0.0121,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0121,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SJU": {
    "flights": 3190,
@@ -439,7 +1195,21 @@
    "nas_delay_share": 0.1772,
    "pct_delayed_15": 0.194,
    "cancel_rate": 0.0075,
-   "total_delay_minutes": 49866
+   "total_delay_minutes": 49866,
+   "stage_length": {
+    "departures_with_distance": 3190,
+    "mean_stage_length_sm": 1481.5,
+    "bands_share": {
+     "lt_500": 0.0188,
+     "500_999": 0.0,
+     "1000_1499": 0.3831,
+     "1500_2499": 0.5887,
+     "ge_2500": 0.0094
+    },
+    "long_haul_share_2500sm": 0.0094,
+    "long_haul_share_1500sm": 0.5981,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "VPS": {
    "flights": 958,
@@ -447,7 +1217,21 @@
    "nas_delay_share": 0.1482,
    "pct_delayed_15": 0.1733,
    "cancel_rate": 0.0063,
-   "total_delay_minutes": 11273
+   "total_delay_minutes": 11273,
+   "stage_length": {
+    "departures_with_distance": 958,
+    "mean_stage_length_sm": 572.5,
+    "bands_share": {
+     "lt_500": 0.4384,
+     "500_999": 0.4697,
+     "1000_1499": 0.0919,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "FAR": {
    "flights": 608,
@@ -455,7 +1239,21 @@
    "nas_delay_share": 0.3453,
    "pct_delayed_15": 0.1727,
    "cancel_rate": 0.0263,
-   "total_delay_minutes": 15002
+   "total_delay_minutes": 15002,
+   "stage_length": {
+    "departures_with_distance": 608,
+    "mean_stage_length_sm": 677.5,
+    "bands_share": {
+     "lt_500": 0.2155,
+     "500_999": 0.6168,
+     "1000_1499": 0.1382,
+     "1500_2499": 0.0296,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0296,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "GRR": {
    "flights": 1710,
@@ -463,7 +1261,21 @@
    "nas_delay_share": 0.2482,
    "pct_delayed_15": 0.1743,
    "cancel_rate": 0.0187,
-   "total_delay_minutes": 32135
+   "total_delay_minutes": 32135,
+   "stage_length": {
+    "departures_with_distance": 1710,
+    "mean_stage_length_sm": 541.7,
+    "bands_share": {
+     "lt_500": 0.4526,
+     "500_999": 0.3216,
+     "1000_1499": 0.2035,
+     "1500_2499": 0.0222,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0222,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "IND": {
    "flights": 4290,
@@ -471,7 +1283,21 @@
    "nas_delay_share": 0.2695,
    "pct_delayed_15": 0.1641,
    "cancel_rate": 0.0119,
-   "total_delay_minutes": 50613
+   "total_delay_minutes": 50613,
+   "stage_length": {
+    "departures_with_distance": 4290,
+    "mean_stage_length_sm": 710.9,
+    "bands_share": {
+     "lt_500": 0.3186,
+     "500_999": 0.5242,
+     "1000_1499": 0.0825,
+     "1500_2499": 0.0746,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0746,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "PDX": {
    "flights": 5040,
@@ -479,7 +1305,21 @@
    "nas_delay_share": 0.2626,
    "pct_delayed_15": 0.1448,
    "cancel_rate": 0.0048,
-   "total_delay_minutes": 48892
+   "total_delay_minutes": 48892,
+   "stage_length": {
+    "departures_with_distance": 5040,
+    "mean_stage_length_sm": 1099.6,
+    "bands_share": {
+     "lt_500": 0.1712,
+     "500_999": 0.4216,
+     "1000_1499": 0.1075,
+     "1500_2499": 0.2357,
+     "ge_2500": 0.0639
+    },
+    "long_haul_share_2500sm": 0.0639,
+    "long_haul_share_1500sm": 0.2996,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "CHA": {
    "flights": 527,
@@ -487,7 +1327,21 @@
    "nas_delay_share": 0.1691,
    "pct_delayed_15": 0.2163,
    "cancel_rate": 0.0342,
-   "total_delay_minutes": 11271
+   "total_delay_minutes": 11271,
+   "stage_length": {
+    "departures_with_distance": 527,
+    "mean_stage_length_sm": 528.6,
+    "bands_share": {
+     "lt_500": 0.2011,
+     "500_999": 0.7818,
+     "1000_1499": 0.0,
+     "1500_2499": 0.0171,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0171,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "CMH": {
    "flights": 3713,
@@ -495,7 +1349,21 @@
    "nas_delay_share": 0.3394,
    "pct_delayed_15": 0.1541,
    "cancel_rate": 0.0051,
-   "total_delay_minutes": 44947
+   "total_delay_minutes": 44947,
+   "stage_length": {
+    "departures_with_distance": 3713,
+    "mean_stage_length_sm": 671.3,
+    "bands_share": {
+     "lt_500": 0.5882,
+     "500_999": 0.2594,
+     "1000_1499": 0.0555,
+     "1500_2499": 0.097,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.097,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "BWI": {
    "flights": 8041,
@@ -503,7 +1371,21 @@
    "nas_delay_share": 0.2223,
    "pct_delayed_15": 0.242,
    "cancel_rate": 0.0034,
-   "total_delay_minutes": 97751
+   "total_delay_minutes": 97751,
+   "stage_length": {
+    "departures_with_distance": 8041,
+    "mean_stage_length_sm": 826.3,
+    "bands_share": {
+     "lt_500": 0.3497,
+     "500_999": 0.4267,
+     "1000_1499": 0.1074,
+     "1500_2499": 0.1162,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.1162,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "BHM": {
    "flights": 1495,
@@ -511,7 +1393,21 @@
    "nas_delay_share": 0.1278,
    "pct_delayed_15": 0.1559,
    "cancel_rate": 0.0087,
-   "total_delay_minutes": 18704
+   "total_delay_minutes": 18704,
+   "stage_length": {
+    "departures_with_distance": 1495,
+    "mean_stage_length_sm": 536.2,
+    "bands_share": {
+     "lt_500": 0.4114,
+     "500_999": 0.4763,
+     "1000_1499": 0.0923,
+     "1500_2499": 0.0201,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0201,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "OKC": {
    "flights": 1980,
@@ -519,7 +1415,21 @@
    "nas_delay_share": 0.1549,
    "pct_delayed_15": 0.1571,
    "cancel_rate": 0.0177,
-   "total_delay_minutes": 28975
+   "total_delay_minutes": 28975,
+   "stage_length": {
+    "departures_with_distance": 1980,
+    "mean_stage_length_sm": 660.5,
+    "bands_share": {
+     "lt_500": 0.4061,
+     "500_999": 0.4717,
+     "1000_1499": 0.1071,
+     "1500_2499": 0.0152,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0152,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SAN": {
    "flights": 8505,
@@ -527,7 +1437,21 @@
    "nas_delay_share": 0.2244,
    "pct_delayed_15": 0.2319,
    "cancel_rate": 0.0033,
-   "total_delay_minutes": 96275
+   "total_delay_minutes": 96275,
+   "stage_length": {
+    "departures_with_distance": 8505,
+    "mean_stage_length_sm": 1086.2,
+    "bands_share": {
+     "lt_500": 0.3777,
+     "500_999": 0.1539,
+     "1000_1499": 0.1688,
+     "1500_2499": 0.2474,
+     "ge_2500": 0.0522
+    },
+    "long_haul_share_2500sm": 0.0522,
+    "long_haul_share_1500sm": 0.2996,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ROC": {
    "flights": 907,
@@ -535,7 +1459,21 @@
    "nas_delay_share": 0.3411,
    "pct_delayed_15": 0.1775,
    "cancel_rate": 0.0121,
-   "total_delay_minutes": 14545
+   "total_delay_minutes": 14545,
+   "stage_length": {
+    "departures_with_distance": 907,
+    "mean_stage_length_sm": 510.3,
+    "bands_share": {
+     "lt_500": 0.4035,
+     "500_999": 0.5006,
+     "1000_1499": 0.0959,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "CID": {
    "flights": 761,
@@ -543,7 +1481,21 @@
    "nas_delay_share": 0.1558,
    "pct_delayed_15": 0.2063,
    "cancel_rate": 0.0302,
-   "total_delay_minutes": 18909
+   "total_delay_minutes": 18909,
+   "stage_length": {
+    "departures_with_distance": 761,
+    "mean_stage_length_sm": 526.3,
+    "bands_share": {
+     "lt_500": 0.5112,
+     "500_999": 0.3403,
+     "1000_1499": 0.1485,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "GSO": {
    "flights": 943,
@@ -551,7 +1503,21 @@
    "nas_delay_share": 0.2384,
    "pct_delayed_15": 0.1453,
    "cancel_rate": 0.0117,
-   "total_delay_minutes": 10850
+   "total_delay_minutes": 10850,
+   "stage_length": {
+    "departures_with_distance": 943,
+    "mean_stage_length_sm": 444.3,
+    "bands_share": {
+     "lt_500": 0.6787,
+     "500_999": 0.3213,
+     "1000_1499": 0.0,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SJC": {
    "flights": 3423,
@@ -559,7 +1525,21 @@
    "nas_delay_share": 0.1901,
    "pct_delayed_15": 0.1785,
    "cancel_rate": 0.005,
-   "total_delay_minutes": 27628
+   "total_delay_minutes": 27628,
+   "stage_length": {
+    "departures_with_distance": 3423,
+    "mean_stage_length_sm": 709.9,
+    "bands_share": {
+     "lt_500": 0.5215,
+     "500_999": 0.3097,
+     "1000_1499": 0.0643,
+     "1500_2499": 0.1046,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.1046,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "CLE": {
    "flights": 3498,
@@ -567,7 +1547,21 @@
    "nas_delay_share": 0.3053,
    "pct_delayed_15": 0.1552,
    "cancel_rate": 0.01,
-   "total_delay_minutes": 45581
+   "total_delay_minutes": 45581,
+   "stage_length": {
+    "departures_with_distance": 3498,
+    "mean_stage_length_sm": 705.1,
+    "bands_share": {
+     "lt_500": 0.512,
+     "500_999": 0.2158,
+     "1000_1499": 0.173,
+     "1500_2499": 0.0992,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0992,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "BDL": {
    "flights": 1946,
@@ -575,7 +1569,21 @@
    "nas_delay_share": 0.2017,
    "pct_delayed_15": 0.185,
    "cancel_rate": 0.0092,
-   "total_delay_minutes": 29934
+   "total_delay_minutes": 29934,
+   "stage_length": {
+    "departures_with_distance": 1946,
+    "mean_stage_length_sm": 818.2,
+    "bands_share": {
+     "lt_500": 0.2415,
+     "500_999": 0.3962,
+     "1000_1499": 0.2852,
+     "1500_2499": 0.0771,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0771,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "HOU": {
    "flights": 4418,
@@ -583,7 +1591,21 @@
    "nas_delay_share": 0.2027,
    "pct_delayed_15": 0.2644,
    "cancel_rate": 0.0014,
-   "total_delay_minutes": 59663
+   "total_delay_minutes": 59663,
+   "stage_length": {
+    "departures_with_distance": 4418,
+    "mean_stage_length_sm": 737.8,
+    "bands_share": {
+     "lt_500": 0.3397,
+     "500_999": 0.4024,
+     "1000_1499": 0.2365,
+     "1500_2499": 0.0213,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0213,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "PSP": {
    "flights": 1680,
@@ -591,7 +1613,21 @@
    "nas_delay_share": 0.3471,
    "pct_delayed_15": 0.1869,
    "cancel_rate": 0.0048,
-   "total_delay_minutes": 24524
+   "total_delay_minutes": 24524,
+   "stage_length": {
+    "departures_with_distance": 1680,
+    "mean_stage_length_sm": 819.3,
+    "bands_share": {
+     "lt_500": 0.403,
+     "500_999": 0.3607,
+     "1000_1499": 0.0982,
+     "1500_2499": 0.1381,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.1381,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "BUR": {
    "flights": 2455,
@@ -599,7 +1635,21 @@
    "nas_delay_share": 0.3837,
    "pct_delayed_15": 0.1853,
    "cancel_rate": 0.0069,
-   "total_delay_minutes": 24639
+   "total_delay_minutes": 24639,
+   "stage_length": {
+    "departures_with_distance": 2455,
+    "mean_stage_length_sm": 538.5,
+    "bands_share": {
+     "lt_500": 0.6525,
+     "500_999": 0.2603,
+     "1000_1499": 0.0501,
+     "1500_2499": 0.0371,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0371,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "PHL": {
    "flights": 8692,
@@ -607,7 +1657,21 @@
    "nas_delay_share": 0.2093,
    "pct_delayed_15": 0.1932,
    "cancel_rate": 0.0068,
-   "total_delay_minutes": 127717
+   "total_delay_minutes": 127717,
+   "stage_length": {
+    "departures_with_distance": 8692,
+    "mean_stage_length_sm": 945.7,
+    "bands_share": {
+     "lt_500": 0.2339,
+     "500_999": 0.464,
+     "1000_1499": 0.1302,
+     "1500_2499": 0.1532,
+     "ge_2500": 0.0186
+    },
+    "long_haul_share_2500sm": 0.0186,
+    "long_haul_share_1500sm": 0.1719,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ORF": {
    "flights": 1655,
@@ -615,7 +1679,21 @@
    "nas_delay_share": 0.2094,
    "pct_delayed_15": 0.1571,
    "cancel_rate": 0.0103,
-   "total_delay_minutes": 23327
+   "total_delay_minutes": 23327,
+   "stage_length": {
+    "departures_with_distance": 1655,
+    "mean_stage_length_sm": 507.9,
+    "bands_share": {
+     "lt_500": 0.4671,
+     "500_999": 0.4495,
+     "1000_1499": 0.0653,
+     "1500_2499": 0.0181,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0181,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "MSN": {
    "flights": 1245,
@@ -623,7 +1701,21 @@
    "nas_delay_share": 0.1866,
    "pct_delayed_15": 0.1751,
    "cancel_rate": 0.0233,
-   "total_delay_minutes": 21539
+   "total_delay_minutes": 21539,
+   "stage_length": {
+    "departures_with_distance": 1245,
+    "mean_stage_length_sm": 507.2,
+    "bands_share": {
+     "lt_500": 0.4602,
+     "500_999": 0.494,
+     "1000_1499": 0.0458,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "TUL": {
    "flights": 1509,
@@ -631,7 +1723,21 @@
    "nas_delay_share": 0.172,
    "pct_delayed_15": 0.1637,
    "cancel_rate": 0.0113,
-   "total_delay_minutes": 23412
+   "total_delay_minutes": 23412,
+   "stage_length": {
+    "departures_with_distance": 1509,
+    "mean_stage_length_sm": 622.7,
+    "bands_share": {
+     "lt_500": 0.2982,
+     "500_999": 0.558,
+     "1000_1499": 0.1438,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "OMA": {
    "flights": 2053,
@@ -639,7 +1745,21 @@
    "nas_delay_share": 0.2798,
    "pct_delayed_15": 0.1534,
    "cancel_rate": 0.0127,
-   "total_delay_minutes": 29313
+   "total_delay_minutes": 29313,
+   "stage_length": {
+    "departures_with_distance": 2053,
+    "mean_stage_length_sm": 715.5,
+    "bands_share": {
+     "lt_500": 0.4067,
+     "500_999": 0.322,
+     "1000_1499": 0.2713,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "LEX": {
    "flights": 786,
@@ -647,7 +1767,21 @@
    "nas_delay_share": 0.2155,
    "pct_delayed_15": 0.1539,
    "cancel_rate": 0.0165,
-   "total_delay_minutes": 8787
+   "total_delay_minutes": 8787,
+   "stage_length": {
+    "departures_with_distance": 786,
+    "mean_stage_length_sm": 450.0,
+    "bands_share": {
+     "lt_500": 0.715,
+     "500_999": 0.2354,
+     "1000_1499": 0.0382,
+     "1500_2499": 0.0115,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0115,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "RIC": {
    "flights": 1643,
@@ -655,7 +1789,21 @@
    "nas_delay_share": 0.2825,
    "pct_delayed_15": 0.1729,
    "cancel_rate": 0.0103,
-   "total_delay_minutes": 19663
+   "total_delay_minutes": 19663,
+   "stage_length": {
+    "departures_with_distance": 1643,
+    "mean_stage_length_sm": 558.5,
+    "bands_share": {
+     "lt_500": 0.5673,
+     "500_999": 0.3348,
+     "1000_1499": 0.098,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "PVD": {
    "flights": 1349,
@@ -663,7 +1811,21 @@
    "nas_delay_share": 0.3183,
    "pct_delayed_15": 0.1438,
    "cancel_rate": 0.0037,
-   "total_delay_minutes": 14736
+   "total_delay_minutes": 14736,
+   "stage_length": {
+    "departures_with_distance": 1349,
+    "mean_stage_length_sm": 738.3,
+    "bands_share": {
+     "lt_500": 0.3239,
+     "500_999": 0.407,
+     "1000_1499": 0.2513,
+     "1500_2499": 0.0178,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0178,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "BUF": {
    "flights": 1699,
@@ -671,7 +1833,21 @@
    "nas_delay_share": 0.2404,
    "pct_delayed_15": 0.183,
    "cancel_rate": 0.0094,
-   "total_delay_minutes": 20271
+   "total_delay_minutes": 20271,
+   "stage_length": {
+    "departures_with_distance": 1699,
+    "mean_stage_length_sm": 608.4,
+    "bands_share": {
+     "lt_500": 0.5892,
+     "500_999": 0.156,
+     "1000_1499": 0.2242,
+     "1500_2499": 0.0306,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0306,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "HNL": {
    "flights": 4809,
@@ -679,7 +1855,21 @@
    "nas_delay_share": 0.133,
    "pct_delayed_15": 0.1813,
    "cancel_rate": 0.006,
-   "total_delay_minutes": 45859
+   "total_delay_minutes": 45859,
+   "stage_length": {
+    "departures_with_distance": 4809,
+    "mean_stage_length_sm": 1424.5,
+    "bands_share": {
+     "lt_500": 0.5323,
+     "500_999": 0.0,
+     "1000_1499": 0.0,
+     "1500_2499": 0.0799,
+     "ge_2500": 0.3878
+    },
+    "long_haul_share_2500sm": 0.3878,
+    "long_haul_share_1500sm": 0.4677,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "FSD": {
    "flights": 723,
@@ -687,7 +1877,21 @@
    "nas_delay_share": 0.1553,
    "pct_delayed_15": 0.184,
    "cancel_rate": 0.018,
-   "total_delay_minutes": 12186
+   "total_delay_minutes": 12186,
+   "stage_length": {
+    "departures_with_distance": 723,
+    "mean_stage_length_sm": 601.1,
+    "bands_share": {
+     "lt_500": 0.6321,
+     "500_999": 0.177,
+     "1000_1499": 0.1798,
+     "1500_2499": 0.0111,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0111,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "STT": {
    "flights": 611,
@@ -695,7 +1899,21 @@
    "nas_delay_share": 0.1682,
    "pct_delayed_15": 0.1702,
    "cancel_rate": 0.0065,
-   "total_delay_minutes": 7608
+   "total_delay_minutes": 7608,
+   "stage_length": {
+    "departures_with_distance": 611,
+    "mean_stage_length_sm": 1362.5,
+    "bands_share": {
+     "lt_500": 0.0949,
+     "500_999": 0.0,
+     "1000_1499": 0.2979,
+     "1500_2499": 0.6072,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.6072,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "LIH": {
    "flights": 1292,
@@ -703,7 +1921,21 @@
    "nas_delay_share": 0.0775,
    "pct_delayed_15": 0.154,
    "cancel_rate": 0.0046,
-   "total_delay_minutes": 10275
+   "total_delay_minutes": 10275,
+   "stage_length": {
+    "departures_with_distance": 1292,
+    "mean_stage_length_sm": 1172.1,
+    "bands_share": {
+     "lt_500": 0.5882,
+     "500_999": 0.0,
+     "1000_1499": 0.0,
+     "1500_2499": 0.1115,
+     "ge_2500": 0.3003
+    },
+    "long_haul_share_2500sm": 0.3003,
+    "long_haul_share_1500sm": 0.4118,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ANC": {
    "flights": 1333,
@@ -711,7 +1943,21 @@
    "nas_delay_share": 0.0545,
    "pct_delayed_15": 0.0975,
    "cancel_rate": 0.0038,
-   "total_delay_minutes": 7092
+   "total_delay_minutes": 7092,
+   "stage_length": {
+    "departures_with_distance": 1333,
+    "mean_stage_length_sm": 1232.3,
+    "bands_share": {
+     "lt_500": 0.2386,
+     "500_999": 0.1718,
+     "1000_1499": 0.3458,
+     "1500_2499": 0.1275,
+     "ge_2500": 0.1163
+    },
+    "long_haul_share_2500sm": 0.1163,
+    "long_haul_share_1500sm": 0.2438,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SMF": {
    "flights": 4672,
@@ -719,7 +1965,21 @@
    "nas_delay_share": 0.1586,
    "pct_delayed_15": 0.177,
    "cancel_rate": 0.0041,
-   "total_delay_minutes": 42269
+   "total_delay_minutes": 42269,
+   "stage_length": {
+    "departures_with_distance": 4672,
+    "mean_stage_length_sm": 803.5,
+    "bands_share": {
+     "lt_500": 0.5184,
+     "500_999": 0.2607,
+     "1000_1499": 0.0477,
+     "1500_2499": 0.1631,
+     "ge_2500": 0.0101
+    },
+    "long_haul_share_2500sm": 0.0101,
+    "long_haul_share_1500sm": 0.1732,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "PWM": {
    "flights": 720,
@@ -727,7 +1987,21 @@
    "nas_delay_share": 0.1735,
    "pct_delayed_15": 0.1597,
    "cancel_rate": 0.0139,
-   "total_delay_minutes": 12113
+   "total_delay_minutes": 12113,
+   "stage_length": {
+    "departures_with_distance": 720,
+    "mean_stage_length_sm": 605.0,
+    "bands_share": {
+     "lt_500": 0.55,
+     "500_999": 0.3625,
+     "1000_1499": 0.0875,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "DAL": {
    "flights": 5965,
@@ -735,7 +2009,21 @@
    "nas_delay_share": 0.1788,
    "pct_delayed_15": 0.3184,
    "cancel_rate": 0.007,
-   "total_delay_minutes": 95390
+   "total_delay_minutes": 95390,
+   "stage_length": {
+    "departures_with_distance": 5965,
+    "mean_stage_length_sm": 734.6,
+    "bands_share": {
+     "lt_500": 0.3008,
+     "500_999": 0.4464,
+     "1000_1499": 0.2377,
+     "1500_2499": 0.0151,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0151,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ONT": {
    "flights": 2119,
@@ -743,7 +2031,21 @@
    "nas_delay_share": 0.2269,
    "pct_delayed_15": 0.1897,
    "cancel_rate": 0.0028,
-   "total_delay_minutes": 24082
+   "total_delay_minutes": 24082,
+   "stage_length": {
+    "departures_with_distance": 2119,
+    "mean_stage_length_sm": 783.5,
+    "bands_share": {
+     "lt_500": 0.4785,
+     "500_999": 0.2544,
+     "1000_1499": 0.1458,
+     "1500_2499": 0.1071,
+     "ge_2500": 0.0142
+    },
+    "long_haul_share_2500sm": 0.0142,
+    "long_haul_share_1500sm": 0.1213,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "KOA": {
    "flights": 1298,
@@ -751,7 +2053,21 @@
    "nas_delay_share": 0.1277,
    "pct_delayed_15": 0.1333,
    "cancel_rate": 0.0077,
-   "total_delay_minutes": 10044
+   "total_delay_minutes": 10044,
+   "stage_length": {
+    "departures_with_distance": 1298,
+    "mean_stage_length_sm": 1211.0,
+    "bands_share": {
+     "lt_500": 0.5693,
+     "500_999": 0.0,
+     "1000_1499": 0.0,
+     "1500_2499": 0.1179,
+     "ge_2500": 0.3128
+    },
+    "long_haul_share_2500sm": 0.3128,
+    "long_haul_share_1500sm": 0.4307,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "MKE": {
    "flights": 2588,
@@ -759,7 +2075,21 @@
    "nas_delay_share": 0.1561,
    "pct_delayed_15": 0.1708,
    "cancel_rate": 0.022,
-   "total_delay_minutes": 44515
+   "total_delay_minutes": 44515,
+   "stage_length": {
+    "departures_with_distance": 2588,
+    "mean_stage_length_sm": 647.1,
+    "bands_share": {
+     "lt_500": 0.3964,
+     "500_999": 0.3891,
+     "1000_1499": 0.158,
+     "1500_2499": 0.0564,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0564,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "PIT": {
    "flights": 3531,
@@ -767,7 +2097,21 @@
    "nas_delay_share": 0.3149,
    "pct_delayed_15": 0.1442,
    "cancel_rate": 0.0051,
-   "total_delay_minutes": 39749
+   "total_delay_minutes": 39749,
+   "stage_length": {
+    "departures_with_distance": 3531,
+    "mean_stage_length_sm": 682.4,
+    "bands_share": {
+     "lt_500": 0.5466,
+     "500_999": 0.2322,
+     "1000_1499": 0.1393,
+     "1500_2499": 0.0818,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0818,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "LIT": {
    "flights": 1131,
@@ -775,7 +2119,21 @@
    "nas_delay_share": 0.1427,
    "pct_delayed_15": 0.1777,
    "cancel_rate": 0.008,
-   "total_delay_minutes": 18550
+   "total_delay_minutes": 18550,
+   "stage_length": {
+    "departures_with_distance": 1131,
+    "mean_stage_length_sm": 551.6,
+    "bands_share": {
+     "lt_500": 0.5694,
+     "500_999": 0.328,
+     "1000_1499": 0.1026,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SDF": {
    "flights": 2136,
@@ -783,7 +2141,21 @@
    "nas_delay_share": 0.2105,
    "pct_delayed_15": 0.1573,
    "cancel_rate": 0.0112,
-   "total_delay_minutes": 33182
+   "total_delay_minutes": 33182,
+   "stage_length": {
+    "departures_with_distance": 2136,
+    "mean_stage_length_sm": 544.0,
+    "bands_share": {
+     "lt_500": 0.5309,
+     "500_999": 0.3951,
+     "1000_1499": 0.0435,
+     "1500_2499": 0.0304,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0304,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SYR": {
    "flights": 926,
@@ -791,7 +2163,21 @@
    "nas_delay_share": 0.2975,
    "pct_delayed_15": 0.1631,
    "cancel_rate": 0.013,
-   "total_delay_minutes": 11945
+   "total_delay_minutes": 11945,
+   "stage_length": {
+    "departures_with_distance": 926,
+    "mean_stage_length_sm": 646.3,
+    "bands_share": {
+     "lt_500": 0.3445,
+     "500_999": 0.4158,
+     "1000_1499": 0.2397,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ATW": {
    "flights": 809,
@@ -799,7 +2185,21 @@
    "nas_delay_share": 0.2979,
    "pct_delayed_15": 0.1928,
    "cancel_rate": 0.0396,
-   "total_delay_minutes": 20614
+   "total_delay_minutes": 20614,
+   "stage_length": {
+    "departures_with_distance": 809,
+    "mean_stage_length_sm": 510.7,
+    "bands_share": {
+     "lt_500": 0.6304,
+     "500_999": 0.1891,
+     "1000_1499": 0.1681,
+     "1500_2499": 0.0124,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0124,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "EYW": {
    "flights": 816,
@@ -807,7 +2207,21 @@
    "nas_delay_share": 0.1844,
    "pct_delayed_15": 0.1777,
    "cancel_rate": 0.0,
-   "total_delay_minutes": 12868
+   "total_delay_minutes": 12868,
+   "stage_length": {
+    "departures_with_distance": 816,
+    "mean_stage_length_sm": 852.2,
+    "bands_share": {
+     "lt_500": 0.1654,
+     "500_999": 0.3113,
+     "1000_1499": 0.5233,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "GRB": {
    "flights": 520,
@@ -815,7 +2229,21 @@
    "nas_delay_share": 0.1683,
    "pct_delayed_15": 0.1769,
    "cancel_rate": 0.0462,
-   "total_delay_minutes": 12525
+   "total_delay_minutes": 12525,
+   "stage_length": {
+    "departures_with_distance": 520,
+    "mean_stage_length_sm": 241.6,
+    "bands_share": {
+     "lt_500": 0.9404,
+     "500_999": 0.0596,
+     "1000_1499": 0.0,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "AVL": {
    "flights": 785,
@@ -823,7 +2251,21 @@
    "nas_delay_share": 0.228,
    "pct_delayed_15": 0.1541,
    "cancel_rate": 0.014,
-   "total_delay_minutes": 12380
+   "total_delay_minutes": 12380,
+   "stage_length": {
+    "departures_with_distance": 785,
+    "mean_stage_length_sm": 534.8,
+    "bands_share": {
+     "lt_500": 0.3325,
+     "500_999": 0.6076,
+     "1000_1499": 0.0484,
+     "1500_2499": 0.0115,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0115,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "XNA": {
    "flights": 1214,
@@ -831,7 +2273,21 @@
    "nas_delay_share": 0.1678,
    "pct_delayed_15": 0.1392,
    "cancel_rate": 0.0099,
-   "total_delay_minutes": 18067
+   "total_delay_minutes": 18067,
+   "stage_length": {
+    "departures_with_distance": 1214,
+    "mean_stage_length_sm": 671.1,
+    "bands_share": {
+     "lt_500": 0.2595,
+     "500_999": 0.4654,
+     "1000_1499": 0.2751,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "DAY": {
    "flights": 677,
@@ -839,7 +2295,21 @@
    "nas_delay_share": 0.1534,
    "pct_delayed_15": 0.1684,
    "cancel_rate": 0.0207,
-   "total_delay_minutes": 14524
+   "total_delay_minutes": 14524,
+   "stage_length": {
+    "departures_with_distance": 677,
+    "mean_stage_length_sm": 488.5,
+    "bands_share": {
+     "lt_500": 0.7504,
+     "500_999": 0.2053,
+     "1000_1499": 0.0443,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "MDT": {
    "flights": 537,
@@ -847,7 +2317,21 @@
    "nas_delay_share": 0.1373,
    "pct_delayed_15": 0.2048,
    "cancel_rate": 0.0168,
-   "total_delay_minutes": 13316
+   "total_delay_minutes": 13316,
+   "stage_length": {
+    "departures_with_distance": 537,
+    "mean_stage_length_sm": 650.8,
+    "bands_share": {
+     "lt_500": 0.1564,
+     "500_999": 0.7858,
+     "1000_1499": 0.0577,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "MYR": {
    "flights": 1165,
@@ -855,7 +2339,21 @@
    "nas_delay_share": 0.3073,
    "pct_delayed_15": 0.1665,
    "cancel_rate": 0.006,
-   "total_delay_minutes": 16136
+   "total_delay_minutes": 16136,
+   "stage_length": {
+    "departures_with_distance": 1165,
+    "mean_stage_length_sm": 483.5,
+    "bands_share": {
+     "lt_500": 0.5614,
+     "500_999": 0.3948,
+     "1000_1499": 0.0438,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "TUS": {
    "flights": 1834,
@@ -863,7 +2361,21 @@
    "nas_delay_share": 0.1953,
    "pct_delayed_15": 0.1609,
    "cancel_rate": 0.0044,
-   "total_delay_minutes": 19540
+   "total_delay_minutes": 19540,
+   "stage_length": {
+    "departures_with_distance": 1834,
+    "mean_stage_length_sm": 666.3,
+    "bands_share": {
+     "lt_500": 0.4171,
+     "500_999": 0.3719,
+     "1000_1499": 0.1718,
+     "1500_2499": 0.0393,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0393,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SGF": {
    "flights": 647,
@@ -871,7 +2383,21 @@
    "nas_delay_share": 0.1751,
    "pct_delayed_15": 0.1638,
    "cancel_rate": 0.0155,
-   "total_delay_minutes": 13996
+   "total_delay_minutes": 13996,
+   "stage_length": {
+    "departures_with_distance": 647,
+    "mean_stage_length_sm": 517.5,
+    "bands_share": {
+     "lt_500": 0.6121,
+     "500_999": 0.3601,
+     "1000_1499": 0.0278,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "MDW": {
    "flights": 6282,
@@ -879,7 +2405,21 @@
    "nas_delay_share": 0.2325,
    "pct_delayed_15": 0.2249,
    "cancel_rate": 0.0118,
-   "total_delay_minutes": 79562
+   "total_delay_minutes": 79562,
+   "stage_length": {
+    "departures_with_distance": 6282,
+    "mean_stage_length_sm": 826.8,
+    "bands_share": {
+     "lt_500": 0.2732,
+     "500_999": 0.4745,
+     "1000_1499": 0.1188,
+     "1500_2499": 0.1336,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.1336,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "TYS": {
    "flights": 1152,
@@ -887,7 +2427,21 @@
    "nas_delay_share": 0.1553,
    "pct_delayed_15": 0.1441,
    "cancel_rate": 0.0148,
-   "total_delay_minutes": 14507
+   "total_delay_minutes": 14507,
+   "stage_length": {
+    "departures_with_distance": 1152,
+    "mean_stage_length_sm": 536.9,
+    "bands_share": {
+     "lt_500": 0.5304,
+     "500_999": 0.3898,
+     "1000_1499": 0.0651,
+     "1500_2499": 0.0148,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0148,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ELP": {
    "flights": 1303,
@@ -895,7 +2449,21 @@
    "nas_delay_share": 0.1044,
    "pct_delayed_15": 0.1926,
    "cancel_rate": 0.0092,
-   "total_delay_minutes": 18067
+   "total_delay_minutes": 18067,
+   "stage_length": {
+    "departures_with_distance": 1303,
+    "mean_stage_length_sm": 606.9,
+    "bands_share": {
+     "lt_500": 0.2103,
+     "500_999": 0.6976,
+     "1000_1499": 0.0921,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "HPN": {
    "flights": 888,
@@ -903,7 +2471,21 @@
    "nas_delay_share": 0.2021,
    "pct_delayed_15": 0.223,
    "cancel_rate": 0.0124,
-   "total_delay_minutes": 20031
+   "total_delay_minutes": 20031,
+   "stage_length": {
+    "departures_with_distance": 888,
+    "mean_stage_length_sm": 844.6,
+    "bands_share": {
+     "lt_500": 0.1295,
+     "500_999": 0.4313,
+     "1000_1499": 0.4054,
+     "1500_2499": 0.0338,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0338,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "LGB": {
    "flights": 1156,
@@ -911,7 +2493,21 @@
    "nas_delay_share": 0.1064,
    "pct_delayed_15": 0.1955,
    "cancel_rate": 0.0,
-   "total_delay_minutes": 10816
+   "total_delay_minutes": 10816,
+   "stage_length": {
+    "departures_with_distance": 1156,
+    "mean_stage_length_sm": 721.6,
+    "bands_share": {
+     "lt_500": 0.5995,
+     "500_999": 0.1929,
+     "1000_1499": 0.0804,
+     "1500_2499": 0.0753,
+     "ge_2500": 0.0519
+    },
+    "long_haul_share_2500sm": 0.0519,
+    "long_haul_share_1500sm": 0.1272,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ILM": {
    "flights": 587,
@@ -919,7 +2515,21 @@
    "nas_delay_share": 0.2169,
    "pct_delayed_15": 0.1601,
    "cancel_rate": 0.0119,
-   "total_delay_minutes": 5462
+   "total_delay_minutes": 5462,
+   "stage_length": {
+    "departures_with_distance": 587,
+    "mean_stage_length_sm": 490.4,
+    "bands_share": {
+     "lt_500": 0.5707,
+     "500_999": 0.3271,
+     "1000_1499": 0.1022,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "EUG": {
    "flights": 708,
@@ -927,7 +2537,21 @@
    "nas_delay_share": 0.2814,
    "pct_delayed_15": 0.161,
    "cancel_rate": 0.0042,
-   "total_delay_minutes": 10240
+   "total_delay_minutes": 10240,
+   "stage_length": {
+    "departures_with_distance": 708,
+    "mean_stage_length_sm": 609.3,
+    "bands_share": {
+     "lt_500": 0.4364,
+     "500_999": 0.5621,
+     "1000_1499": 0.0,
+     "1500_2499": 0.0014,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0014,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "PIE": {
    "flights": 752,
@@ -935,7 +2559,21 @@
    "nas_delay_share": 0.176,
    "pct_delayed_15": 0.1649,
    "cancel_rate": 0.0013,
-   "total_delay_minutes": 7626
+   "total_delay_minutes": 7626,
+   "stage_length": {
+    "departures_with_distance": 752,
+    "mean_stage_length_sm": 887.2,
+    "bands_share": {
+     "lt_500": 0.0465,
+     "500_999": 0.5691,
+     "1000_1499": 0.371,
+     "1500_2499": 0.0133,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0133,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "PGD": {
    "flights": 667,
@@ -943,7 +2581,21 @@
    "nas_delay_share": 0.1486,
    "pct_delayed_15": 0.1919,
    "cancel_rate": 0.0015,
-   "total_delay_minutes": 7465
+   "total_delay_minutes": 7465,
+   "stage_length": {
+    "departures_with_distance": 667,
+    "mean_stage_length_sm": 1036.0,
+    "bands_share": {
+     "lt_500": 0.0,
+     "500_999": 0.3688,
+     "1000_1499": 0.6312,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SFB": {
    "flights": 799,
@@ -951,7 +2603,21 @@
    "nas_delay_share": 0.0895,
    "pct_delayed_15": 0.214,
    "cancel_rate": 0.0,
-   "total_delay_minutes": 14576
+   "total_delay_minutes": 14576,
+   "stage_length": {
+    "departures_with_distance": 799,
+    "mean_stage_length_sm": 871.7,
+    "bands_share": {
+     "lt_500": 0.1039,
+     "500_999": 0.5832,
+     "1000_1499": 0.2954,
+     "1500_2499": 0.0175,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0175,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "AZA": {
    "flights": 543,
@@ -959,7 +2625,21 @@
    "nas_delay_share": 0.0808,
    "pct_delayed_15": 0.2394,
    "cancel_rate": 0.0,
-   "total_delay_minutes": 9579
+   "total_delay_minutes": 9579,
+   "stage_length": {
+    "departures_with_distance": 543,
+    "mean_stage_length_sm": 1076.6,
+    "bands_share": {
+     "lt_500": 0.1271,
+     "500_999": 0.2099,
+     "1000_1499": 0.5488,
+     "1500_2499": 0.1142,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.1142,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "PIA": {
    "flights": 551,
@@ -967,7 +2647,21 @@
    "nas_delay_share": 0.2009,
    "pct_delayed_15": 0.2142,
    "cancel_rate": 0.0472,
-   "total_delay_minutes": 15983
+   "total_delay_minutes": 15983,
+   "stage_length": {
+    "departures_with_distance": 551,
+    "mean_stage_length_sm": 444.1,
+    "bands_share": {
+     "lt_500": 0.5354,
+     "500_999": 0.3648,
+     "1000_1499": 0.0998,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "FWA": {
    "flights": 522,
@@ -975,7 +2669,21 @@
    "nas_delay_share": 0.1855,
    "pct_delayed_15": 0.251,
    "cancel_rate": 0.0441,
-   "total_delay_minutes": 17481
+   "total_delay_minutes": 17481,
+   "stage_length": {
+    "departures_with_distance": 522,
+    "mean_stage_length_sm": 413.4,
+    "bands_share": {
+     "lt_500": 0.6916,
+     "500_999": 0.2739,
+     "1000_1499": 0.0172,
+     "1500_2499": 0.0172,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0172,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "FAT": {
    "flights": 1030,
@@ -983,7 +2691,21 @@
    "nas_delay_share": 0.2556,
    "pct_delayed_15": 0.1738,
    "cancel_rate": 0.0039,
-   "total_delay_minutes": 14668
+   "total_delay_minutes": 14668,
+   "stage_length": {
+    "departures_with_distance": 1030,
+    "mean_stage_length_sm": 525.5,
+    "bands_share": {
+     "lt_500": 0.5748,
+     "500_999": 0.3243,
+     "1000_1499": 0.1,
+     "1500_2499": 0.001,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.001,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SBN": {
    "flights": 682,
@@ -991,7 +2713,21 @@
    "nas_delay_share": 0.2071,
    "pct_delayed_15": 0.2331,
    "cancel_rate": 0.0235,
-   "total_delay_minutes": 14227
+   "total_delay_minutes": 14227,
+   "stage_length": {
+    "departures_with_distance": 682,
+    "mean_stage_length_sm": 463.7,
+    "bands_share": {
+     "lt_500": 0.478,
+     "500_999": 0.434,
+     "1000_1499": 0.0601,
+     "1500_2499": 0.0279,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0279,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "OAK": {
    "flights": 2509,
@@ -999,7 +2735,21 @@
    "nas_delay_share": 0.1729,
    "pct_delayed_15": 0.271,
    "cancel_rate": 0.0028,
-   "total_delay_minutes": 30673
+   "total_delay_minutes": 30673,
+   "stage_length": {
+    "departures_with_distance": 2509,
+    "mean_stage_length_sm": 689.6,
+    "bands_share": {
+     "lt_500": 0.5747,
+     "500_999": 0.2941,
+     "1000_1499": 0.0263,
+     "1500_2499": 0.1048,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.1048,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "MAF": {
    "flights": 730,
@@ -1007,7 +2757,21 @@
    "nas_delay_share": 0.1517,
    "pct_delayed_15": 0.1425,
    "cancel_rate": 0.0068,
-   "total_delay_minutes": 8480
+   "total_delay_minutes": 8480,
+   "stage_length": {
+    "departures_with_distance": 730,
+    "mean_stage_length_sm": 419.9,
+    "bands_share": {
+     "lt_500": 0.7233,
+     "500_999": 0.2767,
+     "1000_1499": 0.0,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "SBA": {
    "flights": 733,
@@ -1015,7 +2779,21 @@
    "nas_delay_share": 0.3449,
    "pct_delayed_15": 0.1828,
    "cancel_rate": 0.0041,
-   "total_delay_minutes": 12597
+   "total_delay_minutes": 12597,
+   "stage_length": {
+    "departures_with_distance": 733,
+    "mean_stage_length_sm": 524.6,
+    "bands_share": {
+     "lt_500": 0.6439,
+     "500_999": 0.281,
+     "1000_1499": 0.0409,
+     "1500_2499": 0.0341,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0341,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "RDM": {
    "flights": 591,
@@ -1023,7 +2801,21 @@
    "nas_delay_share": 0.3915,
    "pct_delayed_15": 0.1438,
    "cancel_rate": 0.0051,
-   "total_delay_minutes": 6053
+   "total_delay_minutes": 6053,
+   "stage_length": {
+    "departures_with_distance": 591,
+    "mean_stage_length_sm": 531.3,
+    "bands_share": {
+     "lt_500": 0.5161,
+     "500_999": 0.4839,
+     "1000_1499": 0.0,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "LBB": {
    "flights": 520,
@@ -1031,7 +2823,21 @@
    "nas_delay_share": 0.1487,
    "pct_delayed_15": 0.1712,
    "cancel_rate": 0.0019,
-   "total_delay_minutes": 7490
+   "total_delay_minutes": 7490,
+   "stage_length": {
+    "departures_with_distance": 520,
+    "mean_stage_length_sm": 374.2,
+    "bands_share": {
+     "lt_500": 0.8846,
+     "500_999": 0.1154,
+     "1000_1499": 0.0,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "STS": {
    "flights": 558,
@@ -1039,7 +2845,21 @@
    "nas_delay_share": 0.224,
    "pct_delayed_15": 0.1398,
    "cancel_rate": 0.0,
-   "total_delay_minutes": 6315
+   "total_delay_minutes": 6315,
+   "stage_length": {
+    "departures_with_distance": 558,
+    "mean_stage_length_sm": 485.7,
+    "bands_share": {
+     "lt_500": 0.6398,
+     "500_999": 0.3602,
+     "1000_1499": 0.0,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "MHT": {
    "flights": 553,
@@ -1047,7 +2867,21 @@
    "nas_delay_share": 0.2442,
    "pct_delayed_15": 0.1537,
    "cancel_rate": 0.0054,
-   "total_delay_minutes": 4936
+   "total_delay_minutes": 4936,
+   "stage_length": {
+    "departures_with_distance": 553,
+    "mean_stage_length_sm": 706.5,
+    "bands_share": {
+     "lt_500": 0.4231,
+     "500_999": 0.358,
+     "1000_1499": 0.2188,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0
+    },
+    "long_haul_share_2500sm": 0.0,
+    "long_haul_share_1500sm": 0.0,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   },
   "ITO": {
    "flights": 578,
@@ -1055,7 +2889,21 @@
    "nas_delay_share": 0.0531,
    "pct_delayed_15": 0.1851,
    "cancel_rate": 0.0052,
-   "total_delay_minutes": 5698
+   "total_delay_minutes": 5698,
+   "stage_length": {
+    "departures_with_distance": 578,
+    "mean_stage_length_sm": 215.1,
+    "bands_share": {
+     "lt_500": 0.9983,
+     "500_999": 0.0,
+     "1000_1499": 0.0,
+     "1500_2499": 0.0,
+     "ge_2500": 0.0017
+    },
+    "long_haul_share_2500sm": 0.0017,
+    "long_haul_share_1500sm": 0.0017,
+    "scope": "domestic flights by reporting US carriers only"
+   }
   }
  }
 }

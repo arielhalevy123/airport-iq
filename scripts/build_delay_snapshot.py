@@ -17,6 +17,30 @@ We download one month (~30 MB), aggregate to a few KB per airport, and commit th
 gets real delay data without a 30 MB download or a BTS account.
 
     python scripts/build_delay_snapshot.py 2026 4
+
+STAGE LENGTH
+------------
+The same file carries `Distance` per flight, which is the only per-departure stage length in any
+of our sources — T-100 is summarised by origin airport, so it gives an airport-wide average and
+no distribution. We bucket departures by distance here because it costs one extra field read on
+a pass we are already making.
+
+"Long haul" has no single legal definition, so we do not pick one and hide it. We publish the
+full distribution and TWO thresholds:
+
+    long_haul_share_2500sm   >= 2,500 statute miles  (~4,000 km, the ICAO convention)
+    long_haul_share_1500sm   >= 1,500 statute miles  (the looser commercial usage)
+
+Reporting both makes the sensitivity visible: if an airport's answer swings from 4% to 40%
+between them, the threshold is doing the work and the reader deserves to know that.
+
+SCOPING LIMIT, WHICH MATTERS MOST AT EXACTLY THE AIRPORT PEOPLE ASK ABOUT
+This file covers DOMESTIC flights operated by reporting US carriers. International departures
+are not in it. For most airports that is a minor caveat. For Anchorage it is the whole story:
+ANC is one of the world's largest cargo hubs, and its genuinely long-haul traffic is
+international freight to Asia, none of which appears here. Any long-haul figure we compute for
+ANC therefore describes its domestic passenger operation only, and the answer has to say so
+rather than let a reader infer that ANC flies few long sectors.
 """
 from __future__ import annotations
 
@@ -73,6 +97,24 @@ def build(year: int, month: int) -> Path:
                 a["security_delay"] += f("SecurityDelay")
                 a["del15"] += f("DepDel15")
                 a["cancelled"] += f("Cancelled")
+
+                # Stage length. Counted only where Distance is actually present, so the
+                # denominator is departures-with-a-known-distance rather than all flights —
+                # a missing Distance must not silently become a short-haul vote.
+                dist = f("Distance")
+                if dist > 0:
+                    a["dist_n"] += 1
+                    a["dist_sum"] += dist
+                    if dist < 500:
+                        a["band_lt500"] += 1
+                    elif dist < 1000:
+                        a["band_500_999"] += 1
+                    elif dist < 1500:
+                        a["band_1000_1499"] += 1
+                    elif dist < 2500:
+                        a["band_1500_2499"] += 1
+                    else:
+                        a["band_ge2500"] += 1
                 if i and i % 250_000 == 0:
                     print(f"    {i:,} rows", file=sys.stderr)
 
@@ -93,6 +135,24 @@ def build(year: int, month: int) -> Path:
             "cancel_rate": round(a["cancelled"] / a["flights"], 4),
             "total_delay_minutes": int(a["arr_delay_min"]),
         }
+
+        n = a["dist_n"]
+        if n:
+            out[code]["stage_length"] = {
+                "departures_with_distance": int(n),
+                "mean_stage_length_sm": round(a["dist_sum"] / n, 1),
+                "bands_share": {
+                    "lt_500": round(a["band_lt500"] / n, 4),
+                    "500_999": round(a["band_500_999"] / n, 4),
+                    "1000_1499": round(a["band_1000_1499"] / n, 4),
+                    "1500_2499": round(a["band_1500_2499"] / n, 4),
+                    "ge_2500": round(a["band_ge2500"] / n, 4),
+                },
+                "long_haul_share_2500sm": round(a["band_ge2500"] / n, 4),
+                "long_haul_share_1500sm": round(
+                    (a["band_1500_2499"] + a["band_ge2500"]) / n, 4),
+                "scope": "domestic flights by reporting US carriers only",
+            }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps({"period": f"{year}-{month:02d}", "airports": out}, indent=1))

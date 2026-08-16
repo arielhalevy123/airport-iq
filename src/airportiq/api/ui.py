@@ -10,6 +10,17 @@ turns "trust me" into "check me", and it is the single most useful thing this in
 Plain HTML/CSS/JS with no build step and no CDN, so it runs from `python -m airportiq.api.server`
 with nothing installed. A React app would need npm install and a build before a reviewer could
 see anything, which is a worse trade for a one-day deliverable.
+
+VOICE
+-----
+The brief lists voice as a bonus, and it is done with the browser's own Web Speech API —
+SpeechRecognition in, speechSynthesis out. No key, no cloud STT vendor, no dependency, and it
+degrades to a hidden button when the browser lacks support rather than breaking the page.
+
+One deliberate asymmetry: voice INPUT is the whole question, but voice OUTPUT is only the prose
+answer. The tool trace and the assumptions list stay on screen and are never spoken. Reading a
+list of caveats aloud is how a listener stops hearing them, and the caveats are the part of this
+system that must not be lost. Speech is for the finding; the screen is for the evidence.
 """
 
 INDEX = """<!doctype html>
@@ -75,6 +86,17 @@ INDEX = """<!doctype html>
         background:var(--accent);color:#fff;cursor:pointer}
  button:disabled{opacity:.5;cursor:default}
  .thinking{color:var(--muted);font-style:italic}
+
+ /* voice */
+ .icon{padding:11px 14px;background:var(--panel);color:var(--muted);
+       border:1px solid var(--line);border-radius:10px;font-size:15px;line-height:1}
+ .icon:hover{color:var(--ink);border-color:var(--accent)}
+ .icon[hidden]{display:none}
+ .icon.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+ .icon.rec{background:var(--warn);color:#fff;border-color:var(--warn);
+           animation:pulse 1.2s ease-in-out infinite}
+ @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+ .heard{font-size:12.5px;color:var(--muted);margin:6px 0 0;text-align:center}
 </style></head><body>
 <div class="wrap">
  <header>
@@ -97,9 +119,12 @@ INDEX = """<!doctype html>
 
 <form onsubmit="ask(event)">
  <div class="row">
+  <button type="button" class="icon" id="mic" hidden title="Ask by voice">&#127908;</button>
   <input id="q" placeholder="Ask about US airport capacity…" autocomplete="off" autofocus>
+  <button type="button" class="icon" id="spk" hidden title="Read answers aloud">&#128264;</button>
   <button id="go">Ask</button>
  </div>
+ <p class="heard" id="heard"></p>
 </form>
 
 <script>
@@ -167,10 +192,99 @@ function ask(ev){
         d.assumptions.forEach(a => ul.appendChild(el('li',null,a)));
         det.appendChild(ul); bot.appendChild(det);
       }
+
+      // Speak the finding only. The trace and the caveats stay on screen — see the
+      // module docstring for why they are deliberately never read aloud.
+      if (speakOn && d.answer) speak(d.answer);
     })
     .catch(e => { bot.innerHTML=''; bot.appendChild(el('p',null,'error: '+e)); })
     .finally(() => { go.disabled=false; q.focus();
                      window.scrollTo(0, document.body.scrollHeight); });
+}
+
+/* ---------------------------------------------------------------- voice ---
+   Browser-native Web Speech API. Both legs are feature-detected and each button
+   stays hidden if its half is unsupported, so Firefox (no SpeechRecognition) still
+   gets working text-to-speech instead of a dead microphone. */
+
+const mic = document.getElementById('mic');
+const spk = document.getElementById('spk');
+const heard = document.getElementById('heard');
+
+/* --- output: read the finding aloud --- */
+let speakOn = false;
+const canSpeak = 'speechSynthesis' in window;
+if (canSpeak){
+  spk.hidden = false;
+  spk.onclick = () => {
+    speakOn = !speakOn;
+    spk.classList.toggle('on', speakOn);
+    spk.title = speakOn ? 'Stop reading answers aloud' : 'Read answers aloud';
+    if (!speakOn) speechSynthesis.cancel();
+  };
+}
+
+function speak(text){
+  if (!canSpeak) return;
+  speechSynthesis.cancel();
+  // Percentiles read badly as digits-with-symbols, and an unexpanded "SFO" is spelled
+  // out letter by letter at speed. Both are fixed here rather than in the model's prose,
+  // because the written answer should stay precise for the analyst reading it.
+  const spoken = text
+    .replace(/\bNAS\b/g, 'N A S')
+    .replace(/(\d+)(st|nd|rd|th)\b/g, '$1$2')
+    .replace(/%/g, ' percent')
+    .slice(0, 700);
+  const u = new SpeechSynthesisUtterance(spoken);
+  u.lang = 'en-US'; u.rate = 1.03;
+  speechSynthesis.speak(u);
+}
+
+/* --- input: ask by voice --- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (SR){
+  mic.hidden = false;
+  const rec = new SR();
+  rec.lang = 'en-US';
+  rec.interimResults = true;
+  rec.continuous = false;
+  let listening = false, finalText = '';
+
+  mic.onclick = () => {
+    if (listening){ rec.stop(); return; }
+    finalText = ''; heard.textContent = 'listening…';
+    speechSynthesis.cancel();          // never talk over the user
+    try { rec.start(); } catch(e){ heard.textContent = 'could not start the microphone'; }
+  };
+
+  rec.onstart = () => { listening = true; mic.classList.add('rec'); };
+
+  rec.onresult = (ev) => {
+    let interim = '';
+    for (let i = ev.resultIndex; i < ev.results.length; i++){
+      const r = ev.results[i];
+      if (r.isFinal) finalText += r[0].transcript;
+      else interim += r[0].transcript;
+    }
+    q.value = (finalText + interim).trim();
+    heard.textContent = q.value ? 'heard: ' + q.value : 'listening…';
+  };
+
+  rec.onerror = (ev) => {
+    heard.textContent = ev.error === 'not-allowed'
+      ? 'microphone permission denied'
+      : 'speech error: ' + ev.error;
+  };
+
+  // Submit on end rather than on the first final result: a question said with a pause
+  // in the middle produces two final results, and asking after the first one cuts the
+  // user off mid-sentence.
+  rec.onend = () => {
+    listening = false; mic.classList.remove('rec');
+    const text = q.value.trim();
+    if (text){ heard.textContent = ''; ask(); }
+    else heard.textContent = '';
+  };
 }
 </script></body></html>
 """
