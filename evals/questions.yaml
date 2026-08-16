@@ -34,9 +34,19 @@
   question: "What percentage of flights out of Anchorage are long haul?"
   expect:
     must_mention: ["ANC"]
-    # This one is honest about a gap: we do not have per-flight stage length, only an
-    # airport average. A correct answer says so rather than inventing a percentage.
-    allow_unsupported: true
+    # This used to carry allow_unsupported, because T-100 is summarised by origin airport
+    # and has no distance distribution. The exemption is gone: On-Time Performance carries
+    # per-flight Distance, so the honest gap became a computable number and continuing to
+    # accept "insufficient data" would have been accepting a worse answer than the data
+    # supports.
+    #
+    # Pass condition is a real percentage AND the two disclosures that make it mean
+    # anything — which threshold was used, and that the source is domestic only. For
+    # Anchorage the second is not a footnote: ANC's real long-haul flying is international
+    # freight to Asia, absent from this file, and a reader who misses that draws precisely
+    # the wrong conclusion about the airport.
+    must_contain_any: ["11.6", "12%", "24.4", "24%"]
+    must_state_assumption: "domestic"
 
 - id: q4_sfo_unmet_demand
   question: "What is the unmet flight demand at SFO and why?"

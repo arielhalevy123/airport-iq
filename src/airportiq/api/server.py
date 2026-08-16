@@ -17,6 +17,7 @@ is not doing the arithmetic.
 from __future__ import annotations
 
 import json
+import re
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -43,6 +44,48 @@ def _load() -> None:
     _FACTS = build_facts(sorted(JET_RUNWAYS))
     for profile in ("terminal_expansion", "congestion"):
         _CARDS[profile] = score(_FACTS, profile)
+
+
+_CODE_RE = re.compile(r'"(?:airport|airports)"\s*:\s*(?:"([^"]+)"|\[([^\]]*)\])')
+
+
+def _scorecards_for(trace: list[dict], limit: int = 4) -> list[dict]:
+    """The engine's own numbers for the airports this turn actually looked at.
+
+    Read out of the tool-call arguments rather than out of the prose. Parsing the model's
+    sentence for airport codes would mean the panel agrees with the narration by
+    construction, which is precisely the check we want to keep independent.
+    """
+    from airportiq.agent import resolve
+
+    seen: list[str] = []
+    for call in trace:
+        for m in _CODE_RE.finditer(call.get("args") or ""):
+            raw = m.group(1) or m.group(2) or ""
+            for token in raw.replace('"', " ").split(","):
+                token = token.strip()
+                if not token:
+                    continue
+                try:
+                    code, _ = resolve.resolve_airport(token, allow_primary=True)
+                except (ValueError, resolve.Ambiguous):
+                    continue
+                if code not in seen:
+                    seen.append(code)
+
+    out = []
+    for code in seen[:limit]:
+        card = next((c for c in _CARDS["congestion"] if c.code == code), None)
+        if card is None:
+            continue
+        out.append({
+            "code": card.code, "name": card.name, "hub_class": card.hub_class,
+            "rank": card.rank, "composite": card.composite,
+            "kpis": {k: round(v, 1) for k, v in card.kpis.items()
+                     if isinstance(v, (int, float))},
+            "flags": card.flags, "missing": card.missing,
+        })
+    return out
 
 
 # Absolute, not relative: a relative import fails when this file is run directly
@@ -94,6 +137,10 @@ class Handler(BaseHTTPRequestHandler):
             })
 
         if self.path == "/v1/chat":
+            # Attach the engine's own scorecards for whichever airports the turn touched.
+            # This is the point of the interface: the model writes the sentence, and the
+            # bars beside it come straight from the deterministic engine, so a reader can
+            # check the prose against the numbers without taking anything on trust.
             question = (payload.get("question") or "").strip()
             if not question:
                 return self._json(400, {"error": "question is required"})
@@ -115,7 +162,8 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json(200, {
                         "answer": out["answer"], "intent": "agent",
                         "trace": out["trace"], "rounds": out["rounds"],
-                        "assumptions": assumptions})
+                        "assumptions": assumptions,
+                        "scorecards": _scorecards_for(out["trace"])})
                 except Exception:
                     from airportiq.agent.answer import answer
                     res = answer(question, _CARDS["terminal_expansion"], by_code,

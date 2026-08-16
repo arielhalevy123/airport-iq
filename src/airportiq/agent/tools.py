@@ -99,6 +99,49 @@ def get_delay_breakdown(airport: str) -> dict:
     }
 
 
+def get_stage_length_mix(airport: str) -> dict:
+    """How far this airport's departures actually fly, and what share are long haul.
+
+    Returns TWO long-haul thresholds on purpose. There is no legal definition of "long
+    haul", and for many airports the answer roughly doubles between the two — ANC is 11.6%
+    at 2,500 sm and 24.4% at 1,500 sm. Handing back one number would hide that the
+    threshold, not the airport, was doing the work.
+    """
+    try:
+        code, note = resolve.resolve_airport(airport, allow_primary=True)
+    except (ValueError, resolve.Ambiguous) as e:
+        return {"error": f"could not resolve {airport!r}", "detail": str(e)}
+    f = _FACTS.get(code)
+    s = getattr(f, "stage_length", None) if f else None
+    if not s:
+        return {"error": f"no stage-length data for {code}"}
+
+    out = {
+        "code": code,
+        "departures_measured": s["departures_with_distance"],
+        "mean_stage_length_statute_miles": s["mean_stage_length_sm"],
+        "share_by_band": s["bands_share"],
+        "long_haul_share": {
+            "at_2500_statute_miles": s["long_haul_share_2500sm"],
+            "at_1500_statute_miles": s["long_haul_share_1500sm"],
+        },
+        "definition_note": ("There is no single definition of long haul. 2,500 sm is roughly "
+                            "the 4,000 km ICAO convention; 1,500 sm is the looser commercial "
+                            "usage. Report which threshold you used."),
+        "scope_warning": ("DOMESTIC flights by reporting US carriers only. International "
+                          "departures are NOT counted."),
+    }
+    if code == "ANC":
+        out["airport_specific_warning"] = (
+            "Anchorage is one of the world's largest CARGO hubs, and its genuinely long-haul "
+            "traffic is international freight to Asia — none of which is in this data. This "
+            "figure describes ANC's domestic passenger operation only. Do not present it as "
+            "the share of all flying at Anchorage.")
+    if note:
+        out["note"] = note
+    return out
+
+
 def estimate_unmet_demand(airport: str) -> dict:
     """Suppressed demand at one airport, as a range with its method and mechanism."""
     from ..scoring.unmet import estimate
@@ -160,6 +203,7 @@ REGISTRY: dict[str, Callable] = {
     "list_region": list_region,
     "get_delay_breakdown": get_delay_breakdown,
     "estimate_unmet_demand": estimate_unmet_demand,
+    "get_stage_length_mix": get_stage_length_mix,
     "rank_airports": rank_airports,
 }
 
@@ -191,6 +235,13 @@ SCHEMAS = [
     {"type": "function", "function": {
         "name": "estimate_unmet_demand",
         "description": "Suppressed demand as a range, with method and physical mechanism.",
+        "parameters": {"type": "object", "properties": {
+            "airport": {"type": "string"}}, "required": ["airport"]}}},
+    {"type": "function", "function": {
+        "name": "get_stage_length_mix",
+        "description": ("How far an airport's departures fly, and the long-haul share at two "
+                        "thresholds. USE THIS for any question about long haul, stage length, "
+                        "sector length or flight distance. Do not estimate these yourself."),
         "parameters": {"type": "object", "properties": {
             "airport": {"type": "string"}}, "required": ["airport"]}}},
     {"type": "function", "function": {

@@ -78,6 +78,12 @@ class AirportFacts:
     # measure, and it is a RATE, so it does not scale with airport size.
     nas_delay_share: float | None = None
     mean_taxi_out_min: float | None = None
+    # Stage-length mix, from the same On-Time Performance file. Descriptive only: it answers
+    # "what kind of flying happens here", not "is this airport constrained", so it is
+    # deliberately NOT a scored KPI. A long-haul airport is not thereby a better or worse
+    # expansion candidate, and folding it into the composite would smuggle in a judgement
+    # the data does not support.
+    stage_length: dict | None = None
 
 
 @dataclass
