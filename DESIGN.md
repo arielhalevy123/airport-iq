@@ -96,6 +96,7 @@ Six KPIs, each a **percentile rank within the airport's hub class**, combined wi
 | **demand_growth** | 2-year passenger CAGR | shared |
 | **international_intensity** | international share; those passengers need ~2× terminal area and dwell | landside |
 | **airside_saturation / headroom** | peak-month departures per usable runway | airside |
+| **delay_congestion** | NAS delay share (0.6) + normalised taxi-out (0.4) | observed |
 
 ### Weights
 
@@ -120,6 +121,48 @@ terminal to pay off) and the congestion profile as **saturation** (weight 0.35: 
 This is what stops the model recommending a terminal at an airport whose bottleneck is runways.
 When airside saturation exceeds the 90th percentile in a terminal query, the output carries an
 explicit flag: *"airside-first: a terminal will not relieve this."*
+
+### Observed congestion beats inferred congestion
+
+FAA ASPM is login-gated, which removes the obvious congestion source. But BTS publishes
+flight-level On-Time Performance at a stable bulk URL, and it carries the metric that actually
+attributes congestion to the *airport*:
+
+    NAS delay share = NASDelay / total delay minutes
+
+NAS delay is National Airspace System delay — volume, capacity, flow control and holding. As
+distinct from `CarrierDelay` (the airline's own problem) and `WeatherDelay` (nobody's fault).
+An airport where NAS delay dominates is one hitting its capacity ceiling. That is **causal**,
+not correlational, and it is a **rate**, so it is not a size proxy.
+
+Combined with mean taxi-out time — the cleanest ground-congestion signal — this became
+`delay_congestion`, weighted 0.35 in the congestion profile. `airside_saturation`, which infers
+capacity from runway *count*, dropped to 0.20 as a consequence: **observation outranks
+inference**, and runway count was always a proxy.
+
+The metric validates itself. Ranking April 2026 by NAS delay share puts EWR (32.5%), JFK (31.6%)
+and LGA (27.8%) at the top — the New York metroplex, the most airspace-constrained region in the
+United States. That is the result you would want from a working measure. SFO shows 25.8 minutes
+mean taxi-out, second only to JFK, with 26.4% of flights delayed 15+ minutes.
+
+One month is committed as a 24 KB aggregate so the reviewer gets real delay data without a 30 MB
+download or a BTS account.
+
+### Conversational follow-up
+
+"Compare LAX and SNA" then "why?" must work. Airports, profile and already-stated assumptions
+carry across turns.
+
+**Numbers deliberately do not.** Every answer re-reads values from the score cards. If a figure
+could be inherited from conversation history, the model could restate a stale or misremembered
+number — reintroducing precisely the hallucination the numeric guard exists to prevent, through
+the back door.
+
+*Why this is not LangGraph:* `agent/session.py` is shaped like a checkpointer — thread id,
+persisted state, a reducer merging each turn. But this pipeline is strictly linear, with no
+branching, cycles or agent handoff, so LangGraph's router would add a dependency and no
+capability, and the repo would stop running on a clean clone. The framework earns its place when
+routing is dynamic. Adding it because it looks good is the scope sprawl this role screens for.
 
 ### Peer-group normalisation — the decision that makes it work
 
@@ -184,9 +227,8 @@ model structurally cannot.
   not a strong signal.
 - **Unmet demand is fundamentally unobservable.** Suppressed demand never appears in the data by
   construction. Any figure here is a proxy with a stated counterfactual.
-- **Delay data is not yet wired in.** BTS On-Time Performance provides `TaxiOut` and `NASDelay`,
-  and `NASDelay ÷ total delay minutes` isolates the airport-attributable share. That is the first
-  thing to add with more time.
+- **Delay data covers one month** (April 2026). A single month is seasonal; a trailing twelve
+  would be more robust and is a straightforward extension of `build_delay_snapshot.py`.
 - **Data lags roughly four months** (currently through 2026-04). Fine for trend analysis; stated
   in every answer.
 
