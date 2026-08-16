@@ -41,9 +41,25 @@ def _load() -> None:
     from airportiq.agent.session import SessionStore
     _SESSIONS = SessionStore()
     from build_and_rank import JET_RUNWAYS, build_facts
-    _FACTS = build_facts(sorted(JET_RUNWAYS))
+    from airportiq import obs
+
+    with obs.span("build_facts", source="bts+snapshot") as sp:
+        _FACTS = build_facts(sorted(JET_RUNWAYS))
+        sp.output(airports=len(_FACTS))
+
+    # The engine is traced from OUT HERE, never from inside. scoring/ stays free of any
+    # network, clock or third-party import, so tests/test_purity.py keeps passing — see
+    # airportiq/obs.py for why that boundary is where the instrumentation belongs.
     for profile in ("terminal_expansion", "congestion"):
-        _CARDS[profile] = score(_FACTS, profile)
+        with obs.span("score", profile=profile, airports=len(_FACTS)) as sp:
+            _CARDS[profile] = score(_FACTS, profile)
+            cards = _CARDS[profile]
+            sp.output(
+                scored=len(cards),
+                incomplete=sum(1 for c in cards if c.missing),
+                flagged=sum(1 for c in cards if c.flags),
+                top=[c.code for c in cards[:5]],
+            )
 
 
 _CODE_RE = re.compile(r'"(?:airport|airports)"\s*:\s*(?:"([^"]+)"|\[([^\]]*)\])')
@@ -99,6 +115,13 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
+        # The UI is a string baked into the Python module, so it changes whenever the server
+        # is restarted with new code — but the browser has no way to know that and will
+        # happily re-serve the page it already has. The failure that causes is nasty to
+        # diagnose: the server is running the new build, curl proves the new endpoint works,
+        # and the tab in front of you is still the old app calling the old route.
+        if "html" in ctype:
+            self.send_header("Cache-Control", "no-store, must-revalidate")
         self.end_headers()
         self.wfile.write(body)
 

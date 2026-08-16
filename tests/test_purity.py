@@ -5,7 +5,7 @@ ranking logic (not only LLM output)". The separation is not a convention or a co
 it is a failing build. Walk the AST of every module under scoring/ and reject any import
 that could introduce nondeterminism, a network call, or an LLM.
 
-Run: python -m pytest tests/ -q     (or just: python tests/test_purity.py)
+Run: python run_tests.py     (or just: python tests/test_purity.py)
 """
 from __future__ import annotations
 
@@ -110,3 +110,31 @@ if __name__ == "__main__":
     test_scoring_is_deterministic()
     test_missing_data_is_not_zero()
     print("all purity/determinism tests passed")
+
+
+def test_scoring_does_not_import_the_tracer() -> None:
+    """Observability is wired at the boundary, never inside the engine.
+
+    airportiq.obs is optional-Langfuse and therefore touches the network and the clock.
+    If it ever leaks into scoring/, the purity guarantee is gone — so name it explicitly
+    rather than relying on it happening to look like a safe import."""
+    violations = [
+        f"{p.name} imports {i!r}"
+        for p in sorted(SCORING.rglob("*.py"))
+        for i in _imports(p)
+        if i.split(".")[-1] == "obs" or i in {"airportiq.obs", "obs"}
+    ]
+    assert not violations, (
+        "The scoring engine must not import the tracer; trace it from the caller.\n"
+        + "\n".join(f"  - {v}" for v in violations)
+    )
+
+
+def test_tracer_is_optional_and_fails_open() -> None:
+    """With no Langfuse keys the tracer must be a silent no-op, not an error. CI installs
+    nothing, so this is the configuration the build actually runs in."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+    from airportiq import obs
+    with obs.span("unit-test", profile="congestion") as sp:
+        sp.output(scored=0)
+    assert obs.status() in ("off", "on") or obs.status().startswith("error:")
