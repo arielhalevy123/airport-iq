@@ -42,12 +42,15 @@ PROFILES: dict[str, dict[str, float]] = {
     },
     # Airside. Same runway measure as above but with the POLARITY FLIPPED: spare runway is
     # a precondition for terminal ROI, whereas runway saturation *is* congestion.
+    # delay_congestion is OBSERVED congestion; airside_saturation is INFERRED from runway
+    # count. Observation outranks inference, so the observed measure takes the plurality and
+    # the inferred one drops to 0.20. Still no weight above 0.40.
     "congestion": {
-        "airside_saturation": 0.35,
-        "demand_growth": 0.20,
+        "delay_congestion": 0.35,
+        "airside_saturation": 0.20,
+        "demand_growth": 0.15,
         "peak_pressure": 0.15,
         "gate_saturation": 0.15,
-        "international_intensity": 0.15,
     },
 }
 
@@ -69,6 +72,12 @@ class AirportFacts:
     jet_runways: int | None = None
     peak_month_departures: float | None = None
     regulatory_cap: str | None = None      # e.g. "SNA: noise curfew + passenger cap"
+    # From BTS On-Time Performance. nas_delay_share is the fraction of this airport's delay
+    # attributable to the National Airspace System - volume and capacity - as opposed to
+    # carrier or weather delay. It is the closest thing in open data to a causal congestion
+    # measure, and it is a RATE, so it does not scale with airport size.
+    nas_delay_share: float | None = None
+    mean_taxi_out_min: float | None = None
 
 
 @dataclass
@@ -130,7 +139,25 @@ def _airside_saturation(a: AirportFacts) -> float | None:
     return (a.peak_month_departures / 30.0) / (a.jet_runways * 30.0)
 
 
+def _delay_congestion(a: AirportFacts) -> float | None:
+    """Observed congestion, from delay causes rather than inferred from runway counts.
+
+    Combines the share of delay attributable to the airspace system with taxi-out time.
+    Both are rates, so neither is a size proxy: a small airport with a full runway scores
+    high, and a huge airport with plenty of capacity does not.
+    """
+    if a.nas_delay_share is None and a.mean_taxi_out_min is None:
+        return None
+    parts, weights = [], []
+    if a.nas_delay_share is not None:
+        parts.append(a.nas_delay_share); weights.append(0.6)
+    if a.mean_taxi_out_min is not None:
+        parts.append(min(a.mean_taxi_out_min / 30.0, 1.0)); weights.append(0.4)
+    return sum(p * w for p, w in zip(parts, weights)) / sum(weights)
+
+
 KPI_FUNCS = {
+    "delay_congestion": _delay_congestion,
     "peak_pressure": _peak_pressure,
     "gate_saturation": _gate_saturation,
     "demand_growth": _demand_growth,
