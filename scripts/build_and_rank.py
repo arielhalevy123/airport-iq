@@ -47,7 +47,17 @@ JET_RUNWAYS = {
 }
 
 
+def _load_delays() -> dict[str, dict]:
+    """Per-airport delay metrics from the committed BTS On-Time snapshot."""
+    import json
+    p = Path(__file__).resolve().parents[1] / "data" / "snapshots" / "bts_delays.json"
+    if not p.exists():
+        return {}
+    return json.loads(p.read_text()).get("airports", {})
+
+
 def build_facts(codes: list[str]) -> list[AirportFacts]:
+    delays = _load_delays()
     facts: list[AirportFacts] = []
     for code in codes:
         rows = bts.monthly(code, months=36)
@@ -85,6 +95,8 @@ def build_facts(codes: list[str]) -> list[AirportFacts]:
             jet_runways=JET_RUNWAYS.get(code),
             peak_month_departures=max((r["departures"] or 0) for r in ttm),
             regulatory_cap=REGULATORY_CAPS.get(code),
+            nas_delay_share=(delays.get(code) or {}).get("nas_delay_share"),
+            mean_taxi_out_min=(delays.get(code) or {}).get("mean_taxi_out_min"),
         ))
     return facts
 

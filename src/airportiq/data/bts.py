@@ -22,6 +22,7 @@ separate arrivals block that is NOT part of the total. Summing everything matchi
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import time
 import urllib.parse
@@ -50,7 +51,10 @@ def _get(params: dict) -> list[dict]:
     """One SODA request, with an on-disk cache keyed by the query."""
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     qs = urllib.parse.urlencode(params)
-    key = str(abs(hash(qs)))
+    # sha1, NOT the builtin hash(). Python randomises hash() per process (PYTHONHASHSEED),
+    # so a hash()-keyed cache silently never hits across runs - every invocation re-fetches
+    # everything. Took a server that would not start to notice.
+    key = hashlib.sha1(qs.encode()).hexdigest()[:16]
     cached = CACHE_DIR / f"bts_{key}.json"
     if cached.exists() and (time.time() - cached.stat().st_mtime) < CACHE_TTL_SEC:
         return json.loads(cached.read_text())
