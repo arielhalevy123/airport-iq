@@ -103,8 +103,8 @@ Six KPIs, each a **percentile rank within the airport's hub class**, combined wi
 **terminal_expansion** — peak_pressure 0.35, gate_saturation 0.20, demand_growth 0.20,
 international_intensity 0.15, airside_headroom 0.10
 
-**congestion** — airside_saturation 0.35, demand_growth 0.20, peak_pressure 0.15,
-gate_saturation 0.15, international_intensity 0.15
+**congestion** — delay_congestion 0.35, airside_saturation 0.20, demand_growth 0.15,
+peak_pressure 0.15, gate_saturation 0.15
 
 `peak_pressure` leads the terminal profile because terminals are sized on peak-hour design-day
 flow (IATA ADRM), not annual totals — so the metric closest to the design condition carries the
