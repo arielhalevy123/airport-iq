@@ -24,13 +24,13 @@ from dataclasses import dataclass, field
 from . import llm, resolve
 from .session import Session, Turn, is_followup
 
-INTENTS = ("rank", "compare", "metric", "explain", "unsupported")
+INTENTS = ("rank", "compare", "metric", "explain", "unmet_demand", "unsupported")
 
 _PARSE_SYSTEM = """You convert an aviation analyst's question into a JSON plan. Output ONLY JSON.
 
 Schema:
 {
-  "intent": "rank" | "compare" | "metric" | "explain" | "unsupported",
+  "intent": "rank" | "compare" | "metric" | "explain" | "unmet_demand" | "unsupported",
   "entities": ["surface strings exactly as the user wrote them"],
   "region": "region name if one is named, else null",
   "profile": "terminal_expansion" | "congestion",
@@ -42,8 +42,11 @@ Rules you must follow:
 - Copy entity strings VERBATIM. Do not convert names to airport codes. That is done elsewhere.
 - "terminal expansion" or anything about gates/terminals -> profile "terminal_expansion".
 - "congestion", "delays", "capacity" -> profile "congestion".
-- If the question needs data we do not have (construction cost, ticket prices, ROI, staffing),
-  return intent "unsupported" with a reason. Do not guess."""
+- "unmet demand", "suppressed demand", "demand we are not serving" -> intent "unmet_demand".
+  This IS answerable: it is estimated from load factor, delay attribution and aircraft
+  upgauging. Do not mark it unsupported.
+- If the question needs data we genuinely do not have (construction cost, ticket prices, ROI,
+  staffing, gate counts), return intent "unsupported" with a reason. Do not guess."""
 
 
 @dataclass
@@ -164,6 +167,24 @@ def answer(question: str, cards: list, facts_by_code: dict,
 
     assumptions: list[str] = []
     by_code = {c.code: c for c in cards}
+
+    # Unmet demand is answered by a dedicated deterministic analysis, not by the narrator.
+    # It needs a number AND a mechanism, and both must be traceable.
+    if plan["intent"] == "unmet_demand":
+        from ..scoring.unmet import estimate, render
+        codes, notes = resolve.resolve_many(plan.get("entities") or [])
+        assumptions.extend(notes)
+        parts = []
+        for code in codes:
+            card, f = by_code.get(code), facts_by_code.get(code)
+            if card and f:
+                parts.append(render(estimate(card, f)))
+        if parts:
+            if session is not None:
+                session.add(Turn(question=question, intent="unmet_demand",
+                                 codes=codes, profile=plan["profile"]))
+            return Answer(text="\n\n".join(parts), intent="unmet_demand",
+                          assumptions=assumptions)
 
     # Deterministic resolution — never the model's job.
     if plan.get("region"):
