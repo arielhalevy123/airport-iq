@@ -140,10 +140,13 @@ def run_streaming(question: str, cards: list, facts_by_code: dict,
         reply = None
         for kind, payload in llm.stream_with_tools(messages, tools.SCHEMAS, temperature=0.0):
             if kind == "delta":
-                # Prose arriving alongside tool calls is the model thinking out loud
-                # mid-plan; only forward it once we know this is the final answer, which
-                # we do not know until the stream ends. So buffer, then decide.
+                # Forward prose live rather than buffering to the end of the round. Buffering
+                # meant "streaming" showed nothing until the answer was already complete.
+                # Rounds with tool calls occasionally emit a short "let me check…" preamble
+                # before the tool_call arrives — the client resets the answer buffer on
+                # tool_call so that reasoning text does not pollute the final prose.
                 answer_parts.append(payload)
+                yield ("delta", payload)
             else:
                 reply = payload
 
@@ -151,8 +154,6 @@ def run_streaming(question: str, cards: list, facts_by_code: dict,
 
         if not calls:
             text = "".join(answer_parts).strip() or (reply or {}).get("content") or ""
-            for part in answer_parts:
-                yield ("delta", part)
             yield ("done", {"answer": text, "trace": trace,
                             "rounds": round_no + 1, "tool_calls": total_calls})
             return
