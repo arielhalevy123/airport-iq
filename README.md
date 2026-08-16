@@ -2,20 +2,55 @@
 
 An agent that ranks US airports as candidates for capacity investment, from public aviation data.
 
+![AirportIQ demo](docs/images/demo.gif)
+
 Ask it questions like:
 
 - *Which airports in New England are strong candidates for terminal expansion?*
 - *Compare LA and Santa Ana airport congestion levels.*
+- *What percentage of flights out of Anchorage are long haul?*
 - *What is the unmet flight demand at SFO and why?*
+
+## What it looks like
+
+**The tool calls are streamed live, as the agent decides to make them.** The interesting
+latency here is not token generation, it is the agent going away to query things — so that is
+what the interface shows. You watch it resolve the region *before* ranking, rather than staring
+at a spinner.
+
+![Streaming tool trace and scorecards](docs/images/02-streaming-trace.jpg)
+
+**Every answer carries the engine's own numbers.** The percentile bars beneath the prose come
+straight from the deterministic scoring engine, so the sentence can be checked against the data
+that produced it in one glance. The panel is built server-side from the *tool-call arguments* —
+never by parsing the model's text, which would agree with itself by construction.
+
+Amber is reserved exclusively for constraint flags. An amber card means that airport is legally
+or physically capped, which changes the recommendation no matter how good its other metrics look:
+
+![Scorecards, with a legally capped airport flagged](docs/images/04-scorecards-capped.jpg)
+
+**Uncertainty is stated, not buried.** "Long haul" has no single definition, so both thresholds
+are always returned — the answer nearly doubles between them, and hiding that would let the
+threshold masquerade as a finding. The domestic-only scope caveat matters most at exactly the
+airport being asked about, since Anchorage's real long-haul traffic is international freight:
+
+![Anchorage long-haul answer with both thresholds](docs/images/03-anchorage-long-haul.jpg)
 
 ## Run it
 
 ```bash
 python scripts/build_and_rank.py --profile terminal_expansion   # no LLM, no API key needed
+python run_tests.py                                             # 32 tests, no framework needed
 cp .env.example .env                                            # add ONE key for the chat agent
+python -m airportiq.api.server                                  # then open http://localhost:8000
 python scripts/ask.py "Which New England airports need terminal expansion?"
-pytest tests/ -q                                                # or: python tests/test_purity.py
 ```
+
+There is deliberately **no test framework**. This project claims to run on a clean clone with
+nothing installed, and a `pytest` dependency would falsify that claim in the one place it would
+be most embarrassing — the suite that exists to verify it. `run_tests.py` is forty lines of
+stdlib. CI runs the same command on Python 3.10 through 3.13.
 
 `build_and_rank.py` runs with **no API key at all** — the scoring path contains no model.
 A committed snapshot (`data/snapshots/`) means it also runs with **no network**.
@@ -59,6 +94,21 @@ domestic_passengers + outbound_international_1 = total_passengers    (exact)
 `total_*` is departure-based (≈ enplanements). `inbound_international_*` is a **separate arrivals
 block, not part of the total**. Summing everything matching "international" inflates SFO by
 about a third.
+
+## Interface
+
+Plain HTML/CSS/JS — no build step, no CDN, no npm install before a reviewer can see anything.
+
+- **Streaming** over Server-Sent Events. Tool calls appear as they happen; the answer streams in
+  token by token.
+- **Voice** via the browser's own Web Speech API — no key, no cloud STT vendor, no dependency.
+  Each leg is feature-detected separately, so a browser with synthesis but not recognition gets
+  spoken answers rather than a dead microphone.
+  One deliberate asymmetry: voice *input* is the whole question, but voice *output* is the prose
+  answer only. The trace and the caveats are never read aloud — reading a list of caveats aloud
+  is how a listener stops hearing them.
+- **`/v1/score`** returns the full ranking with **no API key and no model involved at all**, so
+  every figure the agent quotes can be reproduced independently.
 
 ## What it does not do
 

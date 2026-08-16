@@ -150,6 +150,21 @@ INDEX = """<!doctype html>
  button:disabled{opacity:.45;cursor:default}
  .thinking{color:var(--muted);font-style:italic}
 
+ /* live tool trace, streamed */
+ .live{margin-bottom:2px}
+ .live:empty{display:none}
+ .step{display:flex;align-items:center;gap:8px;padding:3px 0;
+       font:11.5px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+       animation:slide .18s ease-out}
+ @keyframes slide{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+ .dot{width:5px;height:5px;border-radius:50%;background:var(--line);flex:none}
+ .step.run .dot{background:var(--accent);animation:pulse 1s ease-in-out infinite}
+ .step.run{color:var(--accent)}
+ .step.ok .dot{background:var(--ok)}
+ .cursor{display:inline-block;width:7px;height:14px;vertical-align:-2px;margin-left:2px;
+         background:var(--accent);animation:blink .9s step-end infinite}
+ @keyframes blink{50%{opacity:0}}
+
  /* voice */
  .icon{padding:11px 13px;background:var(--panel);color:var(--muted);
        border:1px solid var(--line);border-radius:3px;font-size:15px;line-height:1}
@@ -251,6 +266,10 @@ function scorecards(list){
   return grid;
 }
 
+/* Streamed turn. The interesting latency here is the TOOL CALLS, not token generation:
+   the model thinks, queries, thinks again. A spinner hides precisely the part worth
+   watching, so each tool call appears live as the agent decides to make it. The wait
+   becomes the demonstration. */
 function ask(ev){
   if (ev) ev.preventDefault();
   const text = q.value.trim();
@@ -262,17 +281,85 @@ function ask(ev){
 
   const wrap = el('div','msg');
   const bot = el('div','bot');
-  const pending = el('p','thinking','analysing…');
-  bot.appendChild(pending); wrap.appendChild(bot); log.appendChild(wrap);
-  window.scrollTo(0, document.body.scrollHeight);
+  const live = el('div','live');            // tool calls, as they happen
+  const para = el('p');                     // the answer, as it streams
+  para.appendChild(el('span','cursor',''));
+  bot.appendChild(live); bot.appendChild(para);
+  wrap.appendChild(bot); log.appendChild(wrap);
+  const stick = () => window.scrollTo(0, document.body.scrollHeight);
+  stick();
 
-  fetch('/v1/chat', {method:'POST', headers:{'content-type':'application/json'},
-                     body: JSON.stringify({question:text, session_id:SID})})
-    .then(r => r.json())
-    .then(d => {
-      bot.innerHTML = '';
-      const answer = d.answer || d.error || '(no answer)';
-      answer.split(/\\n\\n+/).forEach(par => bot.appendChild(el('p',null,par)));
+  const step = (label, cls) => {
+    const row = el('div','step ' + (cls||''));
+    row.appendChild(el('span','dot',''));
+    row.appendChild(el('span',null,label));
+    live.appendChild(row); stick();
+    return row;
+  };
+  const thinking = step('reasoning…','run');
+
+  let answer = '', done = null;
+
+  fetch('/v1/chat/stream', {method:'POST', headers:{'content-type':'application/json'},
+                            body: JSON.stringify({question:text, session_id:SID})})
+    .then(resp => {
+      const reader = resp.body.getReader();
+      const dec = new TextDecoder();
+      let buf = '';
+
+      // Minimal SSE parser. EventSource cannot be used because it is GET-only and the
+      // question travels in a POST body.
+      const pump = () => reader.read().then(({done:fin, value}) => {
+        if (fin) return;
+        buf += dec.decode(value, {stream:true});
+        let i;
+        while ((i = buf.indexOf('\\n\\n')) !== -1){
+          const frame = buf.slice(0, i); buf = buf.slice(i + 2);
+          const ev = (frame.match(/^event: (.*)$/m) || [])[1];
+          const dm = frame.match(/^data: (.*)$/m);
+          if (!ev || !dm) continue;
+          // Never swallow a frame silently: a dropped 'done' loses the trace and the
+          // scorecards while the answer still renders, which looks like a UI that simply
+          // does not have those features rather than one that failed.
+          let d;
+          try { d = JSON.parse(dm[1]); }
+          catch(err){ console.error('[airportiq] bad SSE frame', ev, err, dm[1]); continue; }
+          handle(ev, d);
+        }
+        return pump();
+      });
+
+      const handle = (ev, d) => {
+        if (ev === 'tool_call'){
+          thinking.remove();
+          step(d.tool + ' ' + shortArgs(d.args), 'run');
+        } else if (ev === 'tool_result'){
+          const rows = live.querySelectorAll('.step.run');
+          const last = rows[rows.length-1];
+          if (last){ last.classList.remove('run'); last.classList.add('ok'); }
+          if (d.cached) step(d.tool + '  (cached)','ok');
+        } else if (ev === 'delta'){
+          thinking.remove();
+          answer += d;
+          para.textContent = answer;
+          para.appendChild(el('span','cursor',''));
+          stick();
+        } else if (ev === 'error'){
+          thinking.remove();
+          para.textContent = 'error: ' + d.error;
+        } else if (ev === 'done'){
+          done = d;
+        }
+      };
+
+      return pump();
+    })
+    .then(() => {
+      thinking.remove();
+      const d = done || {};
+      bot.removeChild(para);
+      const finalText = (d.answer || answer || '(no answer)');
+      finalText.split(/\\n\\n+/).forEach(par => bot.appendChild(el('p',null,par)));
 
       if (d.intent === 'unsupported')
         bot.querySelector('p').appendChild(el('span','badge warn','outside the data'));
@@ -309,11 +396,24 @@ function ask(ev){
 
       // Speak the finding only. The trace and the caveats stay on screen — see the
       // module docstring for why they are deliberately never read aloud.
-      if (speakOn && d.answer) speak(d.answer);
+      if (speakOn && finalText) speak(finalText);
     })
-    .catch(e => { bot.innerHTML=''; bot.appendChild(el('p',null,'error: '+e)); })
-    .finally(() => { go.disabled=false; q.focus();
-                     window.scrollTo(0, document.body.scrollHeight); });
+    // para may already have been detached by the finaliser, so an error written only
+    // there would be invisible. Log it and put it somewhere still on screen.
+    .catch(e => {
+      console.error('[airportiq] turn failed:', e);
+      const p = el('p',null,'error: ' + (e && e.message ? e.message : e));
+      bot.appendChild(p);
+    })
+    .finally(() => { go.disabled=false; q.focus(); stick(); });
+}
+
+function shortArgs(s){
+  try {
+    const o = JSON.parse(s || '{}');
+    const v = o.airport || o.region || (o.airports||[]).join(', ') || o.profile || '';
+    return v ? '· ' + v : '';
+  } catch(e){ return ''; }
 }
 
 /* ---------------------------------------------------------------- voice ---

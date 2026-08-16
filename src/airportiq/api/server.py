@@ -105,6 +105,33 @@ class Handler(BaseHTTPRequestHandler):
     def _json(self, code: int, obj: dict) -> None:
         self._send(code, json.dumps(obj, indent=1).encode(), "application/json")
 
+    def _sse_open(self) -> None:
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream")
+        self.send_header("Cache-Control", "no-cache")
+        # MUST be close, not keep-alive. An SSE response has no Content-Length, so the
+        # only thing that tells the client the body has ended is the socket closing. On
+        # keep-alive the browser's reader never reports done: the answer streams in and
+        # renders, but the code that runs *after* the stream — trace, scorecards, and
+        # re-enabling the input — simply never fires. It fails as a missing feature
+        # rather than as an error, which is why it survived a first round of testing.
+        self.send_header("Connection", "close")
+        # Without this a reverse proxy will happily buffer the whole stream and deliver
+        # it as one lump, which looks exactly like streaming being broken.
+        self.send_header("X-Accel-Buffering", "no")
+        self.end_headers()
+        self.close_connection = True
+
+    def _sse(self, event: str, data: dict) -> bool:
+        """Write one SSE frame. Returns False once the client has gone away."""
+        try:
+            payload = f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+            self.wfile.write(payload.encode("utf-8"))
+            self.wfile.flush()
+            return True
+        except (BrokenPipeError, ConnectionResetError):
+            return False
+
     def log_message(self, *args) -> None:      # quieter console
         pass
 
@@ -135,6 +162,34 @@ class Handler(BaseHTTPRequestHandler):
                              "flags": c.flags, "missing": c.missing}
                             for c in cards[:20]],
             })
+
+        if self.path == "/v1/chat/stream":
+            question = (payload.get("question") or "").strip()
+            if not question:
+                return self._json(400, {"error": "question is required"})
+
+            by_code = {f.code: f for f in _FACTS}
+            self._sse_open()
+            try:
+                from airportiq.agent import react
+                saw_region = False
+                for kind, data in react.run_streaming(question, _CARDS["congestion"], by_code):
+                    if kind == "tool_result" and "list_region" in data.get("tool", ""):
+                        saw_region = True
+                    if kind == "done":
+                        assumptions = []
+                        if saw_region:
+                            assumptions.append("Region membership resolved deterministically, "
+                                               "not inferred by the model.")
+                        data = {**data, "assumptions": assumptions,
+                                "scorecards": _scorecards_for(data.get("trace") or [])}
+                    if not self._sse(kind, data):
+                        return                       # client navigated away mid-answer
+            except Exception as e:                   # noqa: BLE001
+                # The stream is already open, so an error has to travel as an event —
+                # a 500 status cannot be sent after the headers have gone out.
+                self._sse("error", {"error": f"{type(e).__name__}: {e}"})
+            return
 
         if self.path == "/v1/chat":
             # Attach the engine's own scorecards for whichever airports the turn touched.

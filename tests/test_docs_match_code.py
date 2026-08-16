@@ -42,3 +42,26 @@ if __name__ == "__main__":
         if name.startswith("test_"):
             fn(); print(f"  ok  {name}")
     print("docs match code")
+
+
+def test_readme_images_all_exist():
+    """A README that renders a broken-image icon on GitHub is worse than one with no
+    images at all — it reads as an unfinished project. Cheap to check, so check it."""
+    import re
+    root = Path(__file__).resolve().parents[1]
+    readme = (root / "README.md").read_text()
+    refs = re.findall(r"!\[[^\]]*\]\(([^)]+)\)", readme)
+    assert refs, "the README should carry at least one screenshot"
+    missing = [r for r in refs if not (root / r).is_file()]
+    assert not missing, f"README references images that do not exist: {missing}"
+
+
+def test_readme_does_not_promise_a_test_framework():
+    """The zero-dependency claim and the documented test command have to agree. They did
+    not once: the README said `pytest tests/ -q` while the project claimed to run on a
+    clean clone with nothing installed."""
+    root = Path(__file__).resolve().parents[1]
+    for line in (root / "README.md").read_text().splitlines():
+        stripped = line.strip()
+        if stripped.startswith(("python", "$", "pytest")) and "pytest" in stripped:
+            raise AssertionError(f"README tells the reader to run pytest: {stripped!r}")
