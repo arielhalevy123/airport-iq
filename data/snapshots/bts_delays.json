@@ -1,0 +1,1061 @@
+{
+ "period": "2026-04",
+ "airports": {
+  "GSP": {
+   "flights": 1120,
+   "mean_taxi_out_min": 15.95,
+   "nas_delay_share": 0.1773,
+   "pct_delayed_15": 0.1152,
+   "cancel_rate": 0.0134,
+   "total_delay_minutes": 11708
+  },
+  "STL": {
+   "flights": 5156,
+   "mean_taxi_out_min": 12.1,
+   "nas_delay_share": 0.2082,
+   "pct_delayed_15": 0.2073,
+   "cancel_rate": 0.008,
+   "total_delay_minutes": 69214
+  },
+  "LGA": {
+   "flights": 11443,
+   "mean_taxi_out_min": 25.72,
+   "nas_delay_share": 0.2777,
+   "pct_delayed_15": 0.218,
+   "cancel_rate": 0.0095,
+   "total_delay_minutes": 192839
+  },
+  "MSP": {
+   "flights": 9639,
+   "mean_taxi_out_min": 17.42,
+   "nas_delay_share": 0.24,
+   "pct_delayed_15": 0.1415,
+   "cancel_rate": 0.0075,
+   "total_delay_minutes": 112522
+  },
+  "MSY": {
+   "flights": 4428,
+   "mean_taxi_out_min": 15.12,
+   "nas_delay_share": 0.2164,
+   "pct_delayed_15": 0.1949,
+   "cancel_rate": 0.0065,
+   "total_delay_minutes": 59678
+  },
+  "LAS": {
+   "flights": 14672,
+   "mean_taxi_out_min": 17.47,
+   "nas_delay_share": 0.1706,
+   "pct_delayed_15": 0.2574,
+   "cancel_rate": 0.004,
+   "total_delay_minutes": 180955
+  },
+  "CLT": {
+   "flights": 15396,
+   "mean_taxi_out_min": 20.92,
+   "nas_delay_share": 0.1615,
+   "pct_delayed_15": 0.2135,
+   "cancel_rate": 0.0023,
+   "total_delay_minutes": 221250
+  },
+  "DEN": {
+   "flights": 25345,
+   "mean_taxi_out_min": 19.17,
+   "nas_delay_share": 0.193,
+   "pct_delayed_15": 0.1849,
+   "cancel_rate": 0.0027,
+   "total_delay_minutes": 272005
+  },
+  "SLC": {
+   "flights": 9877,
+   "mean_taxi_out_min": 18.3,
+   "nas_delay_share": 0.2313,
+   "pct_delayed_15": 0.1383,
+   "cancel_rate": 0.0038,
+   "total_delay_minutes": 100847
+  },
+  "MEM": {
+   "flights": 2146,
+   "mean_taxi_out_min": 13.99,
+   "nas_delay_share": 0.1503,
+   "pct_delayed_15": 0.1836,
+   "cancel_rate": 0.0098,
+   "total_delay_minutes": 33286
+  },
+  "BOS": {
+   "flights": 12626,
+   "mean_taxi_out_min": 19.76,
+   "nas_delay_share": 0.265,
+   "pct_delayed_15": 0.2019,
+   "cancel_rate": 0.0031,
+   "total_delay_minutes": 172959
+  },
+  "SEA": {
+   "flights": 12864,
+   "mean_taxi_out_min": 19.56,
+   "nas_delay_share": 0.2523,
+   "pct_delayed_15": 0.1543,
+   "cancel_rate": 0.0017,
+   "total_delay_minutes": 114830
+  },
+  "ATL": {
+   "flights": 26607,
+   "mean_taxi_out_min": 16.41,
+   "nas_delay_share": 0.2058,
+   "pct_delayed_15": 0.1686,
+   "cancel_rate": 0.01,
+   "total_delay_minutes": 295899
+  },
+  "MIA": {
+   "flights": 9556,
+   "mean_taxi_out_min": 22.06,
+   "nas_delay_share": 0.2121,
+   "pct_delayed_15": 0.2319,
+   "cancel_rate": 0.003,
+   "total_delay_minutes": 154917
+  },
+  "FLL": {
+   "flights": 8610,
+   "mean_taxi_out_min": 19.72,
+   "nas_delay_share": 0.2581,
+   "pct_delayed_15": 0.2877,
+   "cancel_rate": 0.0106,
+   "total_delay_minutes": 181134
+  },
+  "IAH": {
+   "flights": 10022,
+   "mean_taxi_out_min": 20.59,
+   "nas_delay_share": 0.2415,
+   "pct_delayed_15": 0.1871,
+   "cancel_rate": 0.0057,
+   "total_delay_minutes": 143133
+  },
+  "DTW": {
+   "flights": 10417,
+   "mean_taxi_out_min": 18.01,
+   "nas_delay_share": 0.2417,
+   "pct_delayed_15": 0.1607,
+   "cancel_rate": 0.0127,
+   "total_delay_minutes": 136754
+  },
+  "OGG": {
+   "flights": 2155,
+   "mean_taxi_out_min": 10.68,
+   "nas_delay_share": 0.0844,
+   "pct_delayed_15": 0.1777,
+   "cancel_rate": 0.0037,
+   "total_delay_minutes": 20751
+  },
+  "MCI": {
+   "flights": 4184,
+   "mean_taxi_out_min": 13.48,
+   "nas_delay_share": 0.1941,
+   "pct_delayed_15": 0.1926,
+   "cancel_rate": 0.0098,
+   "total_delay_minutes": 55914
+  },
+  "JFK": {
+   "flights": 8254,
+   "mean_taxi_out_min": 27.46,
+   "nas_delay_share": 0.3161,
+   "pct_delayed_15": 0.1593,
+   "cancel_rate": 0.0024,
+   "total_delay_minutes": 96632
+  },
+  "ICT": {
+   "flights": 993,
+   "mean_taxi_out_min": 15.91,
+   "nas_delay_share": 0.3012,
+   "pct_delayed_15": 0.2004,
+   "cancel_rate": 0.0232,
+   "total_delay_minutes": 19152
+  },
+  "PBI": {
+   "flights": 3067,
+   "mean_taxi_out_min": 19.84,
+   "nas_delay_share": 0.2329,
+   "pct_delayed_15": 0.2468,
+   "cancel_rate": 0.0062,
+   "total_delay_minutes": 68127
+  },
+  "PNS": {
+   "flights": 1282,
+   "mean_taxi_out_min": 14.0,
+   "nas_delay_share": 0.1755,
+   "pct_delayed_15": 0.1778,
+   "cancel_rate": 0.0078,
+   "total_delay_minutes": 18930
+  },
+  "EWR": {
+   "flights": 10358,
+   "mean_taxi_out_min": 22.16,
+   "nas_delay_share": 0.3254,
+   "pct_delayed_15": 0.1383,
+   "cancel_rate": 0.0069,
+   "total_delay_minutes": 103411
+  },
+  "LAX": {
+   "flights": 15732,
+   "mean_taxi_out_min": 17.91,
+   "nas_delay_share": 0.2165,
+   "pct_delayed_15": 0.1883,
+   "cancel_rate": 0.0044,
+   "total_delay_minutes": 193564
+  },
+  "RNO": {
+   "flights": 1631,
+   "mean_taxi_out_min": 17.54,
+   "nas_delay_share": 0.3132,
+   "pct_delayed_15": 0.1833,
+   "cancel_rate": 0.0043,
+   "total_delay_minutes": 18969
+  },
+  "MCO": {
+   "flights": 14604,
+   "mean_taxi_out_min": 19.51,
+   "nas_delay_share": 0.2507,
+   "pct_delayed_15": 0.2247,
+   "cancel_rate": 0.0039,
+   "total_delay_minutes": 210127
+  },
+  "SFO": {
+   "flights": 12401,
+   "mean_taxi_out_min": 25.82,
+   "nas_delay_share": 0.2136,
+   "pct_delayed_15": 0.2638,
+   "cancel_rate": 0.007,
+   "total_delay_minutes": 207630
+  },
+  "ALB": {
+   "flights": 1141,
+   "mean_taxi_out_min": 14.32,
+   "nas_delay_share": 0.2574,
+   "pct_delayed_15": 0.1437,
+   "cancel_rate": 0.0114,
+   "total_delay_minutes": 12708
+  },
+  "CHS": {
+   "flights": 2167,
+   "mean_taxi_out_min": 16.77,
+   "nas_delay_share": 0.1853,
+   "pct_delayed_15": 0.1892,
+   "cancel_rate": 0.0074,
+   "total_delay_minutes": 33855
+  },
+  "SNA": {
+   "flights": 3686,
+   "mean_taxi_out_min": 16.17,
+   "nas_delay_share": 0.2732,
+   "pct_delayed_15": 0.1991,
+   "cancel_rate": 0.0081,
+   "total_delay_minutes": 46890
+  },
+  "RSW": {
+   "flights": 3632,
+   "mean_taxi_out_min": 16.44,
+   "nas_delay_share": 0.2685,
+   "pct_delayed_15": 0.1878,
+   "cancel_rate": 0.0069,
+   "total_delay_minutes": 57762
+  },
+  "ORD": {
+   "flights": 33206,
+   "mean_taxi_out_min": 29.2,
+   "nas_delay_share": 0.2108,
+   "pct_delayed_15": 0.2564,
+   "cancel_rate": 0.0354,
+   "total_delay_minutes": 754911
+  },
+  "ECP": {
+   "flights": 923,
+   "mean_taxi_out_min": 13.4,
+   "nas_delay_share": 0.1477,
+   "pct_delayed_15": 0.1831,
+   "cancel_rate": 0.013,
+   "total_delay_minutes": 12057
+  },
+  "SAT": {
+   "flights": 3384,
+   "mean_taxi_out_min": 13.5,
+   "nas_delay_share": 0.2347,
+   "pct_delayed_15": 0.1681,
+   "cancel_rate": 0.0074,
+   "total_delay_minutes": 41332
+  },
+  "BZN": {
+   "flights": 717,
+   "mean_taxi_out_min": 18.83,
+   "nas_delay_share": 0.2067,
+   "pct_delayed_15": 0.1562,
+   "cancel_rate": 0.0028,
+   "total_delay_minutes": 11381
+  },
+  "CVG": {
+   "flights": 2835,
+   "mean_taxi_out_min": 15.02,
+   "nas_delay_share": 0.2297,
+   "pct_delayed_15": 0.1478,
+   "cancel_rate": 0.0102,
+   "total_delay_minutes": 41359
+  },
+  "TPA": {
+   "flights": 6952,
+   "mean_taxi_out_min": 15.15,
+   "nas_delay_share": 0.1979,
+   "pct_delayed_15": 0.1926,
+   "cancel_rate": 0.0049,
+   "total_delay_minutes": 86185
+  },
+  "AUS": {
+   "flights": 7647,
+   "mean_taxi_out_min": 15.98,
+   "nas_delay_share": 0.2059,
+   "pct_delayed_15": 0.2254,
+   "cancel_rate": 0.0059,
+   "total_delay_minutes": 118651
+  },
+  "ABQ": {
+   "flights": 1969,
+   "mean_taxi_out_min": 15.54,
+   "nas_delay_share": 0.1861,
+   "pct_delayed_15": 0.162,
+   "cancel_rate": 0.0056,
+   "total_delay_minutes": 21301
+  },
+  "BNA": {
+   "flights": 9617,
+   "mean_taxi_out_min": 16.86,
+   "nas_delay_share": 0.1856,
+   "pct_delayed_15": 0.2405,
+   "cancel_rate": 0.006,
+   "total_delay_minutes": 135603
+  },
+  "IAD": {
+   "flights": 4843,
+   "mean_taxi_out_min": 21.1,
+   "nas_delay_share": 0.295,
+   "pct_delayed_15": 0.1068,
+   "cancel_rate": 0.0031,
+   "total_delay_minutes": 47641
+  },
+  "RDU": {
+   "flights": 4748,
+   "mean_taxi_out_min": 17.75,
+   "nas_delay_share": 0.25,
+   "pct_delayed_15": 0.1672,
+   "cancel_rate": 0.0063,
+   "total_delay_minutes": 61720
+  },
+  "SAV": {
+   "flights": 1764,
+   "mean_taxi_out_min": 16.05,
+   "nas_delay_share": 0.1899,
+   "pct_delayed_15": 0.1791,
+   "cancel_rate": 0.0079,
+   "total_delay_minutes": 22304
+  },
+  "DFW": {
+   "flights": 25686,
+   "mean_taxi_out_min": 18.84,
+   "nas_delay_share": 0.1488,
+   "pct_delayed_15": 0.2657,
+   "cancel_rate": 0.0133,
+   "total_delay_minutes": 458981
+  },
+  "DSM": {
+   "flights": 1307,
+   "mean_taxi_out_min": 15.21,
+   "nas_delay_share": 0.2336,
+   "pct_delayed_15": 0.1477,
+   "cancel_rate": 0.0252,
+   "total_delay_minutes": 23761
+  },
+  "PHX": {
+   "flights": 17679,
+   "mean_taxi_out_min": 16.45,
+   "nas_delay_share": 0.1402,
+   "pct_delayed_15": 0.2179,
+   "cancel_rate": 0.0029,
+   "total_delay_minutes": 209974
+  },
+  "HSV": {
+   "flights": 674,
+   "mean_taxi_out_min": 16.17,
+   "nas_delay_share": 0.0913,
+   "pct_delayed_15": 0.178,
+   "cancel_rate": 0.0163,
+   "total_delay_minutes": 12526
+  },
+  "BOI": {
+   "flights": 1946,
+   "mean_taxi_out_min": 17.09,
+   "nas_delay_share": 0.2105,
+   "pct_delayed_15": 0.147,
+   "cancel_rate": 0.0036,
+   "total_delay_minutes": 24204
+  },
+  "DCA": {
+   "flights": 11802,
+   "mean_taxi_out_min": 21.72,
+   "nas_delay_share": 0.185,
+   "pct_delayed_15": 0.2345,
+   "cancel_rate": 0.008,
+   "total_delay_minutes": 213751
+  },
+  "COS": {
+   "flights": 1034,
+   "mean_taxi_out_min": 19.1,
+   "nas_delay_share": 0.1988,
+   "pct_delayed_15": 0.1741,
+   "cancel_rate": 0.0048,
+   "total_delay_minutes": 14835
+  },
+  "GEG": {
+   "flights": 1457,
+   "mean_taxi_out_min": 15.83,
+   "nas_delay_share": 0.2505,
+   "pct_delayed_15": 0.1283,
+   "cancel_rate": 0.0027,
+   "total_delay_minutes": 13245
+  },
+  "SRQ": {
+   "flights": 1806,
+   "mean_taxi_out_min": 16.52,
+   "nas_delay_share": 0.2355,
+   "pct_delayed_15": 0.1733,
+   "cancel_rate": 0.01,
+   "total_delay_minutes": 23838
+  },
+  "JAX": {
+   "flights": 2487,
+   "mean_taxi_out_min": 14.79,
+   "nas_delay_share": 0.1947,
+   "pct_delayed_15": 0.1637,
+   "cancel_rate": 0.0048,
+   "total_delay_minutes": 25256
+  },
+  "SJU": {
+   "flights": 3190,
+   "mean_taxi_out_min": 15.66,
+   "nas_delay_share": 0.1772,
+   "pct_delayed_15": 0.194,
+   "cancel_rate": 0.0075,
+   "total_delay_minutes": 49866
+  },
+  "VPS": {
+   "flights": 958,
+   "mean_taxi_out_min": 15.69,
+   "nas_delay_share": 0.1482,
+   "pct_delayed_15": 0.1733,
+   "cancel_rate": 0.0063,
+   "total_delay_minutes": 11273
+  },
+  "FAR": {
+   "flights": 608,
+   "mean_taxi_out_min": 18.6,
+   "nas_delay_share": 0.3453,
+   "pct_delayed_15": 0.1727,
+   "cancel_rate": 0.0263,
+   "total_delay_minutes": 15002
+  },
+  "GRR": {
+   "flights": 1710,
+   "mean_taxi_out_min": 16.46,
+   "nas_delay_share": 0.2482,
+   "pct_delayed_15": 0.1743,
+   "cancel_rate": 0.0187,
+   "total_delay_minutes": 32135
+  },
+  "IND": {
+   "flights": 4290,
+   "mean_taxi_out_min": 14.5,
+   "nas_delay_share": 0.2695,
+   "pct_delayed_15": 0.1641,
+   "cancel_rate": 0.0119,
+   "total_delay_minutes": 50613
+  },
+  "PDX": {
+   "flights": 5040,
+   "mean_taxi_out_min": 15.78,
+   "nas_delay_share": 0.2626,
+   "pct_delayed_15": 0.1448,
+   "cancel_rate": 0.0048,
+   "total_delay_minutes": 48892
+  },
+  "CHA": {
+   "flights": 527,
+   "mean_taxi_out_min": 17.83,
+   "nas_delay_share": 0.1691,
+   "pct_delayed_15": 0.2163,
+   "cancel_rate": 0.0342,
+   "total_delay_minutes": 11271
+  },
+  "CMH": {
+   "flights": 3713,
+   "mean_taxi_out_min": 14.7,
+   "nas_delay_share": 0.3394,
+   "pct_delayed_15": 0.1541,
+   "cancel_rate": 0.0051,
+   "total_delay_minutes": 44947
+  },
+  "BWI": {
+   "flights": 8041,
+   "mean_taxi_out_min": 14.88,
+   "nas_delay_share": 0.2223,
+   "pct_delayed_15": 0.242,
+   "cancel_rate": 0.0034,
+   "total_delay_minutes": 97751
+  },
+  "BHM": {
+   "flights": 1495,
+   "mean_taxi_out_min": 15.04,
+   "nas_delay_share": 0.1278,
+   "pct_delayed_15": 0.1559,
+   "cancel_rate": 0.0087,
+   "total_delay_minutes": 18704
+  },
+  "OKC": {
+   "flights": 1980,
+   "mean_taxi_out_min": 14.92,
+   "nas_delay_share": 0.1549,
+   "pct_delayed_15": 0.1571,
+   "cancel_rate": 0.0177,
+   "total_delay_minutes": 28975
+  },
+  "SAN": {
+   "flights": 8505,
+   "mean_taxi_out_min": 20.6,
+   "nas_delay_share": 0.2244,
+   "pct_delayed_15": 0.2319,
+   "cancel_rate": 0.0033,
+   "total_delay_minutes": 96275
+  },
+  "ROC": {
+   "flights": 907,
+   "mean_taxi_out_min": 15.3,
+   "nas_delay_share": 0.3411,
+   "pct_delayed_15": 0.1775,
+   "cancel_rate": 0.0121,
+   "total_delay_minutes": 14545
+  },
+  "CID": {
+   "flights": 761,
+   "mean_taxi_out_min": 14.82,
+   "nas_delay_share": 0.1558,
+   "pct_delayed_15": 0.2063,
+   "cancel_rate": 0.0302,
+   "total_delay_minutes": 18909
+  },
+  "GSO": {
+   "flights": 943,
+   "mean_taxi_out_min": 16.67,
+   "nas_delay_share": 0.2384,
+   "pct_delayed_15": 0.1453,
+   "cancel_rate": 0.0117,
+   "total_delay_minutes": 10850
+  },
+  "SJC": {
+   "flights": 3423,
+   "mean_taxi_out_min": 14.07,
+   "nas_delay_share": 0.1901,
+   "pct_delayed_15": 0.1785,
+   "cancel_rate": 0.005,
+   "total_delay_minutes": 27628
+  },
+  "CLE": {
+   "flights": 3498,
+   "mean_taxi_out_min": 15.06,
+   "nas_delay_share": 0.3053,
+   "pct_delayed_15": 0.1552,
+   "cancel_rate": 0.01,
+   "total_delay_minutes": 45581
+  },
+  "BDL": {
+   "flights": 1946,
+   "mean_taxi_out_min": 15.4,
+   "nas_delay_share": 0.2017,
+   "pct_delayed_15": 0.185,
+   "cancel_rate": 0.0092,
+   "total_delay_minutes": 29934
+  },
+  "HOU": {
+   "flights": 4418,
+   "mean_taxi_out_min": 13.72,
+   "nas_delay_share": 0.2027,
+   "pct_delayed_15": 0.2644,
+   "cancel_rate": 0.0014,
+   "total_delay_minutes": 59663
+  },
+  "PSP": {
+   "flights": 1680,
+   "mean_taxi_out_min": 18.53,
+   "nas_delay_share": 0.3471,
+   "pct_delayed_15": 0.1869,
+   "cancel_rate": 0.0048,
+   "total_delay_minutes": 24524
+  },
+  "BUR": {
+   "flights": 2455,
+   "mean_taxi_out_min": 18.04,
+   "nas_delay_share": 0.3837,
+   "pct_delayed_15": 0.1853,
+   "cancel_rate": 0.0069,
+   "total_delay_minutes": 24639
+  },
+  "PHL": {
+   "flights": 8692,
+   "mean_taxi_out_min": 20.14,
+   "nas_delay_share": 0.2093,
+   "pct_delayed_15": 0.1932,
+   "cancel_rate": 0.0068,
+   "total_delay_minutes": 127717
+  },
+  "ORF": {
+   "flights": 1655,
+   "mean_taxi_out_min": 16.58,
+   "nas_delay_share": 0.2094,
+   "pct_delayed_15": 0.1571,
+   "cancel_rate": 0.0103,
+   "total_delay_minutes": 23327
+  },
+  "MSN": {
+   "flights": 1245,
+   "mean_taxi_out_min": 16.01,
+   "nas_delay_share": 0.1866,
+   "pct_delayed_15": 0.1751,
+   "cancel_rate": 0.0233,
+   "total_delay_minutes": 21539
+  },
+  "TUL": {
+   "flights": 1509,
+   "mean_taxi_out_min": 15.49,
+   "nas_delay_share": 0.172,
+   "pct_delayed_15": 0.1637,
+   "cancel_rate": 0.0113,
+   "total_delay_minutes": 23412
+  },
+  "OMA": {
+   "flights": 2053,
+   "mean_taxi_out_min": 14.68,
+   "nas_delay_share": 0.2798,
+   "pct_delayed_15": 0.1534,
+   "cancel_rate": 0.0127,
+   "total_delay_minutes": 29313
+  },
+  "LEX": {
+   "flights": 786,
+   "mean_taxi_out_min": 16.94,
+   "nas_delay_share": 0.2155,
+   "pct_delayed_15": 0.1539,
+   "cancel_rate": 0.0165,
+   "total_delay_minutes": 8787
+  },
+  "RIC": {
+   "flights": 1643,
+   "mean_taxi_out_min": 16.6,
+   "nas_delay_share": 0.2825,
+   "pct_delayed_15": 0.1729,
+   "cancel_rate": 0.0103,
+   "total_delay_minutes": 19663
+  },
+  "PVD": {
+   "flights": 1349,
+   "mean_taxi_out_min": 14.7,
+   "nas_delay_share": 0.3183,
+   "pct_delayed_15": 0.1438,
+   "cancel_rate": 0.0037,
+   "total_delay_minutes": 14736
+  },
+  "BUF": {
+   "flights": 1699,
+   "mean_taxi_out_min": 14.26,
+   "nas_delay_share": 0.2404,
+   "pct_delayed_15": 0.183,
+   "cancel_rate": 0.0094,
+   "total_delay_minutes": 20271
+  },
+  "HNL": {
+   "flights": 4809,
+   "mean_taxi_out_min": 16.95,
+   "nas_delay_share": 0.133,
+   "pct_delayed_15": 0.1813,
+   "cancel_rate": 0.006,
+   "total_delay_minutes": 45859
+  },
+  "FSD": {
+   "flights": 723,
+   "mean_taxi_out_min": 16.94,
+   "nas_delay_share": 0.1553,
+   "pct_delayed_15": 0.184,
+   "cancel_rate": 0.018,
+   "total_delay_minutes": 12186
+  },
+  "STT": {
+   "flights": 611,
+   "mean_taxi_out_min": 16.86,
+   "nas_delay_share": 0.1682,
+   "pct_delayed_15": 0.1702,
+   "cancel_rate": 0.0065,
+   "total_delay_minutes": 7608
+  },
+  "LIH": {
+   "flights": 1292,
+   "mean_taxi_out_min": 10.61,
+   "nas_delay_share": 0.0775,
+   "pct_delayed_15": 0.154,
+   "cancel_rate": 0.0046,
+   "total_delay_minutes": 10275
+  },
+  "ANC": {
+   "flights": 1333,
+   "mean_taxi_out_min": 12.7,
+   "nas_delay_share": 0.0545,
+   "pct_delayed_15": 0.0975,
+   "cancel_rate": 0.0038,
+   "total_delay_minutes": 7092
+  },
+  "SMF": {
+   "flights": 4672,
+   "mean_taxi_out_min": 14.25,
+   "nas_delay_share": 0.1586,
+   "pct_delayed_15": 0.177,
+   "cancel_rate": 0.0041,
+   "total_delay_minutes": 42269
+  },
+  "PWM": {
+   "flights": 720,
+   "mean_taxi_out_min": 15.49,
+   "nas_delay_share": 0.1735,
+   "pct_delayed_15": 0.1597,
+   "cancel_rate": 0.0139,
+   "total_delay_minutes": 12113
+  },
+  "DAL": {
+   "flights": 5965,
+   "mean_taxi_out_min": 13.99,
+   "nas_delay_share": 0.1788,
+   "pct_delayed_15": 0.3184,
+   "cancel_rate": 0.007,
+   "total_delay_minutes": 95390
+  },
+  "ONT": {
+   "flights": 2119,
+   "mean_taxi_out_min": 14.11,
+   "nas_delay_share": 0.2269,
+   "pct_delayed_15": 0.1897,
+   "cancel_rate": 0.0028,
+   "total_delay_minutes": 24082
+  },
+  "KOA": {
+   "flights": 1298,
+   "mean_taxi_out_min": 12.63,
+   "nas_delay_share": 0.1277,
+   "pct_delayed_15": 0.1333,
+   "cancel_rate": 0.0077,
+   "total_delay_minutes": 10044
+  },
+  "MKE": {
+   "flights": 2588,
+   "mean_taxi_out_min": 15.45,
+   "nas_delay_share": 0.1561,
+   "pct_delayed_15": 0.1708,
+   "cancel_rate": 0.022,
+   "total_delay_minutes": 44515
+  },
+  "PIT": {
+   "flights": 3531,
+   "mean_taxi_out_min": 14.13,
+   "nas_delay_share": 0.3149,
+   "pct_delayed_15": 0.1442,
+   "cancel_rate": 0.0051,
+   "total_delay_minutes": 39749
+  },
+  "LIT": {
+   "flights": 1131,
+   "mean_taxi_out_min": 16.08,
+   "nas_delay_share": 0.1427,
+   "pct_delayed_15": 0.1777,
+   "cancel_rate": 0.008,
+   "total_delay_minutes": 18550
+  },
+  "SDF": {
+   "flights": 2136,
+   "mean_taxi_out_min": 16.17,
+   "nas_delay_share": 0.2105,
+   "pct_delayed_15": 0.1573,
+   "cancel_rate": 0.0112,
+   "total_delay_minutes": 33182
+  },
+  "SYR": {
+   "flights": 926,
+   "mean_taxi_out_min": 16.35,
+   "nas_delay_share": 0.2975,
+   "pct_delayed_15": 0.1631,
+   "cancel_rate": 0.013,
+   "total_delay_minutes": 11945
+  },
+  "ATW": {
+   "flights": 809,
+   "mean_taxi_out_min": 18.5,
+   "nas_delay_share": 0.2979,
+   "pct_delayed_15": 0.1928,
+   "cancel_rate": 0.0396,
+   "total_delay_minutes": 20614
+  },
+  "EYW": {
+   "flights": 816,
+   "mean_taxi_out_min": 15.12,
+   "nas_delay_share": 0.1844,
+   "pct_delayed_15": 0.1777,
+   "cancel_rate": 0.0,
+   "total_delay_minutes": 12868
+  },
+  "GRB": {
+   "flights": 520,
+   "mean_taxi_out_min": 17.94,
+   "nas_delay_share": 0.1683,
+   "pct_delayed_15": 0.1769,
+   "cancel_rate": 0.0462,
+   "total_delay_minutes": 12525
+  },
+  "AVL": {
+   "flights": 785,
+   "mean_taxi_out_min": 16.57,
+   "nas_delay_share": 0.228,
+   "pct_delayed_15": 0.1541,
+   "cancel_rate": 0.014,
+   "total_delay_minutes": 12380
+  },
+  "XNA": {
+   "flights": 1214,
+   "mean_taxi_out_min": 16.48,
+   "nas_delay_share": 0.1678,
+   "pct_delayed_15": 0.1392,
+   "cancel_rate": 0.0099,
+   "total_delay_minutes": 18067
+  },
+  "DAY": {
+   "flights": 677,
+   "mean_taxi_out_min": 16.17,
+   "nas_delay_share": 0.1534,
+   "pct_delayed_15": 0.1684,
+   "cancel_rate": 0.0207,
+   "total_delay_minutes": 14524
+  },
+  "MDT": {
+   "flights": 537,
+   "mean_taxi_out_min": 14.27,
+   "nas_delay_share": 0.1373,
+   "pct_delayed_15": 0.2048,
+   "cancel_rate": 0.0168,
+   "total_delay_minutes": 13316
+  },
+  "MYR": {
+   "flights": 1165,
+   "mean_taxi_out_min": 13.7,
+   "nas_delay_share": 0.3073,
+   "pct_delayed_15": 0.1665,
+   "cancel_rate": 0.006,
+   "total_delay_minutes": 16136
+  },
+  "TUS": {
+   "flights": 1834,
+   "mean_taxi_out_min": 16.32,
+   "nas_delay_share": 0.1953,
+   "pct_delayed_15": 0.1609,
+   "cancel_rate": 0.0044,
+   "total_delay_minutes": 19540
+  },
+  "SGF": {
+   "flights": 647,
+   "mean_taxi_out_min": 16.65,
+   "nas_delay_share": 0.1751,
+   "pct_delayed_15": 0.1638,
+   "cancel_rate": 0.0155,
+   "total_delay_minutes": 13996
+  },
+  "MDW": {
+   "flights": 6282,
+   "mean_taxi_out_min": 14.97,
+   "nas_delay_share": 0.2325,
+   "pct_delayed_15": 0.2249,
+   "cancel_rate": 0.0118,
+   "total_delay_minutes": 79562
+  },
+  "TYS": {
+   "flights": 1152,
+   "mean_taxi_out_min": 15.95,
+   "nas_delay_share": 0.1553,
+   "pct_delayed_15": 0.1441,
+   "cancel_rate": 0.0148,
+   "total_delay_minutes": 14507
+  },
+  "ELP": {
+   "flights": 1303,
+   "mean_taxi_out_min": 15.0,
+   "nas_delay_share": 0.1044,
+   "pct_delayed_15": 0.1926,
+   "cancel_rate": 0.0092,
+   "total_delay_minutes": 18067
+  },
+  "HPN": {
+   "flights": 888,
+   "mean_taxi_out_min": 16.1,
+   "nas_delay_share": 0.2021,
+   "pct_delayed_15": 0.223,
+   "cancel_rate": 0.0124,
+   "total_delay_minutes": 20031
+  },
+  "LGB": {
+   "flights": 1156,
+   "mean_taxi_out_min": 12.77,
+   "nas_delay_share": 0.1064,
+   "pct_delayed_15": 0.1955,
+   "cancel_rate": 0.0,
+   "total_delay_minutes": 10816
+  },
+  "ILM": {
+   "flights": 587,
+   "mean_taxi_out_min": 17.49,
+   "nas_delay_share": 0.2169,
+   "pct_delayed_15": 0.1601,
+   "cancel_rate": 0.0119,
+   "total_delay_minutes": 5462
+  },
+  "EUG": {
+   "flights": 708,
+   "mean_taxi_out_min": 16.01,
+   "nas_delay_share": 0.2814,
+   "pct_delayed_15": 0.161,
+   "cancel_rate": 0.0042,
+   "total_delay_minutes": 10240
+  },
+  "PIE": {
+   "flights": 752,
+   "mean_taxi_out_min": 14.5,
+   "nas_delay_share": 0.176,
+   "pct_delayed_15": 0.1649,
+   "cancel_rate": 0.0013,
+   "total_delay_minutes": 7626
+  },
+  "PGD": {
+   "flights": 667,
+   "mean_taxi_out_min": 12.09,
+   "nas_delay_share": 0.1486,
+   "pct_delayed_15": 0.1919,
+   "cancel_rate": 0.0015,
+   "total_delay_minutes": 7465
+  },
+  "SFB": {
+   "flights": 799,
+   "mean_taxi_out_min": 17.07,
+   "nas_delay_share": 0.0895,
+   "pct_delayed_15": 0.214,
+   "cancel_rate": 0.0,
+   "total_delay_minutes": 14576
+  },
+  "AZA": {
+   "flights": 543,
+   "mean_taxi_out_min": 15.09,
+   "nas_delay_share": 0.0808,
+   "pct_delayed_15": 0.2394,
+   "cancel_rate": 0.0,
+   "total_delay_minutes": 9579
+  },
+  "PIA": {
+   "flights": 551,
+   "mean_taxi_out_min": 17.74,
+   "nas_delay_share": 0.2009,
+   "pct_delayed_15": 0.2142,
+   "cancel_rate": 0.0472,
+   "total_delay_minutes": 15983
+  },
+  "FWA": {
+   "flights": 522,
+   "mean_taxi_out_min": 19.75,
+   "nas_delay_share": 0.1855,
+   "pct_delayed_15": 0.251,
+   "cancel_rate": 0.0441,
+   "total_delay_minutes": 17481
+  },
+  "FAT": {
+   "flights": 1030,
+   "mean_taxi_out_min": 17.18,
+   "nas_delay_share": 0.2556,
+   "pct_delayed_15": 0.1738,
+   "cancel_rate": 0.0039,
+   "total_delay_minutes": 14668
+  },
+  "SBN": {
+   "flights": 682,
+   "mean_taxi_out_min": 18.07,
+   "nas_delay_share": 0.2071,
+   "pct_delayed_15": 0.2331,
+   "cancel_rate": 0.0235,
+   "total_delay_minutes": 14227
+  },
+  "OAK": {
+   "flights": 2509,
+   "mean_taxi_out_min": 12.81,
+   "nas_delay_share": 0.1729,
+   "pct_delayed_15": 0.271,
+   "cancel_rate": 0.0028,
+   "total_delay_minutes": 30673
+  },
+  "MAF": {
+   "flights": 730,
+   "mean_taxi_out_min": 15.07,
+   "nas_delay_share": 0.1517,
+   "pct_delayed_15": 0.1425,
+   "cancel_rate": 0.0068,
+   "total_delay_minutes": 8480
+  },
+  "SBA": {
+   "flights": 733,
+   "mean_taxi_out_min": 18.0,
+   "nas_delay_share": 0.3449,
+   "pct_delayed_15": 0.1828,
+   "cancel_rate": 0.0041,
+   "total_delay_minutes": 12597
+  },
+  "RDM": {
+   "flights": 591,
+   "mean_taxi_out_min": 18.72,
+   "nas_delay_share": 0.3915,
+   "pct_delayed_15": 0.1438,
+   "cancel_rate": 0.0051,
+   "total_delay_minutes": 6053
+  },
+  "LBB": {
+   "flights": 520,
+   "mean_taxi_out_min": 14.97,
+   "nas_delay_share": 0.1487,
+   "pct_delayed_15": 0.1712,
+   "cancel_rate": 0.0019,
+   "total_delay_minutes": 7490
+  },
+  "STS": {
+   "flights": 558,
+   "mean_taxi_out_min": 17.97,
+   "nas_delay_share": 0.224,
+   "pct_delayed_15": 0.1398,
+   "cancel_rate": 0.0,
+   "total_delay_minutes": 6315
+  },
+  "MHT": {
+   "flights": 553,
+   "mean_taxi_out_min": 14.32,
+   "nas_delay_share": 0.2442,
+   "pct_delayed_15": 0.1537,
+   "cancel_rate": 0.0054,
+   "total_delay_minutes": 4936
+  },
+  "ITO": {
+   "flights": 578,
+   "mean_taxi_out_min": 9.8,
+   "nas_delay_share": 0.0531,
+   "pct_delayed_15": 0.1851,
+   "cancel_rate": 0.0052,
+   "total_delay_minutes": 5698
+  }
+ }
+}
