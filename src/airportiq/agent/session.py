@@ -49,6 +49,7 @@ class Turn:
     intent: str
     codes: list[str]
     profile: str
+    answer: str = ""
     at: float = field(default_factory=time.time)
 
 
@@ -82,6 +83,22 @@ class Session:
         fresh = [a for a in assumptions if a not in self.stated_assumptions]
         self.stated_assumptions.update(fresh)
         return fresh
+
+    def history_messages(self, max_turns: int = 6) -> list[dict]:
+        """Prior (question, answer) pairs as chat messages, oldest first.
+
+        Only the final assistant prose is replayed — not the tool_calls or tool results
+        from earlier turns. Replaying tool traffic would pin the model to stale answers
+        it has already committed to, and would balloon the context on every follow-up.
+        If the model needs a figure from a previous turn, it re-queries the tools; that
+        is the point of the guardrail against inheriting numbers through conversation.
+        """
+        out: list[dict] = []
+        for t in self.turns[-max_turns:]:
+            out.append({"role": "user", "content": t.question})
+            if t.answer:
+                out.append({"role": "assistant", "content": t.answer})
+        return out
 
 
 class SessionStore:

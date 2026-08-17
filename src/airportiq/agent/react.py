@@ -52,12 +52,15 @@ How to answer:
 
 
 def run(question: str, cards: list, facts_by_code: dict,
-        max_rounds: int = MAX_ROUNDS) -> dict:
+        max_rounds: int = MAX_ROUNDS,
+        history: list[dict] | None = None) -> dict:
     """Answer one question with tool use. Returns the answer and a full call trace."""
     tools.bind(cards, facts_by_code)
 
-    messages = [{"role": "system", "content": SYSTEM},
-                {"role": "user", "content": question}]
+    messages: list[dict] = [{"role": "system", "content": SYSTEM}]
+    if history:
+        messages.extend(history)
+    messages.append({"role": "user", "content": question})
     trace: list[dict] = []
     seen: dict[str, str] = {}
     total_calls = 0
@@ -104,7 +107,8 @@ def run(question: str, cards: list, facts_by_code: dict,
 
 
 def run_streaming(question: str, cards: list, facts_by_code: dict,
-                  max_rounds: int = MAX_ROUNDS):
+                  max_rounds: int = MAX_ROUNDS,
+                  history: list[dict] | None = None):
     """The same loop, yielding events as they happen instead of one dict at the end.
 
     Yields (kind, payload):
@@ -127,8 +131,10 @@ def run_streaming(question: str, cards: list, facts_by_code: dict,
     """
     tools.bind(cards, facts_by_code)
 
-    messages = [{"role": "system", "content": SYSTEM},
-                {"role": "user", "content": question}]
+    messages: list[dict] = [{"role": "system", "content": SYSTEM}]
+    if history:
+        messages.extend(history)
+    messages.append({"role": "user", "content": question})
     trace: list[dict] = []
     seen: dict[str, str] = {}
     total_calls = 0
