@@ -15,7 +15,9 @@ import re
 NEW_ENGLAND = {"CT", "ME", "MA", "NH", "RI", "VT"}
 
 # Airport -> state. In the full build this comes from OurAirports iso_region; kept explicit
-# here so the demo is self-contained and the assumption is auditable.
+# here so the demo is self-contained and the assumption is auditable. Every airport in the
+# scoring universe MUST appear here — otherwise state-based queries silently exclude it,
+# which is the failure mode "which airports in Nebraska" would hit at OMA.
 AIRPORT_STATE = {
     "BOS": "MA", "BDL": "CT", "PVD": "RI", "MHT": "NH", "PWM": "ME", "BTV": "VT",
     "BGR": "ME", "ORH": "MA", "HYA": "MA", "ACK": "MA", "MVY": "MA",
@@ -23,13 +25,41 @@ AIRPORT_STATE = {
     "LAX": "CA", "BUR": "CA", "LGB": "CA", "ONT": "CA", "SNA": "CA", "SAN": "CA",
     "SFO": "CA", "OAK": "CA", "SJC": "CA", "SMF": "CA", "FAT": "CA",
     "SEA": "WA", "PDX": "OR", "DEN": "CO", "PHX": "AZ", "LAS": "NV", "SLC": "UT",
+    "BOI": "ID",
     "ORD": "IL", "MDW": "IL", "DTW": "MI", "MSP": "MN", "STL": "MO", "MCI": "MO",
     "IND": "IN", "CVG": "KY", "CLE": "OH", "PIT": "PA", "PHL": "PA", "MKE": "WI",
+    "OMA": "NE",
     "ATL": "GA", "MIA": "FL", "FLL": "FL", "MCO": "FL", "TPA": "FL", "RSW": "FL",
     "PBI": "FL", "JAX": "FL", "CLT": "NC", "RDU": "NC", "BNA": "TN", "MEM": "TN",
     "DFW": "TX", "DAL": "TX", "IAH": "TX", "HOU": "TX", "AUS": "TX", "SAT": "TX",
     "IAD": "VA", "DCA": "VA", "ORF": "VA", "BWI": "MD", "ANC": "AK", "HNL": "HI",
 }
+
+# US state names and abbreviations. Kept as a plain lookup rather than derived from a library:
+# the demo runs with zero dependencies, and this table is both auditable and deterministic.
+# Two-letter abbrevs are the keys; full names (and a couple of common misspellings) resolve
+# through _STATE_ALIASES.
+_US_STATES = {
+    "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California",
+    "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware", "FL": "Florida", "GA": "Georgia",
+    "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois", "IN": "Indiana", "IA": "Iowa",
+    "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
+    "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota", "MS": "Mississippi",
+    "MO": "Missouri", "MT": "Montana", "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire",
+    "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York", "NC": "North Carolina",
+    "ND": "North Dakota", "OH": "Ohio", "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania",
+    "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota", "TN": "Tennessee",
+    "TX": "Texas", "UT": "Utah", "VT": "Vermont", "VA": "Virginia", "WA": "Washington",
+    "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
+    "DC": "District of Columbia",
+}
+# Names only, not two-letter abbreviations. "LA" already means the Los Angeles metro area
+# in this codebase, and "OR", "IN", "OH" collide with common English. Requiring the spelled
+# state avoids those false positives; if a user types "TX airports" the region resolver
+# refuses rather than guessing.
+_STATE_ALIASES = {name.lower(): abbr for abbr, name in _US_STATES.items()}
+_STATE_ALIASES["washington state"] = "WA"
+_STATE_ALIASES["state of washington"] = "WA"
 
 # Metro groupings. "LA" is genuinely ambiguous, so we say so rather than pick silently.
 METRO = {
@@ -77,12 +107,38 @@ class Ambiguous(Exception):
 
 
 def resolve_region(term: str) -> tuple[list[str], str]:
-    """Region name -> airport codes, plus the assumption to show the user."""
+    """Region name -> airport codes, plus the assumption to show the user.
+
+    Handles two shapes of region:
+      - Multi-state groupings ("New England"), listed explicitly so the definition surfaces.
+      - Single US states, looked up in AIRPORT_STATE. States are a deterministic membership
+        table, not a guess — an airport with no state entry is excluded rather than fabricated
+        into a state, so responses can honestly say "excluded from this table".
+    """
     t = " ".join(term.strip().lower().split())
+    # Strip a trailing "state" and a leading "state of" so "Florida state" and "state of
+    # Florida" both resolve — otherwise the user has to guess our syntax.
+    t = t.removeprefix("the ").removeprefix("state of ").removesuffix(" state")
+    t = t.strip()
+
     if t in {"new england", "ניו אינגלנד"}:
         codes = sorted(c for c, s in AIRPORT_STATE.items() if s in NEW_ENGLAND)
         return codes, ("New England = CT, ME, MA, NH, RI, VT. "
                        "Albany NY is excluded — it is not a New England state.")
+
+    if t in _STATE_ALIASES:
+        abbr = _STATE_ALIASES[t]
+        state_name = _US_STATES.get(abbr, abbr)
+        codes = sorted(c for c, s in AIRPORT_STATE.items() if s == abbr)
+        if not codes:
+            raise ValueError(
+                f"{state_name} has no airports in the current AIRPORT_STATE lookup; "
+                f"the scoring universe does not currently cover any {state_name} airport"
+            )
+        return codes, (f"{state_name} ({abbr}) — membership from the AIRPORT_STATE table, "
+                       f"which is deterministic. Airports outside the lookup are excluded "
+                       f"rather than inferred.")
+
     raise ValueError(f"unknown region {term!r}")
 
 

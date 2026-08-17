@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AirportIQ · Architecture</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1d21;
+    --muted: #5b6570;
+    --line: #d4d9de;
+    --panel: #f5f7f9;
+    --accent: #2563eb;
+    --amber: #b45309;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14171a;
+      --fg: #e6e9ec;
+      --muted: #9aa4ae;
+      --line: #3a4148;
+      --panel: #1d2126;
+      --accent: #60a5fa;
+      --amber: #f0a24b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 2.5rem 1.25rem 5rem;
+    background: var(--bg); color: var(--fg);
+    font: 16px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 880px; margin: 0 auto; }
+  h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 .3rem; }
+  h2 { font-size: 1.3rem; margin: 3rem 0 .8rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  h3 { font-size: 1.05rem; margin: 1.8rem 0 .5rem; }
+  p.lead { color: var(--muted); font-size: 1.05rem; margin-top: 0; }
+  code { font-family: var(--mono); font-size: .85em; background: var(--panel); padding: .1em .35em; border-radius: 4px; }
+  figure { margin: 1.5rem 0; }
+  figure svg { max-width: 100%; height: auto; display: block; }
+  figcaption { color: var(--muted); font-size: .85rem; margin-top: .5rem; }
+  table { border-collapse: collapse; width: 100%; font-size: .9rem; margin: 1rem 0; }
+  th, td { text-align: left; padding: .45rem .7rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  td:first-child code { white-space: nowrap; }
+  ol.steps { padding-left: 1.4rem; }
+  ol.steps > li { margin: .8rem 0; }
+  ol.steps > li::marker { font-weight: 700; color: var(--accent); }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin: 1.2rem 0; }
+  .split > div { padding: 1rem 1.2rem; }
+  .split > div:first-child { border-right: 2px solid var(--accent); }
+  .split h4 { margin: 0 0 .5rem; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .split ul { margin: 0; padding-left: 1.1rem; font-size: .92rem; }
+  .split li { margin: .3rem 0; }
+  .callout { background: var(--panel); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; padding: .8rem 1.1rem; margin: 1.2rem 0; font-size: .95rem; }
+  .callout.amber { border-left-color: var(--amber); }
+  @media (max-width: 640px) { .split { grid-template-columns: 1fr; } .split > div:first-child { border-right: none; border-bottom: 2px solid var(--accent); } }
+</style>
+</head>
+<body>
+<main>
+
+<h1>AirportIQ · Architecture</h1>
+<p class="lead">How the system is built, layer by layer, and exactly what happens to a chat
+message from Enter to answer. The rationale behind each decision (scoring methodology,
+tradeoffs) lives in <code>DESIGN.md</code>; this page explains the structure.</p>
+
+<h2>1. System at a glance</h2>
+
+<figure>
+<svg viewBox="0 0 900 570" role="img" aria-label="Layer diagram: browser talks to a stdlib HTTP server over SSE; the server routes to a tool-calling agent loop or a deterministic fallback pipeline; both converge on a pure scoring engine that reads from a BTS data layer with cache and snapshot fallback." style="color: var(--fg)">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.2">
+    <!-- browser -->
+    <rect x="60" y="16" width="600" height="58" rx="6"/>
+    <!-- server -->
+    <rect x="60" y="130" width="600" height="58" rx="6"/>
+    <!-- agent loop -->
+    <rect x="60" y="252" width="240" height="86" rx="6"/>
+    <!-- fallback pipeline -->
+    <rect x="330" y="252" width="240" height="86" rx="6"/>
+    <!-- llm factory -->
+    <rect x="610" y="252" width="230" height="86" rx="6" stroke-dasharray="5 4"/>
+    <!-- engine -->
+    <rect x="60" y="392" width="510" height="66" rx="6" stroke="var(--accent)" stroke-width="2"/>
+    <!-- data layer -->
+    <rect x="60" y="502" width="510" height="56" rx="6"/>
+    <!-- sidecars -->
+    <rect x="610" y="392" width="230" height="70" rx="6" stroke-dasharray="5 4"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" marker-end="url(#arr)">
+    <line x1="230" y1="74" x2="230" y2="130"/>
+    <line x1="500" y1="74" x2="500" y2="130"/>
+    <line x1="180" y1="188" x2="180" y2="252"/>
+    <line x1="450" y1="188" x2="450" y2="252"/>
+    <line x1="180" y1="338" x2="180" y2="392"/>
+    <line x1="450" y1="338" x2="450" y2="392"/>
+    <line x1="315" y1="458" x2="315" y2="502"/>
+    <line x1="300" y1="295" x2="610" y2="279" stroke-dasharray="4 4"/>
+    <line x1="570" y1="300" x2="610" y2="300" stroke-dasharray="4 4"/>
+  </g>
+  <g font-family="var(--mono)" font-size="12" fill="currentColor">
+    <text x="76" y="38" font-weight="700">BROWSER</text>
+    <text x="76" y="56" fill="var(--muted)">chat · live tool trace · percentile bars · voice in/out (Web Speech)</text>
+    <text x="76" y="152" font-weight="700">HTTP SERVER  api/server.py  (stdlib, no framework)</text>
+    <text x="76" y="170" fill="var(--muted)">routes · sessions · SSE writer · scorecard panel builder</text>
+    <text x="240" y="106" fill="var(--muted)">POST /v1/chat/stream (SSE)</text>
+    <text x="510" y="106" fill="var(--muted)">POST /v1/score (no LLM)</text>
+    <text x="188" y="226" fill="var(--muted)">default</text>
+    <text x="458" y="226" fill="var(--muted)">fallback / keyless</text>
+    <text x="76" y="276" font-weight="700">AGENT TOOL LOOP</text>
+    <text x="76" y="294" fill="var(--muted)">agent/react.py</text>
+    <text x="76" y="312" fill="var(--muted)">model picks tools,</text>
+    <text x="76" y="328" fill="var(--muted)">&#8804;4 rounds · &#8804;10 calls</text>
+    <text x="346" y="276" font-weight="700">DETERMINISTIC PIPELINE</text>
+    <text x="346" y="294" fill="var(--muted)">agent/answer.py</text>
+    <text x="346" y="312" fill="var(--muted)">parse&#8594;resolve&#8594;fetch&#8594;score</text>
+    <text x="346" y="328" fill="var(--muted)">&#8594;narrate&#8594;verify</text>
+    <text x="626" y="276" font-weight="700">LLM PROVIDER FACTORY</text>
+    <text x="626" y="294" fill="var(--muted)">agent/llm.py · no SDK dep</text>
+    <text x="626" y="312" fill="var(--muted)">openai · groq · gemini ·</text>
+    <text x="626" y="328" fill="var(--muted)">anthropic, one interface</text>
+    <text x="76" y="416" font-weight="700" fill="var(--accent)">SCORING ENGINE  scoring/  · PURE: no I/O, no model, no clock</text>
+    <text x="76" y="434" fill="var(--muted)">engine · unmet · explain · thesis  (enforced: test_purity.py fails the build)</text>
+    <text x="76" y="524" font-weight="700">DATA LAYER  data/bts.py</text>
+    <text x="76" y="542" fill="var(--muted)">BTS T-100 (Socrata) · BTS On-Time &#8594; cache &#8594; committed snapshot</text>
+    <text x="626" y="416" font-weight="700">SIDECARS</text>
+    <text x="626" y="434" fill="var(--muted)">session.py (state per id)</text>
+    <text x="626" y="452" fill="var(--muted)">obs.py (optional tracing)</text>
+  </g>
+</svg>
+<figcaption>Both answer paths converge on the same pure engine (blue boundary), so
+<code>/v1/score</code> reproduces any number the chat ever shows.</figcaption>
+</figure>
+
+<p>Three properties of this picture are load-bearing:</p>
+<ol>
+  <li><strong>Both answer paths converge on the same engine.</strong> The agent's tools and
+  the fallback pipeline read the same precomputed score cards.</li>
+  <li><strong>The LLM sits beside the flow, not inside the arithmetic.</strong> It chooses
+  which tools to call and phrases the answer; every number comes out of
+  <code>scoring/</code>, which cannot even import a model or network library without failing
+  the build.</li>
+  <li><strong>The data layer degrades gracefully</strong>: live API, then local cache, then
+  committed snapshot, so a clean clone with no network produces identical numbers.</li>
+</ol>
+
+<h2>2. Module map</h2>
+<table>
+  <tr><th>Module</th><th>Role</th></tr>
+  <tr><td><code>api/server.py</code></td><td>stdlib HTTP server: routes, SSE streaming, session lookup, builds the scorecard panel from tool-call arguments</td></tr>
+  <tr><td><code>api/ui.py</code></td><td>Single-page chat UI served inline; Web Speech API voice in/out</td></tr>
+  <tr><td><code>agent/react.py</code></td><td>The tool-calling loop, bounded at 4 rounds / 10 calls, repeated calls served from a per-turn cache</td></tr>
+  <tr><td><code>agent/tools.py</code></td><td>The 12 read-only tools; every tool returns engine-computed values with provenance</td></tr>
+  <tr><td><code>agent/llm.py</code></td><td>Provider factory: OpenAI, Groq, Gemini, Anthropic behind one interface, no SDK dependency</td></tr>
+  <tr><td><code>agent/session.py</code></td><td>Conversation state per <code>session_id</code>, so follow-ups have a referent</td></tr>
+  <tr><td><code>agent/answer.py</code></td><td>Deterministic fallback pipeline (parse, resolve, fetch, score, narrate, verify)</td></tr>
+  <tr><td><code>agent/resolve.py</code></td><td>Deterministic entity resolution: "New England" to 6 states to codes; "LA" raises Ambiguous rather than guessing</td></tr>
+  <tr><td><code>scoring/engine.py</code></td><td>Pure scoring engine: KPIs, hub-class percentiles, weighted composites, flags</td></tr>
+  <tr><td><code>scoring/unmet.py</code></td><td>Unmet-demand proxy, returned as a range with stated confidence</td></tr>
+  <tr><td><code>scoring/explain.py</code></td><td>Per-stat derivations behind the UI's percentile bars</td></tr>
+  <tr><td><code>scoring/thesis.py</code></td><td>Converts a score card into a structured investment thesis</td></tr>
+  <tr><td><code>data/bts.py</code></td><td>BTS T-100 boundary: API quirks handled here, cache, snapshot</td></tr>
+  <tr><td><code>obs.py</code></td><td>Optional Langfuse tracing at the boundary only (the purity test forbids it inside <code>scoring/</code>)</td></tr>
+</table>
+
+<h2>3. Boot sequence</h2>
+<p>Everything heavy happens once, at startup: fetch T-100 for 65 airports (API, cache, or
+snapshot), build one <code>AirportFacts</code> per airport, score both profiles for every
+hub class, and hold the results in memory (<code>_FACTS</code>, <code>_CARDS</code>). The
+consequence: <strong>tools never do I/O at question time.</strong> They read precomputed
+cards from memory, which makes a 10-tool-call turn fast and every answer consistent within
+a server run.</p>
+
+<h2>4. The life of a message</h2>
+<p>The exact path of one chat turn through <code>POST /v1/chat/stream</code>. The numbers in
+the diagram match the steps below.</p>
+
+<figure>
+<svg viewBox="0 0 940 600" role="img" aria-label="Sequence diagram: the browser posts a question; the server loads session history and starts the agent loop; the loop asks the LLM which tools to call, executes them against the in-memory engine, and streams tool_call, tool_result, and delta events live to the browser; on done the server attaches assumptions and scorecards built from tool-call arguments and saves the turn." style="color: var(--fg)">
+  <defs>
+    <marker id="sarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <!-- lifeline headers -->
+  <g fill="none" stroke="currentColor" stroke-width="1.2">
+    <rect x="30" y="14" width="110" height="30" rx="5"/>
+    <rect x="230" y="14" width="110" height="30" rx="5"/>
+    <rect x="430" y="14" width="110" height="30" rx="5"/>
+    <rect x="620" y="14" width="90" height="30" rx="5"/>
+    <rect x="780" y="14" width="140" height="30" rx="5" stroke="var(--accent)" stroke-width="1.8"/>
+  </g>
+  <g font-family="var(--mono)" font-size="12.5" fill="currentColor" text-anchor="middle" font-weight="700">
+    <text x="85" y="34">BROWSER</text>
+    <text x="285" y="34">SERVER</text>
+    <text x="485" y="34">AGENT LOOP</text>
+    <text x="665" y="34">LLM</text>
+    <text x="850" y="34" fill="var(--accent)">TOOLS / ENGINE</text>
+  </g>
+  <!-- lifelines -->
+  <g stroke="currentColor" stroke-width="1" stroke-dasharray="2 4" opacity=".55">
+    <line x1="85" y1="44" x2="85" y2="580"/>
+    <line x1="285" y1="44" x2="285" y2="580"/>
+    <line x1="485" y1="44" x2="485" y2="580"/>
+    <line x1="665" y1="44" x2="665" y2="580"/>
+    <line x1="850" y1="44" x2="850" y2="580"/>
+  </g>
+  <!-- loop box (steps 3-6) -->
+  <rect x="255" y="160" width="670" height="200" rx="6" fill="none" stroke="currentColor" stroke-dasharray="6 4" opacity=".7"/>
+  <!-- messages -->
+  <g stroke="currentColor" stroke-width="1.4" marker-end="url(#sarr)">
+    <line x1="85" y1="78" x2="283" y2="78"/>
+    <line x1="285" y1="142" x2="483" y2="142"/>
+    <line x1="485" y1="192" x2="663" y2="192"/>
+    <line x1="665" y1="222" x2="487" y2="222"/>
+    <line x1="485" y1="262" x2="848" y2="262"/>
+    <line x1="850" y1="292" x2="487" y2="292"/>
+    <line x1="665" y1="392" x2="487" y2="392"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 4" marker-end="url(#sarr)">
+    <line x1="283" y1="250" x2="87" y2="250"/>
+    <line x1="283" y1="304" x2="87" y2="304"/>
+    <line x1="283" y1="404" x2="87" y2="404"/>
+    <line x1="283" y1="502" x2="87" y2="502"/>
+  </g>
+  <!-- notes -->
+  <g fill="var(--panel)" stroke="currentColor" stroke-width="1">
+    <rect x="200" y="94" width="240" height="34" rx="4"/>
+    <rect x="200" y="424" width="330" height="52" rx="4"/>
+    <rect x="30" y="518" width="330" height="52" rx="4"/>
+  </g>
+  <g font-family="var(--mono)" font-size="11.5" fill="currentColor">
+    <text x="100" y="72">1 · POST question + session_id</text>
+    <text x="295" y="136">run_streaming(question, history)</text>
+    <text x="210" y="108">2 · load session history</text>
+    <text x="210" y="122" fill="var(--muted)">(prior prose only, never old traces)</text>
+    <text x="500" y="186">3 · question + history + 12 tool schemas</text>
+    <text x="500" y="216">4 · tool calls chosen by the model</text>
+    <text x="500" y="256">5 · execute vs in-memory cards</text>
+    <text x="560" y="286">values + provenance</text>
+    <text x="95" y="244" fill="var(--muted)">event: tool_call</text>
+    <text x="95" y="298" fill="var(--muted)">event: tool_result</text>
+    <text x="268" y="352" fill="var(--muted)">6 · repeat: &#8804;4 rounds, &#8804;10 tool calls per turn</text>
+    <text x="500" y="386">7 · prose, token by token</text>
+    <text x="95" y="398" fill="var(--muted)">event: delta &#215; N (live)</text>
+    <text x="210" y="440">8 · attach assumptions + scorecards built</text>
+    <text x="210" y="454" font-weight="700">from TOOL-CALL ARGS, never from prose;</text>
+    <text x="210" y="468">save turn to session for follow-ups</text>
+    <text x="95" y="496" fill="var(--muted)">event: done (answer, trace, scorecards)</text>
+    <text x="40" y="534">9 · render prose + trace + percentile bars</text>
+    <text x="40" y="548">+ amber constraint flags;</text>
+    <text x="40" y="562">voice speaks the prose only</text>
+  </g>
+</svg>
+<figcaption>One chat turn. Solid arrows are calls; dashed arrows are SSE events reaching the
+browser live, which is why the user watches tools fire instead of a spinner.</figcaption>
+</figure>
+
+<ol class="steps">
+  <li><strong>The browser sends the question.</strong> <code>POST /v1/chat/stream</code> with
+  <code>{"question", "session_id"}</code>. The response is a Server-Sent Events stream.</li>
+  <li><strong>The server loads conversation state.</strong> Only prior (question, answer)
+  prose pairs are replayed as history. Tool traces from earlier turns are deliberately not
+  replayed: if old numbers travelled in history, the model could restate a stale figure and
+  bypass the numeric guard. Follow-ups inherit <em>referents</em> ("why?" knows we were
+  discussing LAX vs SNA), never <em>numbers</em>.</li>
+  <li><strong>The loop starts a round.</strong> <code>react.run_streaming</code> sends the
+  model the question, the history, and the schemas of 12 read-only tools
+  (<code>get_airport_metrics</code>, <code>compare_airports</code>, <code>list_region</code>,
+  <code>get_delay_breakdown</code>, <code>estimate_unmet_demand</code>,
+  <code>get_stage_length_mix</code>, <code>rank_airports</code>,
+  <code>rank_by_passenger_growth</code>, <code>rank_by_flight_growth</code>,
+  <code>compare_growth</code>, <code>get_delay_per_passenger</code>,
+  <code>get_cargo_intensity</code>).</li>
+  <li><strong>The model decides which tools to call and in what order.</strong> This choice
+  is the agentic part, and the only decision the model owns besides phrasing.</li>
+  <li><strong>Tools execute, and the user watches.</strong> Each call is emitted as a
+  <code>tool_call</code> event the moment the model requests it, executed against the
+  in-memory cards, and summarized in a <code>tool_result</code> event. Every tool returns
+  engine-computed, structured values with provenance. Repeated identical calls come from a
+  per-turn cache.</li>
+  <li><strong>The loop iterates, bounded.</strong> Results go back to the model, which may
+  call more tools (asked about unmet demand at SFO, it typically calls
+  <code>estimate_unmet_demand</code>, then <code>get_delay_breakdown</code> for the "why").
+  Hard bounds: 4 rounds, 10 tool calls per turn.</li>
+  <li><strong>The answer streams.</strong> When the model stops calling tools and writes
+  prose, each token is forwarded live as a <code>delta</code> event.</li>
+  <li><strong>The server closes the turn and adds the verification layer.</strong> It
+  attaches assumptions (for example, if <code>list_region</code> ran: "region membership
+  resolved deterministically, not inferred by the model"), builds the scorecard panel from
+  the <em>tool-call arguments</em> rather than by parsing the prose (a panel derived from
+  the prose would agree with the prose by construction and verify nothing), and saves the
+  turn to the session.</li>
+  <li><strong>The browser renders the evidence with the answer.</strong> Prose, the
+  expandable tool trace, per-airport percentile bars from the deterministic engine, and
+  amber outlines reserved exclusively for constraint flags. If voice is on,
+  <code>speechSynthesis</code> reads the prose only; caveats and evidence stay on screen.</li>
+</ol>
+
+<div class="callout amber">If anything throws mid-stream, the error travels as an
+<code>error</code> event (the HTTP status is already sent, so a 500 cannot). If no
+OpenAI-compatible key is configured, <code>/v1/chat</code> falls back to the deterministic
+pipeline, so the demo still works keyless.</div>
+
+<h3>SSE event reference</h3>
+<table>
+  <tr><th>Event</th><th>Payload</th><th>Meaning</th></tr>
+  <tr><td><code>round</code></td><td><code>{round}</code></td><td>The loop started another model round (1..4)</td></tr>
+  <tr><td><code>tool_call</code></td><td><code>{tool, args}</code></td><td>The model requested a tool; shown before execution</td></tr>
+  <tr><td><code>tool_result</code></td><td><code>{tool, args, result_preview}</code></td><td>The engine's answer to that call</td></tr>
+  <tr><td><code>delta</code></td><td>text</td><td>One token of the final prose</td></tr>
+  <tr><td><code>done</code></td><td><code>{answer, trace, assumptions, scorecards}</code></td><td>Turn complete, panel data attached</td></tr>
+  <tr><td><code>error</code></td><td><code>{error}</code></td><td>Failure after the stream opened</td></tr>
+</table>
+
+<h2>5. The determinism boundary</h2>
+<p>The single most important line in the architecture is the one between "the model decides"
+and "the engine computes":</p>
+
+<div class="split">
+  <div>
+    <h4>Model decides</h4>
+    <ul>
+      <li>which tools to call</li>
+      <li>in what order</li>
+      <li>how to phrase the answer</li>
+      <li><strong>may not</strong>: compute, estimate, or emit numbers of its own</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Engine computes</h4>
+    <ul>
+      <li>every KPI, percentile, composite, range, flag, and derivation</li>
+      <li><code>scoring/</code> may not import an LLM, a network library, <code>random</code>, or even <code>datetime</code></li>
+      <li><code>tests/test_purity.py</code> walks the AST and <strong>fails the build</strong></li>
+    </ul>
+  </div>
+</div>
+
+<p>Enforced three ways, in increasing strictness: the purity test (a build gate, not a
+convention); placeholder narration in the fallback pipeline (the model writes
+<code>{{SFO.load_factor}}</code>, never digits, and the server substitutes real values); and
+a numeric tripwire (after substitution, any numeric literal not in the allow-set of actually
+computed values discards the prose and ships a deterministic template instead).</p>
+
+<h3>The fallback pipeline</h3>
+<p>When tool calling is unavailable, <code>agent/answer.py</code> runs a fixed pipeline,
+which is also the reference implementation of the boundary:</p>
+
+<figure>
+<svg viewBox="0 0 880 96" role="img" aria-label="Fallback pipeline: parse with the LLM, then deterministic resolve and fetch, pure score, LLM narration with placeholders only, deterministic verify." style="color: var(--fg)">
+  <defs>
+    <marker id="parr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke-width="1.4">
+    <rect x="10"  y="18" width="120" height="44" rx="6" stroke="var(--amber)"/>
+    <rect x="160" y="18" width="120" height="44" rx="6" stroke="currentColor"/>
+    <rect x="310" y="18" width="110" height="44" rx="6" stroke="currentColor"/>
+    <rect x="450" y="18" width="100" height="44" rx="6" stroke="var(--accent)" stroke-width="2"/>
+    <rect x="580" y="18" width="130" height="44" rx="6" stroke="var(--amber)"/>
+    <rect x="740" y="18" width="120" height="44" rx="6" stroke="currentColor"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" marker-end="url(#parr)">
+    <line x1="130" y1="40" x2="158" y2="40"/>
+    <line x1="280" y1="40" x2="308" y2="40"/>
+    <line x1="420" y1="40" x2="448" y2="40"/>
+    <line x1="550" y1="40" x2="578" y2="40"/>
+    <line x1="710" y1="40" x2="738" y2="40"/>
+  </g>
+  <g font-family="var(--mono)" font-size="12" fill="currentColor" text-anchor="middle">
+    <text x="70"  y="38" font-weight="700">parse</text>
+    <text x="70"  y="54" fill="var(--muted)">LLM: strings only</text>
+    <text x="220" y="38" font-weight="700">resolve</text>
+    <text x="220" y="54" fill="var(--muted)">deterministic</text>
+    <text x="365" y="38" font-weight="700">fetch</text>
+    <text x="365" y="54" fill="var(--muted)">api&#8594;cache&#8594;snap</text>
+    <text x="500" y="38" font-weight="700" fill="var(--accent)">score</text>
+    <text x="500" y="54" fill="var(--muted)">PURE</text>
+    <text x="645" y="38" font-weight="700">narrate</text>
+    <text x="645" y="54" fill="var(--muted)">LLM: {{holders}}</text>
+    <text x="800" y="38" font-weight="700">verify</text>
+    <text x="800" y="54" fill="var(--muted)">numeric tripwire</text>
+    <text x="440" y="88" fill="var(--muted)">amber boxes: the only two places the LLM appears, and neither can put a number in front of the user</text>
+  </g>
+</svg>
+<figcaption>The fixed pipeline. The LLM appears exactly twice (amber), and in neither place
+can a number it produced reach the user.</figcaption>
+</figure>
+
+<h2>6. Data flow, source to score</h2>
+
+<figure>
+<svg viewBox="0 0 880 380" role="img" aria-label="Data flow: BTS T-100 via Socrata and BTS On-Time bulk files pass through boundary handling into a cache with a committed snapshot fallback, become one AirportFacts per airport, then six KPIs ranked as percentiles within hub class, then a fixed-weight composite per profile, producing a score card with flags." style="color: var(--fg)">
+  <defs>
+    <marker id="darr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.2">
+    <rect x="60"  y="14" width="330" height="52" rx="6"/>
+    <rect x="480" y="14" width="340" height="52" rx="6"/>
+    <rect x="60"  y="112" width="330" height="52" rx="6"/>
+    <rect x="480" y="112" width="340" height="52" rx="6"/>
+    <rect x="230" y="210" width="420" height="44" rx="6"/>
+    <rect x="230" y="300" width="420" height="60" rx="6" stroke="var(--accent)" stroke-width="2"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" marker-end="url(#darr)">
+    <line x1="225" y1="66" x2="225" y2="112"/>
+    <line x1="650" y1="66" x2="650" y2="112"/>
+    <line x1="290" y1="164" x2="360" y2="210"/>
+    <line x1="590" y1="164" x2="520" y2="210"/>
+    <line x1="440" y1="254" x2="440" y2="300"/>
+  </g>
+  <g font-family="var(--mono)" font-size="12" fill="currentColor">
+    <text x="76" y="36" font-weight="700">BTS T-100 Segment Summary</text>
+    <text x="76" y="54" fill="var(--muted)">Socrata API, keyless, monthly per origin</text>
+    <text x="496" y="36" font-weight="700">BTS On-Time Performance</text>
+    <text x="496" y="54" fill="var(--muted)">flight-level: delay causes, taxi-out, distance</text>
+    <text x="76" y="134" font-weight="700">data/bts.py</text>
+    <text x="76" y="152" fill="var(--muted)">quirks at the boundary &#8594; cache &#8594; snapshot</text>
+    <text x="496" y="134" font-weight="700">build_delay_snapshot.py</text>
+    <text x="496" y="152" fill="var(--muted)">&#8594; 24 KB committed aggregate</text>
+    <text x="246" y="230" font-weight="700">AirportFacts, one per airport</text>
+    <text x="246" y="246" fill="var(--muted)">traffic · delays · stage lengths · runways</text>
+    <text x="246" y="322" font-weight="700" fill="var(--accent)">6 KPIs &#8594; percentile WITHIN HUB CLASS &#8594; weighted composite</text>
+    <text x="246" y="340" fill="var(--muted)">ScoreCard: rank · contributions · flags</text>
+    <text x="246" y="354" fill="var(--muted)">(REGULATORY_CAPS registry · airside-first flag)</text>
+  </g>
+</svg>
+<figcaption>Source to score. Percentiles are computed within hub class so the ranking answers
+"the most investment-worthy large hub" rather than becoming a size proxy.</figcaption>
+</figure>
+
+<p>Two structural choices matter here: percentiles are computed <strong>within hub
+class</strong>, and the same runway metric enters one profile as <em>headroom</em> and the
+other as <em>saturation</em>, which is what stops a terminal recommendation at an airport
+whose real bottleneck is runways.</p>
+
+<h2>7. Scoring methodology</h2>
+<p>First, what is scored: <strong>not profitability</strong> (construction cost, lease terms
+and discount rates are not public), but <strong>investment-worthiness signal</strong>:
+demand pressure measured against physical and legal capacity. The output is a defensible
+shortlist for a cost and feasibility team to price.</p>
+
+<p>Six KPIs, each computed as a <strong>percentile rank within the airport's hub
+class</strong>, combined with fixed weights:</p>
+
+<table>
+  <tr><th>KPI</th><th>What it measures</th><th>Side</th></tr>
+  <tr><td><code>peak_pressure</code></td><td>load factor + how far the peak month exceeds the mean</td><td>landside</td></tr>
+  <tr><td><code>gate_saturation</code></td><td>upgauging: carriers fly <em>bigger</em> aircraft when they cannot add <em>more</em> departures, the fingerprint of a gate/slot constraint</td><td>landside</td></tr>
+  <tr><td><code>demand_growth</code></td><td>2-year passenger CAGR</td><td>shared</td></tr>
+  <tr><td><code>international_intensity</code></td><td>international share; those passengers need roughly 2x terminal area and dwell</td><td>landside</td></tr>
+  <tr><td><code>airside_saturation</code> / <code>headroom</code></td><td>peak-month departures per usable runway</td><td>airside</td></tr>
+  <tr><td><code>delay_congestion</code></td><td>NAS delay share (0.6) + normalized taxi-out (0.4)</td><td>observed</td></tr>
+</table>
+
+<h3>Weights per profile</h3>
+<table>
+  <tr><th>KPI</th><th>terminal_expansion</th><th>congestion</th></tr>
+  <tr><td>peak_pressure</td><td>0.35</td><td>0.15</td></tr>
+  <tr><td>gate_saturation</td><td>0.20</td><td>0.15</td></tr>
+  <tr><td>demand_growth</td><td>0.20</td><td>0.15</td></tr>
+  <tr><td>international_intensity</td><td>0.15</td><td>–</td></tr>
+  <tr><td>airside headroom / saturation</td><td>0.10 (headroom)</td><td>0.20 (saturation)</td></tr>
+  <tr><td>delay_congestion</td><td>–</td><td>0.35</td></tr>
+</table>
+
+<p>The principles behind the numbers:</p>
+<ul>
+  <li><strong>Peer-group normalisation.</strong> Percentiles are computed within hub class
+  (large / medium / small / non-hub), so size decides which league an airport is in, never
+  its score within it. Tested both ways: a global ranking inverts into a size artefact.</li>
+  <li><strong>No weight exceeds 0.40.</strong> Above that, a ranking is a one-metric sort
+  wearing a costume.</li>
+  <li><strong>One metric, opposite polarity.</strong> Peak departures per runway enters the
+  terminal profile as <em>headroom</em> (spare runway is a precondition for a terminal to
+  pay off) and the congestion profile as <em>saturation</em> (runway saturation <em>is</em>
+  congestion). Above the 90th percentile in a terminal query, an explicit flag fires:
+  "airside-first, a terminal will not relieve this."</li>
+  <li><strong>Observation outranks inference.</strong> <code>delay_congestion</code> uses NAS
+  delay share (delay attributed to airspace and airport capacity, as distinct from carrier
+  or weather delay), which is causal and a rate, not a size proxy. Runway-count-based
+  saturation is inference and is weighted below it.</li>
+  <li><strong>Regulatory caps are data, not vibes.</strong> A hand-maintained
+  <code>REGULATORY_CAPS</code> registry (JFK, LGA, EWR, DCA, SNA) flags airports where flat
+  growth is a legal ceiling, not weak demand, and changes the recommendation type.</li>
+  <li><strong>Unmet demand is a stated proxy.</strong> Fundamentally unobservable, so it is
+  estimated from three observable leaks (load factor above the ~82% planning comfort level,
+  NAS delay share, upgauging without frequency growth) and returned as a <strong>range with
+  a confidence label</strong>, never a point estimate.</li>
+</ul>
+<p>Full rationale, including what was tried and rejected: <code>DESIGN.md</code> section 4.</p>
+
+<h2>8. Where and how AI is used</h2>
+<p>The LLM has exactly four jobs, two per path, and none of them is arithmetic:</p>
+<table>
+  <tr><th>#</th><th>Path</th><th>Job</th></tr>
+  <tr><td>1</td><td>Agent (default)</td><td>Choose <strong>which</strong> of the 12 tools to call and <strong>in what order</strong></td></tr>
+  <tr><td>2</td><td>Agent (default)</td><td>Phrase the final answer over the tools' structured results</td></tr>
+  <tr><td>3</td><td>Fallback pipeline</td><td>Parse intent and extract surface strings ("New England", "LA"), never resolve them</td></tr>
+  <tr><td>4</td><td>Fallback pipeline</td><td>Narrate prose containing <code>{{CODE.field}}</code> placeholders, never digits</td></tr>
+</table>
+
+<p>What the model is <strong>never</strong> allowed to do, and how each is enforced:</p>
+<ul>
+  <li><strong>Compute or emit a number</strong>: the purity test (build gate), placeholder
+  narration, and the numeric tripwire (section 5).</li>
+  <li><strong>Resolve entities</strong>: <code>agent/resolve.py</code> maps strings to
+  airport codes deterministically; "LA" raises Ambiguous rather than guessing.</li>
+  <li><strong>Decide whether a caveat appears</strong>: scope caveats (e.g., Anchorage's
+  domestic-only data) are emitted by the tools themselves and pinned by tests.</li>
+</ul>
+<p>The model itself is a runtime choice: <code>agent/llm.py</code> supports OpenAI, Groq,
+Gemini, and Anthropic behind one interface with no SDK dependency; any one key works.</p>
+
+<h2>9. Key tradeoffs</h2>
+<ul>
+  <li><strong>Cached monthly BTS snapshot over live flight tracking.</strong> Investment
+  decisions rest on 12-36 month demand trends; a live feed (OpenSky's free tier serves one
+  hour of history) would demo well while being unable to answer any question actually
+  asked.</li>
+  <li><strong>LLM narration with server-side numeric substitution over letting the model
+  emit numbers.</strong> A hallucinated capacity figure in an investment tool is an
+  unacceptable failure mode; substitution plus the tripwire makes the boundary mechanically
+  testable rather than dependent on prompt wording.</li>
+  <li><strong>Transparent weighted percentile model over a learned model.</strong> There is
+  no labelled "renovation profitability" ground truth to train on, and an additive model
+  returns per-KPI contributions that directly answer the "why", which a black box
+  structurally cannot.</li>
+  <li><strong>Hub-class percentiles over a global ranking.</strong> Tested both ways;
+  global ranking turns the model into a size artefact and the top terminal candidates come
+  out as small regional fields.</li>
+  <li><strong>A range over a point estimate for unmet demand.</strong> A single number
+  would imply precision the method does not have.</li>
+  <li><strong>stdlib over frameworks</strong> (no FastAPI, no LangGraph, no pytest): the
+  flow is linear and the routing trivial, so each framework would add a dependency without
+  adding capability, and the project's claim to run on a clean clone with zero installs
+  would quietly become false.</li>
+</ul>
+
+</main>
+</body>
+</html>

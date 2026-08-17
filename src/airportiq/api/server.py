@@ -40,11 +40,15 @@ def _load() -> None:
     global _SESSIONS
     from airportiq.agent.session import SessionStore
     _SESSIONS = SessionStore()
-    from build_and_rank import JET_RUNWAYS, build_facts
+    from build_and_rank import JET_RUNWAYS, _snapshot_universe, build_facts
     from airportiq import obs
 
+    # Universe is data-defined: whatever airports the T-100 snapshot covers. JET_RUNWAYS is
+    # only a lookup for the optional runway count. See _snapshot_universe for why the coupling
+    # was removed.
     with obs.span("build_facts", source="bts+snapshot") as sp:
-        _FACTS = build_facts(sorted(JET_RUNWAYS))
+        codes = _snapshot_universe() or sorted(JET_RUNWAYS)
+        _FACTS = build_facts(codes)
         sp.output(airports=len(_FACTS))
 
     # The engine is traced from OUT HERE, never from inside. scoring/ stays free of any
@@ -71,8 +75,18 @@ def _scorecards_for(trace: list[dict], limit: int = 4) -> list[dict]:
     Read out of the tool-call arguments rather than out of the prose. Parsing the model's
     sentence for airport codes would mean the panel agrees with the narration by
     construction, which is precisely the check we want to keep independent.
+
+    The card set follows the profile the agent actually queried (also read from the
+    tool-call arguments): a terminal_expansion answer gets terminal_expansion composites
+    beside it, not congestion ones wearing the wrong label.
     """
     from airportiq.agent import resolve
+
+    profile = "congestion"
+    for call in trace:
+        if '"terminal_expansion"' in (call.get("args") or ""):
+            profile = "terminal_expansion"
+            break
 
     seen: list[str] = []
     for call in trace:
@@ -89,17 +103,26 @@ def _scorecards_for(trace: list[dict], limit: int = 4) -> list[dict]:
                 if code not in seen:
                     seen.append(code)
 
+    from airportiq.scoring.explain import explain
+
+    facts_by_code = {f.code: f for f in _FACTS}
     out = []
     for code in seen[:limit]:
-        card = next((c for c in _CARDS["congestion"] if c.code == code), None)
+        card = next((c for c in _CARDS[profile] if c.code == code), None)
         if card is None:
             continue
+        facts = facts_by_code.get(code)
         out.append({
             "code": card.code, "name": card.name, "hub_class": card.hub_class,
             "rank": card.rank, "composite": card.composite,
             "kpis": {k: round(v, 1) for k, v in card.kpis.items()
                      if isinstance(v, (int, float))},
             "flags": card.flags, "missing": card.missing,
+            # What each stat means and how this airport's number was built, from the
+            # same pure layer as the score itself — the tooltip cannot disagree with
+            # the engine because it is derived from the engine's own inputs.
+            "explain": (explain(card, facts, _CARDS[profile], profile)
+                        if facts is not None else None),
         })
     return out
 
@@ -192,11 +215,20 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(400, {"error": "question is required"})
 
             by_code = {f.code: f for f in _FACTS}
+            # Load conversation state so follow-ups ("why?", "and SFO?") have a referent.
+            # Prior (question, answer) pairs are replayed as chat messages; tool traces
+            # from earlier turns are deliberately NOT replayed — see session.history_messages.
+            sid = payload.get("session_id") or self.headers.get("X-Session", "default")
+            sess = _SESSIONS.get(sid) if _SESSIONS is not None else None
+            history = sess.history_messages() if sess else []
+
             self._sse_open()
             try:
                 from airportiq.agent import react
+                from airportiq.agent.session import Turn
                 saw_region = False
-                for kind, data in react.run_streaming(question, _CARDS["congestion"], by_code):
+                for kind, data in react.run_streaming(question, _CARDS, by_code,
+                                                      history=history):
                     if kind == "tool_result" and "list_region" in data.get("tool", ""):
                         saw_region = True
                     if kind == "done":
@@ -206,6 +238,10 @@ class Handler(BaseHTTPRequestHandler):
                                                "not inferred by the model.")
                         data = {**data, "assumptions": assumptions,
                                 "scorecards": _scorecards_for(data.get("trace") or [])}
+                        if sess is not None:
+                            sess.add(Turn(question=question, intent="agent", codes=[],
+                                          profile="congestion",
+                                          answer=data.get("answer") or ""))
                     if not self._sse(kind, data):
                         return                       # client navigated away mid-answer
             except Exception as e:                   # noqa: BLE001
@@ -231,7 +267,7 @@ class Handler(BaseHTTPRequestHandler):
                 # unavailable (no OpenAI-compatible key), so the demo still works.
                 try:
                     from airportiq.agent import react
-                    out = react.run(question, _CARDS["congestion"], by_code)
+                    out = react.run(question, _CARDS, by_code)
                     assumptions = []
                     for t in out["trace"]:
                         if "list_region" in t["tool"]:
