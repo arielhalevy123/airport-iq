@@ -40,11 +40,15 @@ def _load() -> None:
     global _SESSIONS
     from airportiq.agent.session import SessionStore
     _SESSIONS = SessionStore()
-    from build_and_rank import JET_RUNWAYS, build_facts
+    from build_and_rank import JET_RUNWAYS, _snapshot_universe, build_facts
     from airportiq import obs
 
+    # Universe is data-defined: whatever airports the T-100 snapshot covers. JET_RUNWAYS is
+    # only a lookup for the optional runway count. See _snapshot_universe for why the coupling
+    # was removed.
     with obs.span("build_facts", source="bts+snapshot") as sp:
-        _FACTS = build_facts(sorted(JET_RUNWAYS))
+        codes = _snapshot_universe() or sorted(JET_RUNWAYS)
+        _FACTS = build_facts(codes)
         sp.output(airports=len(_FACTS))
 
     # The engine is traced from OUT HERE, never from inside. scoring/ stays free of any
