@@ -40,11 +40,15 @@ def _load() -> None:
     global _SESSIONS
     from airportiq.agent.session import SessionStore
     _SESSIONS = SessionStore()
-    from build_and_rank import JET_RUNWAYS, build_facts
+    from build_and_rank import JET_RUNWAYS, _snapshot_universe, build_facts
     from airportiq import obs
 
+    # Universe is data-defined: whatever airports the T-100 snapshot covers. JET_RUNWAYS is
+    # only a lookup for the optional runway count. See _snapshot_universe for why the coupling
+    # was removed.
     with obs.span("build_facts", source="bts+snapshot") as sp:
-        _FACTS = build_facts(sorted(JET_RUNWAYS))
+        codes = _snapshot_universe() or sorted(JET_RUNWAYS)
+        _FACTS = build_facts(codes)
         sp.output(airports=len(_FACTS))
 
     # The engine is traced from OUT HERE, never from inside. scoring/ stays free of any
@@ -192,11 +196,20 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(400, {"error": "question is required"})
 
             by_code = {f.code: f for f in _FACTS}
+            # Load conversation state so follow-ups ("why?", "and SFO?") have a referent.
+            # Prior (question, answer) pairs are replayed as chat messages; tool traces
+            # from earlier turns are deliberately NOT replayed — see session.history_messages.
+            sid = payload.get("session_id") or self.headers.get("X-Session", "default")
+            sess = _SESSIONS.get(sid) if _SESSIONS is not None else None
+            history = sess.history_messages() if sess else []
+
             self._sse_open()
             try:
                 from airportiq.agent import react
+                from airportiq.agent.session import Turn
                 saw_region = False
-                for kind, data in react.run_streaming(question, _CARDS["congestion"], by_code):
+                for kind, data in react.run_streaming(question, _CARDS["congestion"],
+                                                      by_code, history=history):
                     if kind == "tool_result" and "list_region" in data.get("tool", ""):
                         saw_region = True
                     if kind == "done":
@@ -206,6 +219,10 @@ class Handler(BaseHTTPRequestHandler):
                                                "not inferred by the model.")
                         data = {**data, "assumptions": assumptions,
                                 "scorecards": _scorecards_for(data.get("trace") or [])}
+                        if sess is not None:
+                            sess.add(Turn(question=question, intent="agent", codes=[],
+                                          profile="congestion",
+                                          answer=data.get("answer") or ""))
                     if not self._sse(kind, data):
                         return                       # client navigated away mid-answer
             except Exception as e:                   # noqa: BLE001

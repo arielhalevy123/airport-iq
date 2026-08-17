@@ -47,17 +47,38 @@ JET_RUNWAYS = {
 }
 
 
-def _load_delays() -> dict[str, dict]:
-    """Per-airport delay metrics from the committed BTS On-Time snapshot."""
+def _load_delays() -> tuple[dict[str, dict], str | None]:
+    """Per-airport delay metrics plus the period they cover.
+
+    The period is one month (currently 2026-04). Callers must be able to disclose it, so
+    dropping it here would strip the caveat downstream. Returned as a plain tuple to avoid
+    growing another module for what is a single accessor.
+    """
     import json
     p = Path(__file__).resolve().parents[1] / "data" / "snapshots" / "bts_delays.json"
     if not p.exists():
-        return {}
-    return json.loads(p.read_text()).get("airports", {})
+        return {}, None
+    data = json.loads(p.read_text())
+    return data.get("airports", {}), data.get("period")
+
+
+def _snapshot_universe() -> list[str]:
+    """Airport codes present in the committed T-100 snapshot.
+
+    Universe is data-defined rather than pinned to JET_RUNWAYS: the scoring engine covers
+    whichever airports the data covers. JET_RUNWAYS is now runway-count METADATA, consulted
+    where available and left as None otherwise. That severs the accidental coupling where
+    forgetting to add a runway count also removed the airport from state and regional queries.
+    """
+    import json
+    p = Path(__file__).resolve().parents[1] / "data" / "snapshots" / "bts_monthly.json"
+    if not p.exists():
+        return []
+    return sorted(json.loads(p.read_text()).keys())
 
 
 def build_facts(codes: list[str]) -> list[AirportFacts]:
-    delays = _load_delays()
+    delays, delay_period = _load_delays()
     facts: list[AirportFacts] = []
     for code in codes:
         rows = bts.monthly(code, months=36)
@@ -77,8 +98,17 @@ def build_facts(codes: list[str]) -> list[AirportFacts]:
         intl_share = (sum(intl) / pax_ttm) if intl and pax_ttm else None
 
         pax_2y = sum(r["passengers"] for r in prior) if len(prior) == 12 else None
-        dep_prior = sum(r["departures"] or 0 for r in prior) if len(prior) == 12 else 0
+        dep_prior = (sum(r["departures"] or 0 for r in prior)
+                     if len(prior) == 12 else None)
         seats_prior = sum(r["seats"] or 0 for r in prior) if len(prior) == 12 else 0
+
+        # Freight is optional per row (small airports may report none). Sum what is present;
+        # do not coerce missing months to zero, so the aggregate honestly represents "no data
+        # here" rather than "no freight here".
+        freight_vals = [r["freight_lbs"] for r in ttm if r["freight_lbs"] is not None]
+        freight_ttm = sum(freight_vals) if freight_vals else None
+
+        drow = delays.get(code) or {}
 
         facts.append(AirportFacts(
             code=code,
@@ -90,14 +120,19 @@ def build_facts(codes: list[str]) -> list[AirportFacts]:
             mean_month_passengers=pax_ttm / len(ttm),
             international_share=intl_share,
             passengers_2y_ago=pax_2y,
+            departures_2y_ago=dep_prior,
             seats_per_departure_now=(seats_ttm / dep_ttm) if dep_ttm else None,
-            seats_per_departure_base=(seats_prior / dep_prior) if dep_prior else None,
+            seats_per_departure_base=((seats_prior / dep_prior)
+                                      if dep_prior else None),
             jet_runways=JET_RUNWAYS.get(code),
             peak_month_departures=max((r["departures"] or 0) for r in ttm),
             regulatory_cap=REGULATORY_CAPS.get(code),
-            nas_delay_share=(delays.get(code) or {}).get("nas_delay_share"),
-            mean_taxi_out_min=(delays.get(code) or {}).get("mean_taxi_out_min"),
-            stage_length=(delays.get(code) or {}).get("stage_length"),
+            nas_delay_share=drow.get("nas_delay_share"),
+            mean_taxi_out_min=drow.get("mean_taxi_out_min"),
+            stage_length=drow.get("stage_length"),
+            freight_lbs_ttm=freight_ttm,
+            total_delay_minutes=drow.get("total_delay_minutes"),
+            delay_period=delay_period if drow else None,
         ))
     return facts
 
@@ -109,7 +144,11 @@ def main() -> int:
     ap.add_argument("--hub", default="large")
     a = ap.parse_args()
 
-    codes = sorted(JET_RUNWAYS)
+    # Universe is whichever airports the T-100 snapshot actually covers. JET_RUNWAYS is
+    # runway metadata now, not the airport list — so growing the snapshot grows the universe
+    # without a code change, and forgetting a runway count no longer silently drops an airport
+    # out of state and regional queries.
+    codes = _snapshot_universe() or sorted(JET_RUNWAYS)
     print(f"fetching {len(codes)} airports from BTS ...", file=sys.stderr)
     facts = build_facts(codes)
     print(f"built facts for {len(facts)} airports\n", file=sys.stderr)

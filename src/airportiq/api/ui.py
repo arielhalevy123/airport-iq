@@ -153,8 +153,8 @@ INDEX = """<!doctype html>
  /* live tool trace, streamed */
  .live{margin-bottom:2px}
  .live:empty{display:none}
- .step{display:flex;align-items:center;gap:8px;padding:3px 0;
-       font:11.5px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+ .step{display:flex;align-items:center;gap:9px;padding:5px 0;
+       font:13.5px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
        animation:slide .18s ease-out}
  @keyframes slide{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
  .dot{width:5px;height:5px;border-radius:50%;background:var(--line);flex:none}
@@ -331,6 +331,11 @@ function ask(ev){
 
       const handle = (ev, d) => {
         if (ev === 'tool_call'){
+          // A tool call means the deltas seen so far were mid-plan reasoning, not the final
+          // answer. Drop them so intermediate prose does not leak into the answer paragraph
+          // once the real answer starts streaming after the tool call resolves.
+          answer = '';
+          para.textContent = '';
           thinking.remove();
           step(d.tool + ' ' + shortArgs(d.args), 'run');
         } else if (ev === 'tool_result'){

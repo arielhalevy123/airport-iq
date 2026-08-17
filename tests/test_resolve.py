@@ -51,6 +51,47 @@ def test_la_is_ambiguous_without_permission():
         assert "SNA" in e.candidates
 
 
+def test_us_states_resolve_as_regions():
+    """State-based queries must work as regions. Membership is deterministic (AIRPORT_STATE),
+    never guessed. A user asking 'airports in Florida' should get every FL airport in our
+    universe, not just BOS-because-New-England-is-the-only-known-region."""
+    fl_codes, fl_note = resolve.resolve_region("Florida")
+    assert "MCO" in fl_codes and "MIA" in fl_codes and "FLL" in fl_codes and "TPA" in fl_codes
+    assert "ATL" not in fl_codes, "Georgia is not Florida"
+    assert "Florida" in fl_note
+
+    tx_codes, _ = resolve.resolve_region("Texas")
+    assert "DFW" in tx_codes and "IAH" in tx_codes and "AUS" in tx_codes
+    assert "MCO" not in tx_codes
+
+    # Wrapping words that a user or model might use verbatim.
+    assert resolve.resolve_region("state of Florida")[0] == fl_codes
+    assert resolve.resolve_region("the Florida")[0] == fl_codes
+
+
+def test_state_abbreviation_is_not_a_region():
+    """Two-letter abbreviations collide with metro shorthand and English. 'LA' is a metro
+    in this codebase and must not silently become Louisiana here. Users spell out the state."""
+    try:
+        resolve.resolve_region("LA")
+    except ValueError:
+        pass                                          # good — refused rather than guessed
+    else:
+        raise AssertionError("bare 'LA' region must raise, not resolve to Louisiana")
+
+
+def test_state_with_no_airports_refuses_rather_than_returns_empty():
+    """A state with no airport in AIRPORT_STATE is a coverage gap, not a query with an
+    empty answer. Silence would look like 'no Alabama airports have expansion potential',
+    which is a wrong answer to a right question."""
+    try:
+        resolve.resolve_region("Wyoming")
+    except ValueError as e:
+        assert "Wyoming" in str(e)
+    else:
+        raise AssertionError("a state we do not cover must refuse rather than return empty")
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

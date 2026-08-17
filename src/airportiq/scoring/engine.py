@@ -84,6 +84,12 @@ class AirportFacts:
     # expansion candidate, and folding it into the composite would smuggle in a judgement
     # the data does not support.
     stage_length: dict | None = None
+    # Additional descriptive facts used by tools but not scored. Kept optional so scoring
+    # never depends on their presence — a missing value is missing, never zero.
+    freight_lbs_ttm: float | None = None
+    total_delay_minutes: int | None = None
+    departures_2y_ago: float | None = None
+    delay_period: str | None = None       # e.g. "2026-04" — one month, disclosed by tools
 
 
 @dataclass
