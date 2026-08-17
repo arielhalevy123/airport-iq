@@ -23,14 +23,30 @@ from . import resolve
 
 # Populated by bind() so the tool functions can reach the current data without globals
 # leaking across requests.
-_CARDS: dict[str, Any] = {}
-_FACTS: dict[str, Any] = {}
+#
+# BOTH profiles are bound, because composite, rank, flags and missing[] are PROFILE-
+# SPECIFIC. Binding one card set and letting rank_airports echo whatever profile name the
+# caller asked for produced the worst kind of wrong answer: a congestion ranking wearing a
+# terminal_expansion label, with the airside-first flag structurally unreachable.
+# tests/test_tools.py::test_rank_airports_uses_the_requested_profiles_cards pins this.
+_CARDS_BY_PROFILE: dict[str, dict[str, Any]] = {}
+_CARDS: dict[str, Any] = {}       # the default (congestion) view, for profile-independent
+_FACTS: dict[str, Any] = {}       # lookups: hub class, growth rates, facts passthrough
+
+_DEFAULT_PROFILE = "congestion"
 
 
-def bind(cards: list, facts_by_code: dict) -> None:
-    global _CARDS, _FACTS
-    _CARDS = {c.code: c for c in cards}
+def bind(cards_by_profile: dict[str, list], facts_by_code: dict) -> None:
+    global _CARDS_BY_PROFILE, _CARDS, _FACTS
+    _CARDS_BY_PROFILE = {p: {c.code: c for c in cards}
+                         for p, cards in cards_by_profile.items()}
+    _CARDS = (_CARDS_BY_PROFILE.get(_DEFAULT_PROFILE)
+              or next(iter(_CARDS_BY_PROFILE.values()), {}))
     _FACTS = facts_by_code
+
+
+def _cards_for(profile: str) -> dict[str, Any]:
+    return _CARDS_BY_PROFILE.get(profile, _CARDS)
 
 
 # --------------------------------------------------------------------------- the tools
@@ -76,17 +92,8 @@ def _raw_metrics(f) -> dict:
 # gate count. It is not — it is a seat-upgauging ratio, a fingerprint of a gate/slot
 # constraint rather than a measure of one. Same for airside_saturation, which is a runway
 # COUNT proxy — not a runway CAPACITY measurement.
-_PROXY_LABELS = {
-    "gate_saturation": ("PROXY: seats-per-departure change over two years, "
-                        "not a physical gate count. Rising means carriers are upgauging, "
-                        "which is the fingerprint of a gate or slot constraint."),
-    "airside_saturation": ("PROXY: peak-month departures per usable runway. Runway COUNT, "
-                           "not runway CAPACITY. Two closely spaced parallels do not equal "
-                           "two independent runways in low visibility."),
-    "airside_headroom": ("PROXY: inverse of airside_saturation. Same caveats apply."),
-    "peak_pressure": ("PROXY: load-factor and peak-vs-mean month ratio. Not a facility-level "
-                      "measurement of terminal crowding."),
-}
+# One wording, shared with the UI tooltips (scoring/explain.py), so the two cannot drift.
+from ..scoring.explain import PROXY_LABELS as _PROXY_LABELS  # noqa: E402
 
 
 def _scope_notes(card, f) -> dict:
@@ -107,23 +114,27 @@ def _scope_notes(card, f) -> dict:
     return notes
 
 
-def get_airport_metrics(airport: str) -> dict:
+def get_airport_metrics(airport: str, profile: str = _DEFAULT_PROFILE) -> dict:
     """Every computed KPI for one airport, with its rank and any flags.
 
     Returns raw values AND percentiles AND composite side by side, plus proxy labels for
     the KPIs that are inferred rather than measured. A caller asking for a growth rate must
     quote the raw growth rate, not its percentile — the percentile is a rank aid, not a rate.
+
+    Composite, rank, flags and missing[] are PROFILE-SPECIFIC; the profile used is named in
+    the response so it can never be silently mislabelled.
     """
     try:
         code, note = resolve.resolve_airport(airport, allow_primary=True)
     except (ValueError, resolve.Ambiguous) as e:
         return {"error": f"could not resolve {airport!r}", "detail": str(e)}
-    card = _CARDS.get(code)
+    card = _cards_for(profile).get(code)
     if not card:
         return {"error": f"no data for {code}"}
     fact = _FACTS.get(code)
     out = {
         "code": code, "name": card.name, "hub_class": card.hub_class,
+        "profile": profile,
         "rank_in_hub_class": card.rank, "composite": card.composite,
         "percentiles_within_hub_class": {k: v for k, v in card.kpis.items()
                                          if isinstance(v, (int, float))},
@@ -165,11 +176,11 @@ def _confidence(card, f) -> dict:
     }
 
 
-def compare_airports(airports: list[str]) -> dict:
+def compare_airports(airports: list[str], profile: str = _DEFAULT_PROFILE) -> dict:
     """Side-by-side percentiles for several airports."""
     out, notes = [], []
     for a in airports:
-        m = get_airport_metrics(a)
+        m = get_airport_metrics(a, profile=profile)
         if m.get("note"):
             notes.append(m.pop("note"))
         out.append(m)
@@ -311,6 +322,7 @@ def rank_airports(profile: str = "congestion", hub_class: str | None = None,
                          "rank_by_flight_growth. Composite profiles weight growth at "
                          "~0.15-0.20 and do not answer growth questions directly.")}
 
+    pool = _cards_for(profile)     # the requested profile's cards, not whatever was bound
     if airports:
         wanted = set()
         for a in airports:
@@ -318,9 +330,9 @@ def rank_airports(profile: str = "congestion", hub_class: str | None = None,
                 wanted.add(resolve.resolve_airport(a, allow_primary=True)[0])
             except (ValueError, resolve.Ambiguous):
                 continue
-        rows = [c for c in _CARDS.values() if c.code in wanted and c.composite is not None]
+        rows = [c for c in pool.values() if c.code in wanted and c.composite is not None]
     else:
-        rows = [c for c in _CARDS.values()
+        rows = [c for c in pool.values()
                 if (hub_class is None or c.hub_class == hub_class)
                 and c.composite is not None]
     rows.sort(key=lambda c: (-(c.composite or 0), c.code))
@@ -546,15 +558,22 @@ REGISTRY: dict[str, Callable] = {
 SCHEMAS = [
     {"type": "function", "function": {
         "name": "get_airport_metrics",
-        "description": "All computed KPI percentiles, rank and flags for one airport.",
+        "description": ("All computed KPI percentiles, rank and flags for one airport. "
+                        "Composite and rank are profile-specific: pass profile="
+                        "'terminal_expansion' for terminal/gate questions (default is "
+                        "'congestion')."),
         "parameters": {"type": "object", "properties": {
-            "airport": {"type": "string", "description": "IATA code or city name, e.g. SFO or Santa Ana"}},
+            "airport": {"type": "string", "description": "IATA code or city name, e.g. SFO or Santa Ana"},
+            "profile": {"type": "string", "enum": ["congestion", "terminal_expansion"]}},
             "required": ["airport"]}}},
     {"type": "function", "function": {
         "name": "compare_airports",
-        "description": "Side-by-side metrics for two or more airports.",
+        "description": ("Side-by-side metrics for two or more airports. Pass profile="
+                        "'terminal_expansion' for terminal/gate comparisons (default "
+                        "'congestion')."),
         "parameters": {"type": "object", "properties": {
-            "airports": {"type": "array", "items": {"type": "string"}}},
+            "airports": {"type": "array", "items": {"type": "string"}},
+            "profile": {"type": "string", "enum": ["congestion", "terminal_expansion"]}},
             "required": ["airports"]}}},
     {"type": "function", "function": {
         "name": "list_region",

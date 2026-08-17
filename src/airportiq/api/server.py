@@ -75,8 +75,18 @@ def _scorecards_for(trace: list[dict], limit: int = 4) -> list[dict]:
     Read out of the tool-call arguments rather than out of the prose. Parsing the model's
     sentence for airport codes would mean the panel agrees with the narration by
     construction, which is precisely the check we want to keep independent.
+
+    The card set follows the profile the agent actually queried (also read from the
+    tool-call arguments): a terminal_expansion answer gets terminal_expansion composites
+    beside it, not congestion ones wearing the wrong label.
     """
     from airportiq.agent import resolve
+
+    profile = "congestion"
+    for call in trace:
+        if '"terminal_expansion"' in (call.get("args") or ""):
+            profile = "terminal_expansion"
+            break
 
     seen: list[str] = []
     for call in trace:
@@ -93,17 +103,26 @@ def _scorecards_for(trace: list[dict], limit: int = 4) -> list[dict]:
                 if code not in seen:
                     seen.append(code)
 
+    from airportiq.scoring.explain import explain
+
+    facts_by_code = {f.code: f for f in _FACTS}
     out = []
     for code in seen[:limit]:
-        card = next((c for c in _CARDS["congestion"] if c.code == code), None)
+        card = next((c for c in _CARDS[profile] if c.code == code), None)
         if card is None:
             continue
+        facts = facts_by_code.get(code)
         out.append({
             "code": card.code, "name": card.name, "hub_class": card.hub_class,
             "rank": card.rank, "composite": card.composite,
             "kpis": {k: round(v, 1) for k, v in card.kpis.items()
                      if isinstance(v, (int, float))},
             "flags": card.flags, "missing": card.missing,
+            # What each stat means and how this airport's number was built, from the
+            # same pure layer as the score itself — the tooltip cannot disagree with
+            # the engine because it is derived from the engine's own inputs.
+            "explain": (explain(card, facts, _CARDS[profile], profile)
+                        if facts is not None else None),
         })
     return out
 
@@ -208,8 +227,8 @@ class Handler(BaseHTTPRequestHandler):
                 from airportiq.agent import react
                 from airportiq.agent.session import Turn
                 saw_region = False
-                for kind, data in react.run_streaming(question, _CARDS["congestion"],
-                                                      by_code, history=history):
+                for kind, data in react.run_streaming(question, _CARDS, by_code,
+                                                      history=history):
                     if kind == "tool_result" and "list_region" in data.get("tool", ""):
                         saw_region = True
                     if kind == "done":
@@ -248,7 +267,7 @@ class Handler(BaseHTTPRequestHandler):
                 # unavailable (no OpenAI-compatible key), so the demo still works.
                 try:
                     from airportiq.agent import react
-                    out = react.run(question, _CARDS["congestion"], by_code)
+                    out = react.run(question, _CARDS, by_code)
                     assumptions = []
                     for t in out["trace"]:
                         if "list_region" in t["tool"]:

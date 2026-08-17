@@ -16,7 +16,7 @@ def _bind():
                   kpis={"delay_congestion": 80.0}, contributions={}, missing=[],
                   flags=["Growth is legally capped (noise curfew)."]),
     ]
-    tools.bind(cards, {})
+    tools.bind({"congestion": cards, "terminal_expansion": cards}, {})
     return cards
 
 
@@ -91,7 +91,9 @@ def test_stage_length_returns_both_thresholds():
     """One long-haul number would hide that the threshold is doing the work: for ANC the
     answer roughly doubles between the two, so both must always be returned."""
     _bind()
-    tools.bind(tools._CARDS.values(), {"ANC": _Facts(_ANC_STAGE)})
+    tools.bind({"congestion": list(tools._CARDS.values()),
+                "terminal_expansion": list(tools._CARDS.values())},
+               {"ANC": _Facts(_ANC_STAGE)})
     out = json.loads(tools.call("get_stage_length_mix", '{"airport": "Anchorage"}'))
     lh = out["long_haul_share"]
     assert lh["at_2500_statute_miles"] == 0.1163
@@ -102,7 +104,9 @@ def test_stage_length_returns_both_thresholds():
 def test_stage_length_bands_sum_to_one():
     """A band set that does not sum to 1 means departures were dropped or double counted."""
     _bind()
-    tools.bind(tools._CARDS.values(), {"ANC": _Facts(_ANC_STAGE)})
+    tools.bind({"congestion": list(tools._CARDS.values()),
+                "terminal_expansion": list(tools._CARDS.values())},
+               {"ANC": _Facts(_ANC_STAGE)})
     out = json.loads(tools.call("get_stage_length_mix", '{"airport": "ANC"}'))
     assert abs(sum(out["share_by_band"].values()) - 1.0) < 0.001
 
@@ -112,7 +116,9 @@ def test_anchorage_cargo_caveat_is_forced():
     source. Answering the brief's Anchorage question without that caveat is misleading,
     so the tool emits it rather than hoping the model remembers."""
     _bind()
-    tools.bind(tools._CARDS.values(), {"ANC": _Facts(_ANC_STAGE)})
+    tools.bind({"congestion": list(tools._CARDS.values()),
+                "terminal_expansion": list(tools._CARDS.values())},
+               {"ANC": _Facts(_ANC_STAGE)})
     out = json.loads(tools.call("get_stage_length_mix", '{"airport": "ANC"}'))
     assert "cargo" in out["airport_specific_warning"].lower()
     assert "DOMESTIC" in out["scope_warning"]
@@ -120,7 +126,9 @@ def test_anchorage_cargo_caveat_is_forced():
 
 def test_stage_length_missing_data_is_refused_not_guessed():
     _bind()
-    tools.bind(tools._CARDS.values(), {"SFO": _Facts(None)})
+    tools.bind({"congestion": list(tools._CARDS.values()),
+                "terminal_expansion": list(tools._CARDS.values())},
+               {"SFO": _Facts(None)})
     out = json.loads(tools.call("get_stage_length_mix", '{"airport": "SFO"}'))
     assert "error" in out
 
@@ -168,7 +176,7 @@ def _bind_growth():
         "BOS": _GrowthFacts("BOS", "Boston Logan", 1100, 1000, 1120, 1000, total_delay=None),
         "PDX": _GrowthFacts("PDX", "Portland OR", 950, 1000, 970, 1000, total_delay=200_000),
     }
-    tools.bind(cards, facts)
+    tools.bind({"congestion": cards, "terminal_expansion": cards}, facts)
 
 
 def test_passenger_growth_tool_returns_raw_rate_not_percentile():
@@ -258,7 +266,7 @@ def test_missing_delay_data_lowers_confidence():
     }
     facts["SFO"].nas_delay_share = 0.42
     facts["BGR"].nas_delay_share = None
-    tools.bind(cards, facts)
+    tools.bind({"congestion": cards, "terminal_expansion": cards}, facts)
     full = json.loads(tools.call("get_airport_metrics", '{"airport": "SFO"}'))
     lean = json.loads(tools.call("get_airport_metrics", '{"airport": "BGR"}'))
     assert full["confidence"]["level"] == "high"
@@ -303,3 +311,62 @@ def test_list_region_handles_us_states():
     assert "error" not in out
     assert "excluded_no_data" in out
     assert "MCO" in out["excluded_no_data"]
+
+
+# --------------------------------------------------------------- profile correctness
+
+def _bind_two_profiles():
+    """Two profiles with OPPOSITE orderings, so using the wrong card set is unmissable.
+    This pins the bug where the agent ranked every profile with the congestion composite."""
+    cong = [
+        ScoreCard(code="SFO", name="San Francisco", composite=75.0, rank=1, hub_class="large",
+                  kpis={"delay_congestion": 87.0}, contributions={"delay_congestion": 30.5},
+                  missing=[], flags=[]),
+        ScoreCard(code="PDX", name="Portland", composite=40.0, rank=2, hub_class="large",
+                  kpis={"delay_congestion": 30.0}, contributions={"delay_congestion": 10.5},
+                  missing=[], flags=[]),
+    ]
+    term = [
+        ScoreCard(code="PDX", name="Portland", composite=90.0, rank=1, hub_class="large",
+                  kpis={"peak_pressure": 92.0}, contributions={"peak_pressure": 32.2},
+                  missing=[], flags=[]),
+        ScoreCard(code="SFO", name="San Francisco", composite=50.0, rank=2, hub_class="large",
+                  kpis={"peak_pressure": 55.0}, contributions={"peak_pressure": 19.2},
+                  missing=[],
+                  flags=["Airside-first: this airport is runway-constrained, so a terminal "
+                         "will not relieve it."]),
+    ]
+    tools.bind({"congestion": cong, "terminal_expansion": term}, {})
+
+
+def test_rank_airports_uses_the_requested_profiles_cards():
+    """rank_airports(profile=X) must rank by profile X's composites — not echo the label
+    onto whatever card set happened to be bound."""
+    _bind_two_profiles()
+    term = json.loads(tools.call("rank_airports",
+                                 '{"profile": "terminal_expansion", "hub_class": "large"}'))
+    cong = json.loads(tools.call("rank_airports",
+                                 '{"profile": "congestion", "hub_class": "large"}'))
+    assert [r["code"] for r in term["results"]] == ["PDX", "SFO"]
+    assert term["results"][0]["composite"] == 90.0
+    assert [r["code"] for r in cong["results"]] == ["SFO", "PDX"]
+    assert cong["results"][0]["composite"] == 75.0
+
+
+def test_rank_airports_surfaces_profile_specific_flags():
+    """The airside-first flag only exists on terminal-profile cards. A terminal ranking
+    that cannot show it steers money at a runway-constrained airport."""
+    _bind_two_profiles()
+    out = json.loads(tools.call("rank_airports",
+                                '{"profile": "terminal_expansion", "hub_class": "large"}'))
+    sfo = next(r for r in out["results"] if r["code"] == "SFO")
+    assert any("Airside-first" in f for f in sfo["flags"])
+
+
+def test_get_airport_metrics_is_profile_aware_and_names_its_profile():
+    _bind_two_profiles()
+    term = json.loads(tools.call("get_airport_metrics",
+                                 '{"airport": "SFO", "profile": "terminal_expansion"}'))
+    default = json.loads(tools.call("get_airport_metrics", '{"airport": "SFO"}'))
+    assert term["composite"] == 50.0 and term["profile"] == "terminal_expansion"
+    assert default["composite"] == 75.0 and default["profile"] == "congestion"

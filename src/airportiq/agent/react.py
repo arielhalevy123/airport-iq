@@ -37,7 +37,9 @@ TOOL ROUTING (match the wording of the question, not a plausible-sounding neighb
   decide state membership yourself. Then rank the returned airports with rank_airports
   (composite) OR with a growth tool, depending on the question.
 - "Expansion", "modernisation", "investment candidates", "most capacity-constrained":
-  rank_airports with the appropriate composite profile.
+  rank_airports with the appropriate composite profile. Composite scores, ranks and flags
+  are PROFILE-SPECIFIC: terminal questions need profile="terminal_expansion" on
+  rank_airports, get_airport_metrics and compare_airports alike.
 - "Growing fastest", "top growing", "highest growth": use rank_by_passenger_growth or
   rank_by_flight_growth. Do NOT use rank_airports — its composite weights growth at ~0.15,
   which is not what "growing fastest" means.
@@ -97,11 +99,14 @@ STYLE:
 - Be concise. Finding, then reason. No paragraphs of preamble."""
 
 
-def run(question: str, cards: list, facts_by_code: dict,
+def run(question: str, cards_by_profile: dict[str, list], facts_by_code: dict,
         max_rounds: int = MAX_ROUNDS,
         history: list[dict] | None = None) -> dict:
-    """Answer one question with tool use. Returns the answer and a full call trace."""
-    tools.bind(cards, facts_by_code)
+    """Answer one question with tool use. Returns the answer and a full call trace.
+
+    cards_by_profile carries BOTH scoring profiles, because composite/rank/flags are
+    profile-specific and the tools select by the profile the model asks for."""
+    tools.bind(cards_by_profile, facts_by_code)
 
     messages: list[dict] = [{"role": "system", "content": SYSTEM}]
     if history:
@@ -152,7 +157,7 @@ def run(question: str, cards: list, facts_by_code: dict,
             "note": "reached the round limit; answered from data already gathered"}
 
 
-def run_streaming(question: str, cards: list, facts_by_code: dict,
+def run_streaming(question: str, cards_by_profile: dict[str, list], facts_by_code: dict,
                   max_rounds: int = MAX_ROUNDS,
                   history: list[dict] | None = None):
     """The same loop, yielding events as they happen instead of one dict at the end.
@@ -175,7 +180,7 @@ def run_streaming(question: str, cards: list, facts_by_code: dict,
     reference implementation used by the evals, and threading optional emit-hooks through
     it would make the thing under test differ from the thing in production.
     """
-    tools.bind(cards, facts_by_code)
+    tools.bind(cards_by_profile, facts_by_code)
 
     messages: list[dict] = [{"role": "system", "content": SYSTEM}]
     if history:

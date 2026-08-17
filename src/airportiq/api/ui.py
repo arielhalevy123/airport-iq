@@ -138,6 +138,56 @@ INDEX = """<!doctype html>
  .cflag{margin-top:9px;font-size:11.5px;color:var(--warn);line-height:1.45}
  .cmiss{margin-top:7px;font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
 
+ /* ---- stat explainers: every number carries an ⓘ that shows what the stat is and
+    how THIS airport's figure was derived, straight from the pure explain layer ---- */
+ .info{width:15px;height:15px;border-radius:50%;border:1px solid var(--line);flex:none;
+       background:none;color:var(--muted);cursor:help;padding:0;margin-left:5px;
+       font:600 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+       display:inline-flex;align-items:center;justify-content:center;vertical-align:1px;
+       text-transform:none;letter-spacing:0}
+ .info:hover,.info:focus{color:var(--accent);border-color:var(--accent);outline:none}
+ .tip{position:fixed;z-index:50;max-width:340px;background:var(--panel);
+      border:1px solid var(--accent-dim);border-radius:3px;padding:11px 13px;
+      font-size:12px;line-height:1.5;color:var(--ink);
+      box-shadow:0 6px 24px rgba(0,0,0,.45)}
+ .tip[hidden]{display:none}
+ .tip h4{margin:0 0 6px;font:600 11px ui-monospace,SFMono-Regular,Menlo,monospace;
+         letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+ .tip .twhat{margin-bottom:8px}
+ .tip .thl{font:600 10px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+           letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+ .tip .thow div{font:11.5px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+                padding:1px 0}
+ .tip .tcave{margin-top:8px;color:var(--warn);font-size:11.5px;
+             border-top:1px solid var(--line);padding-top:7px}
+ .tip .thint{margin-top:8px;color:var(--muted);font:10.5px ui-monospace,SFMono-Regular,
+             Menlo,monospace;letter-spacing:.05em;text-transform:uppercase}
+
+ /* the click-through window: where the data came from, what it was, and the calculation,
+    in plain words first. Hover teases the meaning; the window carries the whole story. */
+ .ovl{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:60;display:flex;
+      align-items:center;justify-content:center;padding:20px}
+ .modal{background:var(--panel);border:1px solid var(--accent-dim);border-radius:4px;
+        max-width:500px;width:100%;max-height:82vh;overflow:auto;padding:18px 20px 20px;
+        position:relative;box-shadow:0 14px 48px rgba(0,0,0,.5)}
+ .modal h3{margin:0;font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace;
+           letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+           padding-right:28px}
+ .modal .mcode{color:var(--muted);font:11px ui-monospace,SFMono-Regular,Menlo,monospace;
+               margin:2px 0 4px}
+ .modal .msec{margin-top:13px}
+ .modal .mh{font:600 10px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+            letter-spacing:.09em;text-transform:uppercase;margin-bottom:4px}
+ .modal .msimple{font-size:13.5px;line-height:1.6}
+ .modal .msrc{font-size:12.5px;color:var(--muted)}
+ .modal .mhow div{font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+                  padding:2px 0}
+ .modal .mcave{color:var(--warn);font-size:12px;line-height:1.5}
+ .modal .x{position:absolute;top:8px;right:10px;border:none;background:none;
+           color:var(--muted);font-size:18px;line-height:1;cursor:pointer;padding:4px}
+ .modal .x:hover{color:var(--ink)}
+ .kpi .val{cursor:help}
+
  form{position:fixed;bottom:0;left:0;right:0;background:var(--bg);
       border-top:1px solid var(--line);padding:14px 20px}
  .row{max-width:860px;margin:0 auto;display:flex;gap:8px}
@@ -232,16 +282,101 @@ const KPI_LABEL = {
   international_intensity:'intl intensity'
 };
 
+/* ---- stat explainers ----------------------------------------------------------
+   Two levels, both fed by the `explain` payload the server derives with the same pure
+   layer that computed the score. HOVER answers "what does this stat mean". CLICK opens
+   a window with the whole story: plain words first, then where the data came from, then
+   the calculation step by step, then the fine print. All content goes in via
+   textContent, so it is as XSS-safe as the rest of the page. */
+const tip = el('div','tip'); tip.hidden = true; document.body.appendChild(tip);
+
+function showTip(anchor, title, d){
+  tip.textContent = '';
+  tip.appendChild(el('h4',null,title));
+  if (d.what) tip.appendChild(el('div','twhat',d.what));
+  tip.appendChild(el('div','thint','click for the full story — data source and calculation'));
+  tip.hidden = false;
+  const r = anchor.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  let y = r.bottom + 8;
+  if (y + h > window.innerHeight - 8) y = r.top - h - 8;   // flip above near the bottom
+  tip.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 12)) + 'px';
+  tip.style.top = Math.max(8, y) + 'px';
+}
+
+function hideTip(){ tip.hidden = true; }
+
+function openStory(title, code, d){
+  hideTip();
+  const ovl = el('div','ovl');
+  const box = el('div','modal');
+  const x = el('button','x','×'); x.type = 'button';
+  x.setAttribute('aria-label','close');
+  box.appendChild(x);
+  box.appendChild(el('h3',null,title));
+  if (code) box.appendChild(el('div','mcode',code));
+
+  const sec = (label, cls, fill) => {
+    const s = el('div','msec');
+    s.appendChild(el('div','mh',label));
+    const body = el('div',cls);
+    fill(body);
+    s.appendChild(body);
+    box.appendChild(s);
+  };
+  if (d.simple) sec('in plain words','msimple', b => b.textContent = d.simple);
+  if (d.source) sec('where the data comes from','msrc', b => b.textContent = d.source);
+  if (d.how && d.how.length)
+    sec('the calculation, step by step','mhow',
+        b => d.how.forEach(l => b.appendChild(el('div',null,l))));
+  if (d.caveat) sec('the fine print','mcave', b => b.textContent = d.caveat);
+
+  const close = () => { ovl.remove(); document.removeEventListener('keydown', onKey); };
+  const onKey = ev => { if (ev.key === 'Escape') close(); };
+  x.onclick = close;
+  ovl.onclick = ev => { if (ev.target === ovl) close(); };
+  document.addEventListener('keydown', onKey);
+  ovl.appendChild(box);
+  document.body.appendChild(ovl);
+}
+
+function wireStat(elm, title, code, d){
+  elm.onmouseenter = () => showTip(elm, title, d);
+  elm.onmouseleave = hideTip;
+  elm.onfocus = () => showTip(elm, title, d);
+  elm.onblur = hideTip;
+  elm.onclick = ev => { ev.stopPropagation(); openStory(title, code, d); };
+}
+
+function info(title, code, d){
+  const b = el('button','info','i');
+  b.type = 'button';
+  b.setAttribute('aria-label', 'what is ' + title + ' and how was it computed?');
+  wireStat(b, title, code, d);
+  return b;
+}
+
+window.addEventListener('scroll', hideTip, {passive:true});
+
 function scorecards(list){
   const grid = el('div','cards');
   list.forEach(c => {
     const capped = (c.flags||[]).length > 0;
     const card = el('div','card' + (capped ? ' capped' : ''));
 
+    const ex = c.explain || {};
+    const who = c.code + (c.name ? ' — ' + c.name : '');
+
     const head = el('div','chead');
     head.appendChild(el('span','iata',c.code));
     head.appendChild(el('span','nm',c.name || ''));
-    if (c.rank) head.appendChild(el('span','rk','#'+c.rank+' '+(c.hub_class||'')));
+    if (c.rank){
+      head.appendChild(el('span','rk','#'+c.rank+' '+(c.hub_class||'')));
+      if (ex.rank) head.appendChild(info('rank', who, ex.rank));
+    }
+    if (typeof c.composite === 'number'){
+      head.appendChild(el('span','rk','score '+c.composite.toFixed(1)));
+      if (ex.composite) head.appendChild(info('composite score', who, ex.composite));
+    }
     card.appendChild(head);
 
     // Percentiles are within the airport's own hub class — the same caveat the tools
@@ -249,12 +384,18 @@ function scorecards(list){
     Object.entries(c.kpis||{}).forEach(([k,v]) => {
       if (typeof v !== 'number') return;
       const row = el('div','kpi');
-      row.appendChild(el('div','lbl', KPI_LABEL[k] || k.replace(/_/g,' ')));
+      const title = KPI_LABEL[k] || k.replace(/_/g,' ');
+      const lbl = el('div','lbl', title);
+      if (ex.kpis && ex.kpis[k]) lbl.appendChild(info(title, who, ex.kpis[k]));
+      row.appendChild(lbl);
       const bar = el('div','bar' + (v >= 80 ? ' hi' : ''));
       const fill = el('i'); fill.style.width = Math.max(0,Math.min(100,v)) + '%';
       bar.appendChild(fill);
       row.appendChild(bar);
-      row.appendChild(el('div','val', v.toFixed(0)));
+      const val = el('div','val', v.toFixed(0));
+      // "hover on the number": the value itself explains too, not only the ⓘ
+      if (ex.kpis && ex.kpis[k]) wireStat(val, title, who, ex.kpis[k]);
+      row.appendChild(val);
       card.appendChild(row);
     });
 
