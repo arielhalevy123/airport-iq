@@ -18,7 +18,17 @@ latency here is not token generation, it is the agent going away to query things
 what the interface shows. You watch it resolve the region *before* ranking, rather than staring
 at a spinner.
 
-![Streaming tool trace and scorecards](docs/images/02-streaming-trace.jpg)
+![Streaming tool trace and scorecards](docs/images/01-streaming-trace.jpg)
+
+**Every number can be interrogated.** Each metric carries an ⓘ that explains it in plain words,
+names the source, shows the arithmetic step by step, and states the fine print — including the
+inconvenient parts, like the delay data covering one month of domestic flights only.
+
+An analyst who cannot see how a score was produced has to take it on faith, and a score taken on
+faith is not usable in an investment decision. So the explanation is part of the product rather
+than part of the documentation:
+
+![Metric explainer showing source, calculation and caveats](docs/images/02-metric-explainer.png)
 
 **Every answer carries the engine's own numbers.** The percentile bars beneath the prose come
 straight from the deterministic scoring engine, so the sentence can be checked against the data
